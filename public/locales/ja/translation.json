@@ -1,0 +1,61 @@
+{
+  "app": {
+    "title": "ゼルダ タイムライン インタープリター",
+    "subtitle": "あなただけのタイムライン理論を作ろう"
+  },
+  "sidebar": {
+    "title": "ゲームライブラリ",
+    "searchPlaceholder": "ゲームを検索...",
+    "filter": {
+      "all": "すべて",
+      "mainline": "本編",
+      "spinoff": "外伝"
+    },
+    "dragHint": "ゲームをキャンバスにドラッグ",
+    "canonTooltip": "公式に正史として認定"
+  },
+  "toolbar": {
+    "clear": "クリア",
+    "export": "エクスポート",
+    "exportPNG": "PNGでエクスポート",
+    "exportPDF": "PDFでエクスポート",
+    "exportJSON": "JSONでエクスポート",
+    "import": "インポート",
+    "loadOfficial": "公式タイムラインを読み込む",
+    "undo": "元に戻す",
+    "redo": "やり直す"
+  },
+  "canvas": {
+    "dropHint": "ここにゲームをドロップして追加"
+  },
+  "branch": {
+    "main": "メイン",
+    "child": "子供時代ルート",
+    "adult": "大人時代ルート",
+    "fallen": "敗北ルート"
+  },
+  "settings": {
+    "language": "言語",
+    "coverRegion": "パッケージ地域",
+    "showMinimap": "ミニマップを表示",
+    "snapToGrid": "グリッドにスナップ"
+  },
+  "region": {
+    "us": "北米版",
+    "jp": "日本版",
+    "cn": "中国版"
+  },
+  "contextMenu": {
+    "delete": "削除",
+    "changeBranch": "分岐タイプを変更",
+    "addLabel": "ラベルを追加"
+  },
+  "dialog": {
+    "clearConfirm": {
+      "title": "タイムラインをクリアしますか？",
+      "message": "すべてのゲームと接続が削除されます。この操作は元に戻せません。",
+      "confirm": "クリア",
+      "cancel": "キャンセル"
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "app": {
+    "title": "Zelda Timeline Interpreter",
+    "subtitle": "Create your own timeline theory"
+  },
+  "sidebar": {
+    "title": "Game Library",
+    "searchPlaceholder": "Search games...",
+    "filter": {
+      "all": "All",
+      "mainline": "Mainline",
+      "spinoff": "Spin-off"
+    },
+    "dragHint": "Drag games to the canvas",
+    "canonTooltip": "Officially recognized as canon"
+  },
+  "toolbar": {
+    "clear": "Clear",
+    "export": "Export",
+    "exportPNG": "Export as PNG",
+    "exportPDF": "Export as PDF",
+    "exportJSON": "Export as JSON",
+    "import": "Import",
+    "loadOfficial": "Load Official Timeline",
+    "undo": "Undo",
+    "redo": "Redo"
+  },
+  "canvas": {
+    "dropHint": "Drop game here to add to timeline"
+  },
+  "branch": {
+    "main": "Main",
+    "child": "Child Timeline",
+    "adult": "Adult Timeline",
+    "fallen": "Fallen Hero Timeline"
+  },
+  "settings": {
+    "language": "Language",
+    "coverRegion": "Cover Region",
+    "showMinimap": "Show Minimap",
+    "snapToGrid": "Snap to Grid"
+  },
+  "region": {
+    "us": "US",
+    "jp": "Japan",
+    "cn": "China"
+  },
+  "contextMenu": {
+    "delete": "Delete",
+    "changeBranch": "Change Branch Type",
+    "addLabel": "Add Label"
+  },
+  "dialog": {
+    "clearConfirm": {
+      "title": "Clear Timeline?",
+      "message": "This will remove all games and connections. This action cannot be undone.",
+      "confirm": "Clear",
+      "cancel": "Cancel"
+    }
+  }
+}
