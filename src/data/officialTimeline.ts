@@ -4,7 +4,7 @@ const ROW_HEIGHT = 240;
 const COL_CHILD = 200;   // Child timeline (left)
 const COL_MAIN = 500;    // Main trunk / Adult timeline (center)
 const COL_FALLEN = 800;  // Fallen hero timeline (right)
-const COL_INDEPENDENT = 1200; // Independent timeline (far right)
+const COL_INDEPENDENT = 1200; // Standalone timeline — BotW/TotK (far right)
 
 export const officialTimelineNodes: TimelineNode[] = [
   // === Main trunk (before split) ===
@@ -33,10 +33,9 @@ export const officialTimelineNodes: TimelineNode[] = [
   { id: 'game-legend-of-zelda-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 10 }, data: { gameId: 'legend-of-zelda' } },
   { id: 'game-adventure-of-link-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 11 }, data: { gameId: 'adventure-of-link' } },
 
-  // === Independent Timeline (far right column) ===
-  { id: 'game-age-of-imprisonment-official', type: 'game', position: { x: COL_INDEPENDENT, y: 0 }, data: { gameId: 'age-of-imprisonment' } },
-  { id: 'game-breath-of-the-wild-official', type: 'game', position: { x: COL_INDEPENDENT, y: ROW_HEIGHT }, data: { gameId: 'breath-of-the-wild' } },
-  { id: 'game-tears-of-the-kingdom-official', type: 'game', position: { x: COL_INDEPENDENT, y: ROW_HEIGHT * 2 }, data: { gameId: 'tears-of-the-kingdom' } },
+  // === Standalone Timeline (far right column) — BotW/TotK are officially separate from all three branches ===
+  { id: 'game-breath-of-the-wild-official', type: 'game', position: { x: COL_INDEPENDENT, y: 0 }, data: { gameId: 'breath-of-the-wild' } },
+  { id: 'game-tears-of-the-kingdom-official', type: 'game', position: { x: COL_INDEPENDENT, y: ROW_HEIGHT }, data: { gameId: 'tears-of-the-kingdom' } },
 ];
 
 export const officialTimelineEdges: TimelineEdge[] = [
@@ -67,7 +66,6 @@ export const officialTimelineEdges: TimelineEdge[] = [
   { id: 'e-eow-loz', source: 'game-echoes-of-wisdom-official', target: 'game-legend-of-zelda-official', sourceHandle: 'bottom', targetHandle: 'top', type: 'timeline', data: { branchType: 'fallen' } },
   { id: 'e-loz-aol', source: 'game-legend-of-zelda-official', target: 'game-adventure-of-link-official', sourceHandle: 'bottom', targetHandle: 'top', type: 'timeline', data: { branchType: 'fallen' } },
 
-  // === Independent Timeline chain ===
-  { id: 'e-aoi-botw', source: 'game-age-of-imprisonment-official', target: 'game-breath-of-the-wild-official', sourceHandle: 'bottom', targetHandle: 'top', type: 'timeline', data: { branchType: 'main' } },
+  // === Standalone Timeline chain (BotW/TotK — officially separate from the three branches) ===
   { id: 'e-botw-totk', source: 'game-breath-of-the-wild-official', target: 'game-tears-of-the-kingdom-official', sourceHandle: 'bottom', targetHandle: 'top', type: 'timeline', data: { branchType: 'main' } },
 ];
