@@ -147,27 +147,15 @@ export const games: Game[] = [
     },
   },
   {
-    id: 'oracle-of-seasons',
+    id: 'oracle-of-seasons-ages',
     releaseYear: 2001,
     isMainline: true,
     covers: { us: 'oracle-of-seasons.jpg', jp: 'oracle-of-seasons.jpg' },
     names: {
-      en: 'Oracle of Seasons',
-      ja: 'ふしぎの木の実 大地の章',
-      'zh-CN': '不可思议的果实：大地之章',
-      'zh-TW': '不可思議的果實：大地之章',
-    },
-  },
-  {
-    id: 'oracle-of-ages',
-    releaseYear: 2001,
-    isMainline: true,
-    covers: { us: 'oracle-of-ages.jpg', jp: 'oracle-of-ages.jpg' },
-    names: {
-      en: 'Oracle of Ages',
-      ja: 'ふしぎの木の実 時空の章',
-      'zh-CN': '不可思议的果实：时空之章',
-      'zh-TW': '不可思議的果實：時空之章',
+      en: 'Oracle of Seasons/Ages',
+      ja: 'ふしぎの木の実',
+      'zh-CN': '不可思议的果实',
+      'zh-TW': '不可思議的果實',
     },
   },
   {

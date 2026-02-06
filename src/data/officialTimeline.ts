@@ -26,13 +26,12 @@ export const officialTimelineNodes: TimelineNode[] = [
   // === Fallen Hero Timeline (right column) ===
   { id: 'game-link-to-the-past-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 4 }, data: { gameId: 'link-to-the-past' } },
   { id: 'game-links-awakening-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 5 }, data: { gameId: 'links-awakening' } },
-  { id: 'game-oracle-of-seasons-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 6 }, data: { gameId: 'oracle-of-seasons' } },
-  { id: 'game-oracle-of-ages-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 7 }, data: { gameId: 'oracle-of-ages' } },
-  { id: 'game-link-between-worlds-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 8 }, data: { gameId: 'link-between-worlds' } },
-  { id: 'game-tri-force-heroes-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 9 }, data: { gameId: 'tri-force-heroes' } },
-  { id: 'game-echoes-of-wisdom-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 10 }, data: { gameId: 'echoes-of-wisdom' } },
-  { id: 'game-legend-of-zelda-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 11 }, data: { gameId: 'legend-of-zelda' } },
-  { id: 'game-adventure-of-link-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 12 }, data: { gameId: 'adventure-of-link' } },
+  { id: 'game-oracle-of-seasons-ages-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 6 }, data: { gameId: 'oracle-of-seasons-ages' } },
+  { id: 'game-link-between-worlds-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 7 }, data: { gameId: 'link-between-worlds' } },
+  { id: 'game-tri-force-heroes-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 8 }, data: { gameId: 'tri-force-heroes' } },
+  { id: 'game-echoes-of-wisdom-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 9 }, data: { gameId: 'echoes-of-wisdom' } },
+  { id: 'game-legend-of-zelda-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 10 }, data: { gameId: 'legend-of-zelda' } },
+  { id: 'game-adventure-of-link-official', type: 'game', position: { x: COL_FALLEN, y: ROW_HEIGHT * 11 }, data: { gameId: 'adventure-of-link' } },
 
   // === Independent Timeline (far right column) ===
   { id: 'game-age-of-imprisonment-official', type: 'game', position: { x: COL_INDEPENDENT, y: 0 }, data: { gameId: 'age-of-imprisonment' } },
@@ -61,9 +60,8 @@ export const officialTimelineEdges: TimelineEdge[] = [
 
   // === Fallen Hero Timeline chain ===
   { id: 'e-lttp-la', source: 'game-link-to-the-past-official', target: 'game-links-awakening-official', sourceHandle: 'bottom', targetHandle: 'top', type: 'timeline', data: { branchType: 'fallen' } },
-  { id: 'e-la-oos', source: 'game-links-awakening-official', target: 'game-oracle-of-seasons-official', sourceHandle: 'bottom', targetHandle: 'top', type: 'timeline', data: { branchType: 'fallen' } },
-  { id: 'e-oos-ooa', source: 'game-oracle-of-seasons-official', target: 'game-oracle-of-ages-official', sourceHandle: 'bottom', targetHandle: 'top', type: 'timeline', data: { branchType: 'fallen' } },
-  { id: 'e-ooa-albw', source: 'game-oracle-of-ages-official', target: 'game-link-between-worlds-official', sourceHandle: 'bottom', targetHandle: 'top', type: 'timeline', data: { branchType: 'fallen' } },
+  { id: 'e-la-oracles', source: 'game-links-awakening-official', target: 'game-oracle-of-seasons-ages-official', sourceHandle: 'bottom', targetHandle: 'top', type: 'timeline', data: { branchType: 'fallen' } },
+  { id: 'e-oracles-albw', source: 'game-oracle-of-seasons-ages-official', target: 'game-link-between-worlds-official', sourceHandle: 'bottom', targetHandle: 'top', type: 'timeline', data: { branchType: 'fallen' } },
   { id: 'e-albw-tfh', source: 'game-link-between-worlds-official', target: 'game-tri-force-heroes-official', sourceHandle: 'bottom', targetHandle: 'top', type: 'timeline', data: { branchType: 'fallen' } },
   { id: 'e-tfh-eow', source: 'game-tri-force-heroes-official', target: 'game-echoes-of-wisdom-official', sourceHandle: 'bottom', targetHandle: 'top', type: 'timeline', data: { branchType: 'fallen' } },
   { id: 'e-eow-loz', source: 'game-echoes-of-wisdom-official', target: 'game-legend-of-zelda-official', sourceHandle: 'bottom', targetHandle: 'top', type: 'timeline', data: { branchType: 'fallen' } },
