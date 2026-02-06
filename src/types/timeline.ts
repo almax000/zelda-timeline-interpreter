@@ -12,6 +12,7 @@ export type TimelineNode = Node<TimelineNodeData, 'game'>;
 export interface TimelineEdgeData extends Record<string, unknown> {
   branchType: BranchType;
   label?: string;
+  labelKey?: string;
 }
 
 export type TimelineEdge = Edge<TimelineEdgeData>;

@@ -1,10 +1,12 @@
 import { memo } from 'react';
 import { BaseEdge, getBezierPath, type EdgeProps, type Edge } from '@xyflow/react';
+import { useTranslation } from 'react-i18next';
 import type { BranchType } from '../../types/timeline';
 
 interface TimelineEdgeData extends Record<string, unknown> {
   branchType: BranchType;
   label?: string;
+  labelKey?: string;
 }
 
 type TimelineEdgeType = Edge<TimelineEdgeData>;
@@ -27,6 +29,8 @@ function TimelineEdgeComponent({
   data,
   selected,
 }: EdgeProps<TimelineEdgeType>) {
+  const { t } = useTranslation();
+
   const [edgePath] = getBezierPath({
     sourceX,
     sourceY,
@@ -38,6 +42,11 @@ function TimelineEdgeComponent({
 
   const branchType = data?.branchType || 'main';
   const color = branchColors[branchType];
+  const displayLabel = data?.labelKey ? t(data.labelKey) : data?.label;
+
+  const isHorizontal = Math.abs(targetX - sourceX) > Math.abs(targetY - sourceY);
+  const labelX = (sourceX + targetX) / 2;
+  const labelY = (sourceY + targetY) / 2;
 
   return (
     <>
@@ -50,17 +59,21 @@ function TimelineEdgeComponent({
           filter: selected ? `drop-shadow(0 0 6px ${color})` : undefined,
         }}
       />
-      {data?.label && (
-        <text
-          x={(sourceX + targetX) / 2}
-          y={(sourceY + targetY) / 2 - 10}
-          textAnchor="middle"
-          fill={color}
-          fontSize={12}
-          fontWeight="500"
+      {displayLabel && (
+        <foreignObject
+          x={labelX - 75}
+          y={isHorizontal ? labelY - 30 : labelY - 14}
+          width={150}
+          height={32}
+          style={{ overflow: 'visible' }}
         >
-          {data.label}
-        </text>
+          <div
+            className="text-xs font-medium text-center whitespace-nowrap px-2 py-1 rounded bg-[var(--color-surface)]/80"
+            style={{ color }}
+          >
+            {displayLabel}
+          </div>
+        </foreignObject>
       )}
     </>
   );

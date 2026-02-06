@@ -44,20 +44,32 @@ function GameNodeComponent({ data, selected }: NodeProps<GameNodeType>) {
       `}
       style={{ width: 'auto', maxWidth: 160 }}
     >
-      {/* Top handle */}
+      {/* Top handles (target visible, source hidden) */}
       <Handle
         type="target"
         position={Position.Top}
         id="top"
-        className="!w-3 !h-3 !bg-[var(--color-gold)] !border-2 !border-[var(--color-surface)]"
+        className="!w-2 !h-2 !bg-[var(--color-gold)] !border-[var(--color-surface)]"
+      />
+      <Handle
+        type="source"
+        position={Position.Top}
+        id="top"
+        className="!w-0 !h-0 !opacity-0"
       />
 
-      {/* Left handle */}
+      {/* Left handles (target visible, source hidden) */}
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="left"
+        className="!w-2 !h-2 !bg-[var(--color-gold)] !border-[var(--color-surface)]"
+      />
       <Handle
         type="source"
         position={Position.Left}
         id="left"
-        className="!w-3 !h-3 !bg-[var(--color-branch-child)] !border-2 !border-[var(--color-surface)]"
+        className="!w-0 !h-0 !opacity-0"
       />
 
       {/* Game cover - natural aspect ratio */}
@@ -84,20 +96,32 @@ function GameNodeComponent({ data, selected }: NodeProps<GameNodeType>) {
         </p>
       </div>
 
-      {/* Right handle */}
+      {/* Right handles (source visible, target hidden) */}
       <Handle
         type="source"
         position={Position.Right}
         id="right"
-        className="!w-3 !h-3 !bg-[var(--color-branch-adult)] !border-2 !border-[var(--color-surface)]"
+        className="!w-2 !h-2 !bg-[var(--color-gold)] !border-[var(--color-surface)]"
+      />
+      <Handle
+        type="target"
+        position={Position.Right}
+        id="right"
+        className="!w-0 !h-0 !opacity-0"
       />
 
-      {/* Bottom handle */}
+      {/* Bottom handles (source visible, target hidden) */}
       <Handle
         type="source"
         position={Position.Bottom}
         id="bottom"
-        className="!w-3 !h-3 !bg-[var(--color-gold)] !border-2 !border-[var(--color-surface)]"
+        className="!w-2 !h-2 !bg-[var(--color-gold)] !border-[var(--color-surface)]"
+      />
+      <Handle
+        type="target"
+        position={Position.Bottom}
+        id="bottom"
+        className="!w-0 !h-0 !opacity-0"
       />
     </div>
   );
