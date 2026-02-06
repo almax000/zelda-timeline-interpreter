@@ -1,0 +1,73 @@
+{
+  "app": {
+    "title": "薩爾達時間線模擬器",
+    "subtitle": "建立你自己的時間線理論"
+  },
+  "sidebar": {
+    "title": "遊戲庫",
+    "searchPlaceholder": "搜尋遊戲...",
+    "filter": {
+      "all": "全部",
+      "mainline": "主線",
+      "spinoff": "衍生"
+    },
+    "dragHint": "拖曳遊戲到畫布",
+    "canonTooltip": "官方認定為 canon"
+  },
+  "toolbar": {
+    "clear": "清空",
+    "export": "匯出",
+    "exportPNG": "匯出為 PNG",
+    "exportPDF": "匯出為 PDF",
+    "exportJSON": "匯出為 JSON",
+    "import": "匯入",
+    "loadOfficial": "載入官方時間線",
+    "undo": "復原",
+    "redo": "重做"
+  },
+  "canvas": {
+    "dropHint": "將遊戲拖放到此處加入時間線"
+  },
+  "branch": {
+    "main": "主線",
+    "child": "幼年線",
+    "adult": "成年線",
+    "fallen": "失敗線"
+  },
+  "settings": {
+    "language": "語言",
+    "coverRegion": "封面區域",
+    "showMinimap": "顯示小地圖",
+    "snapToGrid": "對齊網格"
+  },
+  "region": {
+    "us": "美版",
+    "jp": "日版",
+    "cn": "中版"
+  },
+  "contextMenu": {
+    "delete": "刪除",
+    "changeBranch": "更改分支類型",
+    "addLabel": "新增標籤",
+    "editLabel": "編輯標籤"
+  },
+  "dialog": {
+    "clearConfirm": {
+      "title": "清空時間線？",
+      "message": "這將刪除所有遊戲和連接。此操作無法復原。",
+      "confirm": "清空",
+      "cancel": "取消"
+    },
+    "loadOfficialConfirm": {
+      "title": "載入官方時間線？",
+      "message": "這將覆蓋目前的時間線內容。此操作無法復原。",
+      "confirm": "載入",
+      "cancel": "取消"
+    }
+  },
+  "officialTimeline": {
+    "childSplit": "幼年林克回到過去",
+    "adultSplit": "成年林克封印加農",
+    "fallenSplit": "林克戰敗"
+  }
+}

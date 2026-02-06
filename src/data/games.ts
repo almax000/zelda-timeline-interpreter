@@ -11,6 +11,7 @@ export const games: Game[] = [
       en: 'Skyward Sword',
       ja: 'スカイウォードソード',
       'zh-CN': '御天之剑',
+      'zh-TW': '御天之劍',
     },
   },
   {
@@ -22,6 +23,7 @@ export const games: Game[] = [
       en: 'The Minish Cap',
       ja: 'ふしぎのぼうし',
       'zh-CN': '缩小帽',
+      'zh-TW': '縮小帽',
     },
   },
   {
@@ -33,6 +35,7 @@ export const games: Game[] = [
       en: 'Four Swords',
       ja: '4つの剣',
       'zh-CN': '四支剑',
+      'zh-TW': '四支劍',
     },
   },
   {
@@ -44,6 +47,7 @@ export const games: Game[] = [
       en: 'Ocarina of Time',
       ja: '時のオカリナ',
       'zh-CN': '时之笛',
+      'zh-TW': '時之笛',
     },
   },
   {
@@ -55,6 +59,7 @@ export const games: Game[] = [
       en: "Majora's Mask",
       ja: 'ムジュラの仮面',
       'zh-CN': '魔吉拉的假面',
+      'zh-TW': '乐吉拉的面具',
     },
   },
   {
@@ -66,6 +71,7 @@ export const games: Game[] = [
       en: 'Twilight Princess',
       ja: 'トワイライトプリンセス',
       'zh-CN': '黄昏公主',
+      'zh-TW': '黃昏公主',
     },
   },
   {
@@ -77,6 +83,7 @@ export const games: Game[] = [
       en: 'Four Swords Adventures',
       ja: '4つの剣+',
       'zh-CN': '四支剑+',
+      'zh-TW': '四支劍+',
     },
   },
   {
@@ -88,6 +95,7 @@ export const games: Game[] = [
       en: 'The Wind Waker',
       ja: '風のタクト',
       'zh-CN': '风之杖',
+      'zh-TW': '風之乘',
     },
   },
   {
@@ -99,6 +107,7 @@ export const games: Game[] = [
       en: 'Phantom Hourglass',
       ja: '夢幻の砂時計',
       'zh-CN': '幻影沙漏',
+      'zh-TW': '夢幻沙漏',
     },
   },
   {
@@ -110,6 +119,7 @@ export const games: Game[] = [
       en: 'Spirit Tracks',
       ja: '大地の汽笛',
       'zh-CN': '大地的汽笛',
+      'zh-TW': '大地的汽笛',
     },
   },
   {
@@ -121,6 +131,7 @@ export const games: Game[] = [
       en: 'A Link to the Past',
       ja: '神々のトライフォース',
       'zh-CN': '众神的三角力量',
+      'zh-TW': '眾神的三角力量',
     },
   },
   {
@@ -132,6 +143,7 @@ export const games: Game[] = [
       en: "Link's Awakening",
       ja: '夢をみる島',
       'zh-CN': '织梦岛',
+      'zh-TW': '織夢島',
     },
   },
   {
@@ -143,6 +155,7 @@ export const games: Game[] = [
       en: 'Oracle of Seasons',
       ja: 'ふしぎの木の実 大地の章',
       'zh-CN': '不可思议的果实：大地之章',
+      'zh-TW': '不可思議的果實：大地之章',
     },
   },
   {
@@ -154,6 +167,7 @@ export const games: Game[] = [
       en: 'Oracle of Ages',
       ja: 'ふしぎの木の実 時空の章',
       'zh-CN': '不可思议的果实：时空之章',
+      'zh-TW': '不可思議的果實：時空之章',
     },
   },
   {
@@ -165,6 +179,7 @@ export const games: Game[] = [
       en: 'A Link Between Worlds',
       ja: '神々のトライフォース2',
       'zh-CN': '众神的三角力量2',
+      'zh-TW': '眾神的三角力量2',
     },
   },
   {
@@ -176,6 +191,7 @@ export const games: Game[] = [
       en: 'Tri Force Heroes',
       ja: 'トライフォース3銃士',
       'zh-CN': '三角力量三剑客',
+      'zh-TW': '三角力量三劍客',
     },
   },
   {
@@ -187,6 +203,7 @@ export const games: Game[] = [
       en: 'Echoes of Wisdom',
       ja: '知恵のかりもの',
       'zh-CN': '智慧的借物',
+      'zh-TW': '智慧的借物',
     },
   },
   {
@@ -198,6 +215,7 @@ export const games: Game[] = [
       en: 'The Legend of Zelda',
       ja: 'ゼルダの伝説',
       'zh-CN': '塞尔达传说',
+      'zh-TW': '薩爾達傳說',
     },
   },
   {
@@ -209,6 +227,7 @@ export const games: Game[] = [
       en: 'The Adventure of Link',
       ja: 'リンクの冒険',
       'zh-CN': '林克的冒险',
+      'zh-TW': '林克的冒險',
     },
   },
   {
@@ -220,6 +239,7 @@ export const games: Game[] = [
       en: 'Breath of the Wild',
       ja: 'ブレス オブ ザ ワイルド',
       'zh-CN': '旷野之息',
+      'zh-TW': '曠野之息',
     },
   },
   {
@@ -231,10 +251,11 @@ export const games: Game[] = [
       en: 'Tears of the Kingdom',
       ja: 'ティアーズ オブ ザ キングダム',
       'zh-CN': '王国之泪',
+      'zh-TW': '王國之淚',
     },
   },
 
-  // ===== SPIN-OFF GAMES (6) =====
+  // ===== SPIN-OFF GAMES (7) =====
   {
     id: 'hyrule-warriors',
     releaseYear: 2014,
@@ -244,6 +265,7 @@ export const games: Game[] = [
       en: 'Hyrule Warriors',
       ja: 'ゼルダ無双',
       'zh-CN': '塞尔达无双',
+      'zh-TW': '薩爾達無雙',
     },
   },
   {
@@ -255,6 +277,7 @@ export const games: Game[] = [
       en: 'Age of Calamity',
       ja: '厄災の黙示録',
       'zh-CN': '灾厄启示录',
+      'zh-TW': '災厄啟示錄',
     },
   },
   {
@@ -267,6 +290,7 @@ export const games: Game[] = [
       en: 'Age of Imprisonment',
       ja: 'ゼルダ無双 封印戦記',
       'zh-CN': '塞尔达无双 封印战记',
+      'zh-TW': '薩爾達無雙 封印戰記',
     },
   },
   {
@@ -278,6 +302,7 @@ export const games: Game[] = [
       en: 'Cadence of Hyrule',
       ja: 'ケイデンス・オブ・ハイラル',
       'zh-CN': '节奏海拉鲁',
+      'zh-TW': '節奏海拉魯',
     },
   },
   {
@@ -289,6 +314,7 @@ export const games: Game[] = [
       en: "Link's Crossbow Training",
       ja: 'リンクのボウガントレーニング',
       'zh-CN': '十字弓训练',
+      'zh-TW': '十字弓訓練',
     },
   },
   {
@@ -300,6 +326,7 @@ export const games: Game[] = [
       en: "Tingle's Rosy Rupeeland",
       ja: 'もぎたてチンクルのばら色ルッピーランド',
       'zh-CN': '廷格尔的玫瑰色卢比乐园',
+      'zh-TW': '廷格爾的玫瑰色盧比樂園',
     },
   },
   {
@@ -311,6 +338,7 @@ export const games: Game[] = [
       en: 'Nintendo Land: Battle Quest',
       ja: 'ニンテンドーランド: バトルクエスト',
       'zh-CN': '任天堂乐园：战斗任务',
+      'zh-TW': '任天堂樂園：戰鬥任務',
     },
   },
 ];

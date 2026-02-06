@@ -48,7 +48,8 @@
   "contextMenu": {
     "delete": "删除",
     "changeBranch": "更改分支类型",
-    "addLabel": "添加标签"
+    "addLabel": "添加标签",
+    "editLabel": "编辑标签"
   },
   "dialog": {
     "clearConfirm": {
@@ -56,6 +57,17 @@
       "message": "这将删除所有游戏和连接。此操作无法撤销。",
       "confirm": "清空",
       "cancel": "取消"
+    },
+    "loadOfficialConfirm": {
+      "title": "加载官方时间线？",
+      "message": "这将覆盖当前时间线内容。此操作无法撤销。",
+      "confirm": "加载",
+      "cancel": "取消"
     }
+  },
+  "officialTimeline": {
+    "childSplit": "幼年林克回到过去",
+    "adultSplit": "成年林克封印加农",
+    "fallenSplit": "林克战败"
   }
 }

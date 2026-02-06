@@ -10,14 +10,24 @@ interface GameCardProps {
 function GameCardComponent({ game }: GameCardProps) {
   const { t, i18n } = useTranslation();
   const coverRegion = useSettingsStore((state) => state.coverRegion);
+  const [fallbackToUs, setFallbackToUs] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
 
   const gameName = game.names[i18n.language as keyof typeof game.names] || game.names.en;
-  const coverPath = game.covers[coverRegion] || game.covers.us;
+  const effectiveRegion = fallbackToUs ? 'us' : coverRegion;
+  const coverPath = game.covers[effectiveRegion] || game.covers.us;
 
   const handleDragStart = (event: React.DragEvent) => {
     event.dataTransfer.setData('application/zelda-game', game.id);
     event.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleImageError = () => {
+    if (!fallbackToUs && coverRegion !== 'us') {
+      setFallbackToUs(true);
+    } else {
+      setImageFailed(true);
+    }
   };
 
   return (
@@ -30,10 +40,10 @@ function GameCardComponent({ game }: GameCardProps) {
       <div className="w-10 flex-shrink-0 rounded overflow-hidden bg-[var(--color-surface-light)]">
         {coverPath && !imageFailed ? (
           <img
-            src={`/covers/${coverRegion}/${coverPath}`}
+            src={`/covers/${effectiveRegion}/${coverPath}`}
             alt={gameName}
             className="w-full h-auto block"
-            onError={() => setImageFailed(true)}
+            onError={handleImageError}
           />
         ) : (
           <div className="w-10 h-14 flex items-center justify-center">

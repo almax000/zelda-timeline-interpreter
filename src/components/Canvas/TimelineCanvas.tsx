@@ -1,9 +1,10 @@
-import { useCallback, useRef, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   ReactFlow,
   Background,
   Controls,
   MiniMap,
+  useReactFlow,
   type Connection,
   type NodeTypes,
   type EdgeTypes,
@@ -16,9 +17,11 @@ import '@xyflow/react/dist/style.css';
 
 import { GameNode } from './GameNode';
 import { TimelineEdge } from './TimelineEdge';
+import { ContextMenu } from './ContextMenu';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import type { TimelineNode } from '../../types/timeline';
+import type { BranchType } from '../../types/timeline';
 
 const nodeTypes: NodeTypes = {
   game: GameNode as NodeTypes['game'],
@@ -28,10 +31,18 @@ const edgeTypes: EdgeTypes = {
   timeline: TimelineEdge as EdgeTypes['timeline'],
 };
 
-export function TimelineCanvas() {
-  const reactFlowWrapper = useRef<HTMLDivElement>(null);
+interface ContextMenuState {
+  x: number;
+  y: number;
+  type: 'node' | 'edge';
+  targetId: string;
+}
 
-  const { nodes, edges, onNodesChange, onEdgesChange, addNode, addEdge } = useTimelineStore();
+export function TimelineCanvas() {
+  const { screenToFlowPosition } = useReactFlow();
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+
+  const { nodes, edges, onNodesChange, onEdgesChange, addNode, addEdge, removeNode, removeEdge, updateEdgeBranchType, updateEdgeLabel } = useTimelineStore();
   const showMinimap = useSettingsStore((state) => state.showMinimap);
   const snapToGrid = useSettingsStore((state) => state.snapToGrid);
 
@@ -54,14 +65,10 @@ export function TimelineCanvas() {
       const gameId = event.dataTransfer.getData('application/zelda-game');
       if (!gameId) return;
 
-      const wrapper = reactFlowWrapper.current;
-      if (!wrapper) return;
-
-      const bounds = wrapper.getBoundingClientRect();
-      const position = {
-        x: event.clientX - bounds.left - 64,
-        y: event.clientY - bounds.top - 80,
-      };
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
 
       const newNode: TimelineNode = {
         id: `game-${gameId}-${Date.now()}`,
@@ -72,16 +79,51 @@ export function TimelineCanvas() {
 
       addNode(newNode);
     },
-    [addNode]
+    [addNode, screenToFlowPosition]
   );
+
+  const onNodeContextMenu = useCallback(
+    (event: React.MouseEvent, node: TimelineNode) => {
+      event.preventDefault();
+      setContextMenu({
+        x: event.clientX,
+        y: event.clientY,
+        type: 'node',
+        targetId: node.id,
+      });
+    },
+    []
+  );
+
+  const onEdgeContextMenu = useCallback(
+    (event: React.MouseEvent, edge: { id: string }) => {
+      event.preventDefault();
+      setContextMenu({
+        x: event.clientX,
+        y: event.clientY,
+        type: 'edge',
+        targetId: edge.id,
+      });
+    },
+    []
+  );
+
+  const onPaneClick = useCallback(() => {
+    setContextMenu(null);
+  }, []);
+
+  const contextEdge = contextMenu?.type === 'edge'
+    ? edges.find((e) => e.id === contextMenu.targetId)
+    : null;
 
   const defaultEdgeOptions = useMemo(() => ({
     type: 'timeline',
     animated: false,
+    interactionWidth: 20,
   }), []);
 
   return (
-    <div ref={reactFlowWrapper} className="flex-1 h-full">
+    <div className="flex-1 h-full">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -90,6 +132,9 @@ export function TimelineCanvas() {
         onConnect={onConnect}
         onDragOver={onDragOver}
         onDrop={onDrop}
+        onNodeContextMenu={onNodeContextMenu}
+        onEdgeContextMenu={onEdgeContextMenu}
+        onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
@@ -119,6 +164,30 @@ export function TimelineCanvas() {
           />
         )}
       </ReactFlow>
+
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          type={contextMenu.type}
+          edgeBranchType={contextEdge?.data?.branchType}
+          edgeLabel={contextEdge?.data?.label}
+          onDelete={() => {
+            if (contextMenu.type === 'node') {
+              removeNode(contextMenu.targetId);
+            } else {
+              removeEdge(contextMenu.targetId);
+            }
+          }}
+          onChangeBranch={(branchType: BranchType) => {
+            updateEdgeBranchType(contextMenu.targetId, branchType);
+          }}
+          onChangeLabel={(label: string) => {
+            updateEdgeLabel(contextMenu.targetId, label);
+          }}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
     </div>
   );
 }

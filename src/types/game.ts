@@ -14,6 +14,7 @@ export interface Game {
     en: string;
     ja: string;
     'zh-CN': string;
+    'zh-TW': string;
   };
 }
 

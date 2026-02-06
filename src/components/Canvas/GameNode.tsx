@@ -14,13 +14,23 @@ type GameNodeType = Node<GameNodeData, 'game'>;
 function GameNodeComponent({ data, selected }: NodeProps<GameNodeType>) {
   const { i18n } = useTranslation();
   const coverRegion = useSettingsStore((state) => state.coverRegion);
+  const [fallbackToUs, setFallbackToUs] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
 
   const game = getGameById(data.gameId);
   if (!game) return null;
 
   const gameName = game.names[i18n.language as keyof typeof game.names] || game.names.en;
-  const coverPath = game.covers[coverRegion] || game.covers.us;
+  const effectiveRegion = fallbackToUs ? 'us' : coverRegion;
+  const coverPath = game.covers[effectiveRegion] || game.covers.us;
+
+  const handleImageError = () => {
+    if (!fallbackToUs && coverRegion !== 'us') {
+      setFallbackToUs(true);
+    } else {
+      setImageFailed(true);
+    }
+  };
 
   return (
     <div
@@ -53,11 +63,11 @@ function GameNodeComponent({ data, selected }: NodeProps<GameNodeType>) {
       {/* Game cover - natural aspect ratio */}
       {coverPath && !imageFailed ? (
         <img
-          src={`/covers/${coverRegion}/${coverPath}`}
+          src={`/covers/${effectiveRegion}/${coverPath}`}
           alt={gameName}
           className="w-full h-auto block"
           style={{ minWidth: 100, maxWidth: 160 }}
-          onError={() => setImageFailed(true)}
+          onError={handleImageError}
         />
       ) : (
         <div className="w-32 h-40 bg-[var(--color-surface-light)] flex items-center justify-center">

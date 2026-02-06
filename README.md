@@ -1,73 +1,78 @@
-# React + TypeScript + Vite
+# Zelda Timeline Interpreter
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An interactive web tool for creating, visualizing, and sharing your own Zelda timeline theories. Built with React 19, React Flow, and Zustand.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Drag & Drop Timeline Builder** - Drag games from the sidebar onto the canvas to build your timeline
+- **4 Branch Types** - Main (gold), Child (green), Adult (blue), Fallen Hero (purple) timeline connections
+- **Official Timeline Preset** - Load the official Zelda timeline as a starting point
+- **Multi-Language Support** - English, Japanese, Simplified Chinese, Traditional Chinese
+- **Cover Art by Region** - Automatic cover art selection based on language with fallback
+- **Undo/Redo** - Full undo/redo support with keyboard shortcuts (Cmd+Z / Cmd+Shift+Z)
+- **Context Menu** - Right-click nodes/edges to delete, change branch types, or add labels
+- **Export/Import** - Save as PNG, PDF, or JSON; import from JSON
+- **Persistent State** - Timeline auto-saves to localStorage
+- **28 Games** - Complete library including mainline, spin-offs, and canon titles
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Technology | Purpose |
+|-----------|---------|
+| React 19 | UI framework |
+| Vite 7 | Build tool |
+| @xyflow/react | Node-edge graph visualization |
+| Zustand + zundo | State management with undo/redo |
+| Tailwind CSS v4 | Styling |
+| i18next | Internationalization |
+| Playwright | E2E testing |
 
-## Expanding the ESLint configuration
+## Quick Start
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```bash
+# Install dependencies
+npm install
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# Start dev server (port 2104)
+npm run dev
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+# Build for production
+npm run build
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Run E2E tests
+npm run test:e2e
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Project Structure
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+src/
+  components/
+    Canvas/       # React Flow canvas, game nodes, edges, context menu
+    Toolbar/      # Branch selector, language switcher, export menu
+    Sidebar/      # Game library with search
+    UI/           # Reusable UI components
+  stores/         # Zustand stores (timeline + settings)
+  data/           # Game database + official timeline preset
+  types/          # TypeScript types
+  i18n/           # i18next configuration
+  hooks/          # Custom hooks (undo/redo shortcuts)
+  utils/          # Export/import utilities
+e2e/              # Playwright E2E tests
+public/
+  covers/         # Game cover images by region (us/jp)
+  locales/        # Translation files (en/ja/zh-CN/zh-TW)
+```
+
+## Deployment
+
+Deployed on Vercel. The project uses Vite, which Vercel auto-detects for zero-config deployment.
+
+```bash
+# Preview production build locally
+npm run build && npm run preview
+```
+
+## License
+
+MIT

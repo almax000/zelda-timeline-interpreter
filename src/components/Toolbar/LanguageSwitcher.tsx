@@ -4,14 +4,15 @@ import { useSettingsStore } from '../../stores/settingsStore';
 const languages = [
   { code: 'en', label: 'EN' },
   { code: 'ja', label: '日本語' },
-  { code: 'zh-CN', label: '中文' },
+  { code: 'zh-CN', label: '简中' },
+  { code: 'zh-TW', label: '繁中' },
 ] as const;
 
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
   const setLanguage = useSettingsStore((state) => state.setLanguage);
 
-  const handleChange = (lang: 'en' | 'ja' | 'zh-CN') => {
+  const handleChange = (lang: 'en' | 'ja' | 'zh-CN' | 'zh-TW') => {
     i18n.changeLanguage(lang);
     setLanguage(lang);
   };

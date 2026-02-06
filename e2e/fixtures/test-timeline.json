@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "state": {
+    "nodes": [
+      {
+        "id": "game-ocarina-of-time-test",
+        "type": "game",
+        "position": { "x": 300, "y": 100 },
+        "data": { "gameId": "ocarina-of-time" }
+      },
+      {
+        "id": "game-majoras-mask-test",
+        "type": "game",
+        "position": { "x": 100, "y": 400 },
+        "data": { "gameId": "majoras-mask" }
+      },
+      {
+        "id": "game-wind-waker-test",
+        "type": "game",
+        "position": { "x": 500, "y": 400 },
+        "data": { "gameId": "wind-waker" }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-oot-mm-test",
+        "source": "game-ocarina-of-time-test",
+        "target": "game-majoras-mask-test",
+        "sourceHandle": "left",
+        "targetHandle": "top",
+        "type": "timeline",
+        "data": { "branchType": "child" }
+      },
+      {
+        "id": "e-oot-ww-test",
+        "source": "game-ocarina-of-time-test",
+        "target": "game-wind-waker-test",
+        "sourceHandle": "right",
+        "targetHandle": "top",
+        "type": "timeline",
+        "data": { "branchType": "adult" }
+      }
+    ]
+  }
+}

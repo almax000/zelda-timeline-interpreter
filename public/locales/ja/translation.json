@@ -48,7 +48,8 @@
   "contextMenu": {
     "delete": "削除",
     "changeBranch": "分岐タイプを変更",
-    "addLabel": "ラベルを追加"
+    "addLabel": "ラベルを追加",
+    "editLabel": "ラベルを編集"
   },
   "dialog": {
     "clearConfirm": {
@@ -56,6 +57,17 @@
       "message": "すべてのゲームと接続が削除されます。この操作は元に戻せません。",
       "confirm": "クリア",
       "cancel": "キャンセル"
+    },
+    "loadOfficialConfirm": {
+      "title": "公式タイムラインを読み込みますか？",
+      "message": "現在のタイムラインが上書きされます。この操作は元に戻せません。",
+      "confirm": "読み込む",
+      "cancel": "キャンセル"
     }
+  },
+  "officialTimeline": {
+    "childSplit": "子供リンクが過去に戻る",
+    "adultSplit": "大人リンクがガノンを封印",
+    "fallenSplit": "リンクが敗北"
   }
 }

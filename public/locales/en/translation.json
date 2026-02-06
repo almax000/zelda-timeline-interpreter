@@ -48,7 +48,8 @@
   "contextMenu": {
     "delete": "Delete",
     "changeBranch": "Change Branch Type",
-    "addLabel": "Add Label"
+    "addLabel": "Add Label",
+    "editLabel": "Edit Label"
   },
   "dialog": {
     "clearConfirm": {
@@ -56,6 +57,17 @@
       "message": "This will remove all games and connections. This action cannot be undone.",
       "confirm": "Clear",
       "cancel": "Cancel"
+    },
+    "loadOfficialConfirm": {
+      "title": "Load Official Timeline?",
+      "message": "This will replace the current timeline. This action cannot be undone.",
+      "confirm": "Load",
+      "cancel": "Cancel"
     }
+  },
+  "officialTimeline": {
+    "childSplit": "Young Link returns to the past",
+    "adultSplit": "Adult Link seals Ganon",
+    "fallenSplit": "Link falls in battle"
   }
 }
