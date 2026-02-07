@@ -1,12 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <rect width="32" height="32" rx="6" fill="#1a1a2e"/>
-  <!-- ZT in Hylia Serif, font coords flipped to SVG y-down and centered -->
-  <g transform="translate(2.5, 7.72) scale(0.0207, -0.0207) translate(0, -800)" fill="#d4a84b">
+  <!-- ZTI in Hylia Serif, font coords flipped to SVG y-down and centered -->
+  <g transform="translate(1.5, 23.47) scale(0.01869, -0.01869)" fill="#d4a84b">
     <!-- Z glyph -->
     <path d="M470 78L624 294L572 0H12L384 717H151L12 566L66 800H620L243 78ZM471 691L351 517L353 473L392 495ZM331 432L290 411L296 367L336 386ZM234 304L155 107L277 282L274 326Z"/>
-    <!-- T glyph offset by Z advance + gap -->
-    <g transform="translate(670, 0)">
+    <!-- T glyph -->
+    <g transform="translate(600, 0)">
       <path d="M604 800V474L495 717H401V69L489 0H140L229 69V717H134L25 474V800ZM315 733L288 523L315 484L341 523ZM315 365L344 401L315 438L287 401ZM315 68L341 280L315 319L288 280Z"/>
+    </g>
+    <!-- I glyph -->
+    <g transform="translate(1180, 0)">
+      <path d="M284 733V69L372 0H12L100 69V733L12 800H372ZM192 733L169 523L192 484L216 523ZM192 365L218 401L192 438L166 401ZM192 68L216 280L192 319L169 280Z"/>
     </g>
   </g>
 </svg>

@@ -8,7 +8,7 @@ test.describe('Toolbar', () => {
   });
 
   test('displays title and subtitle', async ({ page }) => {
-    await expect(page.locator('text=Zelda Timeline')).toBeVisible();
+    await expect(page.locator('text=Zelda Timeline Interpreter')).toBeVisible();
   });
 
   test('language switcher changes UI language', async ({ page }) => {
