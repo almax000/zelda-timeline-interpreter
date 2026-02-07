@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Hylia Serif';
+  src: url('/fonts/HyliaSerif.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Custom theme variables */
 :root {
   --color-gold: #C9A227;

@@ -32,13 +32,18 @@ export function Toolbar() {
     <>
       <div className="h-14 bg-[var(--color-surface)] border-b border-[var(--color-surface-light)] px-4 flex items-center justify-between">
         {/* Left side - Title */}
-        <div className="flex items-center gap-4">
-          <h1 className="text-lg font-bold text-[var(--color-gold)]">
-            {t('app.title')}
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl tracking-wider text-[var(--color-gold)]" style={{ fontFamily: "'Hylia Serif', serif" }}>
+            ZT
           </h1>
-          <span className="text-xs text-[var(--color-text-muted)] hidden sm:block">
-            {t('app.subtitle')}
-          </span>
+          <div className="hidden sm:flex flex-col">
+            <span className="text-sm font-bold text-[var(--color-gold)]">
+              Zelda Timeline
+            </span>
+            <span className="text-xs text-[var(--color-text-muted)] -mt-0.5">
+              {t('app.subtitle')}
+            </span>
+          </div>
         </div>
 
         {/* Center - Branch selector */}
