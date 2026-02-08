@@ -10,19 +10,21 @@ interface GameCardProps {
 function GameCardComponent({ game }: GameCardProps) {
   const { t, i18n } = useTranslation();
   const coverRegion = useSettingsStore((state) => state.coverRegion);
+  const [logoFailed, setLogoFailed] = useState(false);
   const [fallbackToUs, setFallbackToUs] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
 
   const gameName = game.names[i18n.language as keyof typeof game.names] || game.names.en;
   const effectiveRegion = fallbackToUs ? 'us' : coverRegion;
   const coverPath = game.covers[effectiveRegion] || game.covers.us;
+  const useLogo = game.logo && !logoFailed;
 
   const handleDragStart = (event: React.DragEvent) => {
     event.dataTransfer.setData('application/zelda-game', game.id);
     event.dataTransfer.effectAllowed = 'move';
   };
 
-  const handleImageError = () => {
+  const handleCoverError = () => {
     if (!fallbackToUs && coverRegion !== 'us') {
       setFallbackToUs(true);
     } else {
@@ -36,19 +38,24 @@ function GameCardComponent({ game }: GameCardProps) {
       onDragStart={handleDragStart}
       className="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 cursor-grab hover:bg-[var(--color-surface-light)] active:cursor-grabbing"
     >
-      {/* Cover thumbnail */}
-      <div className="w-10 flex-shrink-0 rounded overflow-hidden bg-[var(--color-surface-light)]">
-        {coverPath && !imageFailed ? (
+      {/* Thumbnail: logo or cover */}
+      <div className="w-10 h-10 flex-shrink-0 rounded overflow-hidden bg-[var(--color-surface-light)] flex items-center justify-center">
+        {useLogo ? (
+          <img
+            src={`/logos/${game.logo}`}
+            alt={gameName}
+            className="max-w-full max-h-full object-contain"
+            onError={() => setLogoFailed(true)}
+          />
+        ) : coverPath && !imageFailed ? (
           <img
             src={`/covers/${effectiveRegion}/${coverPath}`}
             alt={gameName}
             className="w-full h-auto block"
-            onError={handleImageError}
+            onError={handleCoverError}
           />
         ) : (
-          <div className="w-10 h-14 flex items-center justify-center">
-            <span className="text-[8px] text-[var(--color-text-muted)]">N/A</span>
-          </div>
+          <span className="text-[8px] text-[var(--color-text-muted)]">N/A</span>
         )}
       </div>
 

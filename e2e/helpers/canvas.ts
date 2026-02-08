@@ -40,3 +40,28 @@ export async function clearLocalStorage(page: Page) {
     localStorage.clear();
   });
 }
+
+/**
+ * Switch to an editable canvas tab by clicking the numbered page button.
+ * Page-0 is the ▲ button, page 1 = "1", etc.
+ * `pageIndex` is the 1-based index of the editable tab in the PageTabs.
+ */
+export async function switchToEditableTab(page: Page, pageIndex = 1) {
+  // PageTabs shows ▲ for page-0, then numbers for editable tabs
+  // Click the button with text matching the index
+  const pageButton = page.locator(`button:has-text("${pageIndex}")`).first();
+  await pageButton.click();
+  await page.waitForTimeout(300);
+}
+
+/**
+ * Expand sidebar if collapsed (click the chevron-right expand button).
+ */
+export async function expandSidebar(page: Page) {
+  // The sidebar expand button is a narrow button with a chevron
+  const expandBtn = page.locator('button svg path[d="m9 18 6-6-6-6"]').locator('..');
+  if (await expandBtn.isVisible()) {
+    await expandBtn.click();
+    await page.waitForTimeout(200);
+  }
+}

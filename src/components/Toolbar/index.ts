@@ -1,4 +1,4 @@
 export { Toolbar } from './Toolbar';
-export { BranchSelector } from './BranchSelector';
+export { FloatingToolbar } from './FloatingToolbar';
 export { LanguageSwitcher } from './LanguageSwitcher';
 export { ExportMenu } from './ExportMenu';

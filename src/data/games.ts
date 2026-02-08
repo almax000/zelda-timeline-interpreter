@@ -6,6 +6,7 @@ export const games: Game[] = [
     id: 'skyward-sword',
     releaseYear: 2011,
     isMainline: true,
+    logo: 'skyward-sword.png',
     covers: { us: 'skyward-sword.jpg', jp: 'skyward-sword.jpg' },
     names: {
       en: 'Skyward Sword',
@@ -18,6 +19,7 @@ export const games: Game[] = [
     id: 'minish-cap',
     releaseYear: 2004,
     isMainline: true,
+    logo: 'minish-cap.png',
     covers: { us: 'minish-cap.jpg', jp: 'minish-cap.jpg' },
     names: {
       en: 'The Minish Cap',
@@ -30,6 +32,7 @@ export const games: Game[] = [
     id: 'four-swords',
     releaseYear: 2002,
     isMainline: true,
+    logo: 'four-swords.png',
     covers: { us: 'four-swords.jpg', jp: 'four-swords.jpg' },
     names: {
       en: 'Four Swords',
@@ -42,6 +45,7 @@ export const games: Game[] = [
     id: 'ocarina-of-time',
     releaseYear: 1998,
     isMainline: true,
+    logo: 'ocarina-of-time.png',
     covers: { us: 'ocarina-of-time.jpg', jp: 'ocarina-of-time.jpg' },
     names: {
       en: 'Ocarina of Time',
@@ -54,6 +58,7 @@ export const games: Game[] = [
     id: 'majoras-mask',
     releaseYear: 2000,
     isMainline: true,
+    logo: 'majoras-mask.png',
     covers: { us: 'majoras-mask.jpg', jp: 'majoras-mask.jpg' },
     names: {
       en: "Majora's Mask",
@@ -66,6 +71,7 @@ export const games: Game[] = [
     id: 'twilight-princess',
     releaseYear: 2006,
     isMainline: true,
+    logo: 'twilight-princess.png',
     covers: { us: 'twilight-princess.jpg', jp: 'twilight-princess.jpg' },
     names: {
       en: 'Twilight Princess',
@@ -78,6 +84,7 @@ export const games: Game[] = [
     id: 'four-swords-adventures',
     releaseYear: 2004,
     isMainline: true,
+    logo: 'four-swords-adventures.png',
     covers: { us: 'four-swords-adventures.jpg', jp: 'four-swords-adventures.jpg' },
     names: {
       en: 'Four Swords Adventures',
@@ -90,6 +97,7 @@ export const games: Game[] = [
     id: 'wind-waker',
     releaseYear: 2002,
     isMainline: true,
+    logo: 'wind-waker.png',
     covers: { us: 'wind-waker.jpg', jp: 'wind-waker.jpg' },
     names: {
       en: 'The Wind Waker',
@@ -102,6 +110,7 @@ export const games: Game[] = [
     id: 'phantom-hourglass',
     releaseYear: 2007,
     isMainline: true,
+    logo: 'phantom-hourglass.png',
     covers: { us: 'phantom-hourglass.jpg', jp: 'phantom-hourglass.jpg' },
     names: {
       en: 'Phantom Hourglass',
@@ -114,6 +123,7 @@ export const games: Game[] = [
     id: 'spirit-tracks',
     releaseYear: 2009,
     isMainline: true,
+    logo: 'spirit-tracks.png',
     covers: { us: 'spirit-tracks.jpg', jp: 'spirit-tracks.jpg' },
     names: {
       en: 'Spirit Tracks',
@@ -126,6 +136,7 @@ export const games: Game[] = [
     id: 'link-to-the-past',
     releaseYear: 1991,
     isMainline: true,
+    logo: 'link-to-the-past.png',
     covers: { us: 'link-to-the-past.jpg', jp: 'link-to-the-past.jpg' },
     names: {
       en: 'A Link to the Past',
@@ -138,6 +149,7 @@ export const games: Game[] = [
     id: 'links-awakening',
     releaseYear: 1993,
     isMainline: true,
+    logo: 'links-awakening.png',
     covers: { us: 'links-awakening.jpg', jp: 'links-awakening.jpg' },
     names: {
       en: "Link's Awakening",
@@ -150,6 +162,7 @@ export const games: Game[] = [
     id: 'oracle-of-seasons-ages',
     releaseYear: 2001,
     isMainline: true,
+    logo: 'oracle-of-seasons-ages.png',
     covers: { us: 'oracle-of-seasons.jpg', jp: 'oracle-of-seasons.jpg' },
     names: {
       en: 'Oracle of Seasons/Ages',
@@ -162,6 +175,7 @@ export const games: Game[] = [
     id: 'link-between-worlds',
     releaseYear: 2013,
     isMainline: true,
+    logo: 'link-between-worlds.png',
     covers: { us: 'link-between-worlds.jpg', jp: 'link-between-worlds.jpg' },
     names: {
       en: 'A Link Between Worlds',
@@ -174,6 +188,7 @@ export const games: Game[] = [
     id: 'tri-force-heroes',
     releaseYear: 2015,
     isMainline: true,
+    logo: 'tri-force-heroes.png',
     covers: { us: 'tri-force-heroes.jpg', jp: 'tri-force-heroes.jpg' },
     names: {
       en: 'Tri Force Heroes',
@@ -186,6 +201,7 @@ export const games: Game[] = [
     id: 'echoes-of-wisdom',
     releaseYear: 2024,
     isMainline: true,
+    logo: 'echoes-of-wisdom.png',
     covers: { us: 'echoes-of-wisdom.jpg', jp: 'echoes-of-wisdom.jpg' },
     names: {
       en: 'Echoes of Wisdom',
@@ -198,6 +214,7 @@ export const games: Game[] = [
     id: 'legend-of-zelda',
     releaseYear: 1986,
     isMainline: true,
+    logo: 'legend-of-zelda.png',
     covers: { us: 'legend-of-zelda.jpg', jp: 'legend-of-zelda.jpg' },
     names: {
       en: 'The Legend of Zelda',
@@ -210,6 +227,7 @@ export const games: Game[] = [
     id: 'adventure-of-link',
     releaseYear: 1987,
     isMainline: true,
+    logo: 'adventure-of-link.png',
     covers: { us: 'adventure-of-link.jpg', jp: 'adventure-of-link.jpg' },
     names: {
       en: 'The Adventure of Link',
@@ -222,6 +240,7 @@ export const games: Game[] = [
     id: 'breath-of-the-wild',
     releaseYear: 2017,
     isMainline: true,
+    logo: 'breath-of-the-wild.png',
     covers: { us: 'breath-of-the-wild.jpg', jp: 'breath-of-the-wild.jpg' },
     names: {
       en: 'Breath of the Wild',
@@ -234,6 +253,7 @@ export const games: Game[] = [
     id: 'tears-of-the-kingdom',
     releaseYear: 2023,
     isMainline: true,
+    logo: 'tears-of-the-kingdom.png',
     covers: { us: 'tears-of-the-kingdom.jpg', jp: 'tears-of-the-kingdom.jpg' },
     names: {
       en: 'Tears of the Kingdom',
@@ -248,6 +268,7 @@ export const games: Game[] = [
     id: 'hyrule-warriors',
     releaseYear: 2014,
     isMainline: false,
+    logo: 'hyrule-warriors.png',
     covers: { us: 'hyrule-warriors.jpg', jp: 'hyrule-warriors.jpg' },
     names: {
       en: 'Hyrule Warriors',
@@ -260,6 +281,7 @@ export const games: Game[] = [
     id: 'age-of-calamity',
     releaseYear: 2020,
     isMainline: false,
+    logo: 'age-of-calamity.png',
     covers: { us: 'age-of-calamity.jpg', jp: 'age-of-calamity.jpg' },
     names: {
       en: 'Age of Calamity',
@@ -273,6 +295,7 @@ export const games: Game[] = [
     releaseYear: 2025,
     isMainline: false,
     isCanon: true,
+    logo: 'age-of-imprisonment.png',
     covers: { us: 'age-of-imprisonment.jpg', jp: 'age-of-imprisonment.jpg' },
     names: {
       en: 'Age of Imprisonment',
@@ -285,6 +308,7 @@ export const games: Game[] = [
     id: 'cadence-of-hyrule',
     releaseYear: 2019,
     isMainline: false,
+    logo: 'cadence-of-hyrule.png',
     covers: { us: 'cadence-of-hyrule.jpg', jp: 'cadence-of-hyrule.jpg' },
     names: {
       en: 'Cadence of Hyrule',
@@ -297,6 +321,7 @@ export const games: Game[] = [
     id: 'links-crossbow-training',
     releaseYear: 2007,
     isMainline: false,
+    logo: 'links-crossbow-training.png',
     covers: { us: 'links-crossbow-training.jpg', jp: 'links-crossbow-training.jpg' },
     names: {
       en: "Link's Crossbow Training",
@@ -309,6 +334,7 @@ export const games: Game[] = [
     id: 'tingles-rosy-rupeeland',
     releaseYear: 2006,
     isMainline: false,
+    logo: 'tingles-rosy-rupeeland.png',
     covers: { us: 'tingles-rosy-rupeeland.jpg', jp: 'tingles-rosy-rupeeland.jpg' },
     names: {
       en: "Tingle's Rosy Rupeeland",
@@ -321,6 +347,7 @@ export const games: Game[] = [
     id: 'battle-quest',
     releaseYear: 2012,
     isMainline: false,
+    logo: 'battle-quest.png',
     covers: { us: 'battle-quest.jpg', jp: 'battle-quest.jpg' },
     names: {
       en: 'Nintendo Land: Battle Quest',

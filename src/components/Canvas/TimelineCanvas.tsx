@@ -24,6 +24,7 @@ import { AnnotationOverlay } from '../Annotation/AnnotationOverlay';
 import { getCanvasStore } from '../../stores/canvasRegistry';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { useAnnotationStore } from '../../stores/annotationStore';
+import { useTabStore } from '../../stores/tabStore';
 import type { TimelineNode } from '../../types/timeline';
 import type { BranchType } from '../../types/timeline';
 
@@ -55,6 +56,9 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const isAnnotationMode = useAnnotationStore((s) => s.isAnnotationMode);
 
+  const tab = useTabStore((s) => s.tabs.find((t) => t.id === tabId));
+  const isReadOnly = tab?.isReadOnly ?? false;
+
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -73,9 +77,10 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
 
   const onConnect: OnConnect = useCallback(
     (connection: Connection) => {
+      if (isReadOnly) return;
       addEdge(connection);
     },
-    [addEdge]
+    [addEdge, isReadOnly]
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -86,6 +91,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
+      if (isReadOnly) return;
 
       const gameId = event.dataTransfer.getData('application/zelda-game');
       if (!gameId) return;
@@ -104,11 +110,12 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
 
       addNode(newNode);
     },
-    [addNode, screenToFlowPosition]
+    [addNode, screenToFlowPosition, isReadOnly]
   );
 
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: TimelineNode) => {
+      if (isReadOnly) return;
       event.preventDefault();
       setContextMenu({
         x: event.clientX,
@@ -117,11 +124,12 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         targetId: node.id,
       });
     },
-    []
+    [isReadOnly]
   );
 
   const onEdgeContextMenu = useCallback(
     (event: React.MouseEvent, edge: { id: string }) => {
+      if (isReadOnly) return;
       event.preventDefault();
       setContextMenu({
         x: event.clientX,
@@ -130,7 +138,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         targetId: edge.id,
       });
     },
-    []
+    [isReadOnly]
   );
 
   const onPaneClick = useCallback(() => {
@@ -139,6 +147,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
 
   const onPaneContextMenu = useCallback(
     (event: MouseEvent | React.MouseEvent) => {
+      if (isReadOnly) return;
       event.preventDefault();
       setContextMenu({
         x: event.clientX,
@@ -147,7 +156,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         targetId: '',
       });
     },
-    []
+    [isReadOnly]
   );
 
   const contextEdge = contextMenu?.type === 'edge'
@@ -160,13 +169,15 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
     interactionWidth: 20,
   }), []);
 
+  const interactionDisabled = isReadOnly || isAnnotationMode;
+
   return (
     <div ref={containerRef} className="flex-1 h-full relative">
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodesChange={onNodesChange as OnNodesChange}
-        onEdgesChange={onEdgesChange as OnEdgesChange}
+        onNodesChange={isReadOnly ? undefined : onNodesChange as OnNodesChange}
+        onEdgesChange={isReadOnly ? undefined : onEdgesChange as OnEdgesChange}
         onConnect={onConnect}
         onDragOver={onDragOver}
         onDrop={onDrop}
@@ -182,12 +193,12 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         fitView
         minZoom={0.1}
         maxZoom={2}
-        nodesDraggable={!isAnnotationMode}
-        nodesConnectable={!isAnnotationMode}
-        elementsSelectable={!isAnnotationMode}
+        nodesDraggable={!interactionDisabled}
+        nodesConnectable={!interactionDisabled}
+        elementsSelectable={!interactionDisabled}
         panOnDrag={!isAnnotationMode}
         zoomOnScroll={!isAnnotationMode}
-        deleteKeyCode={isAnnotationMode ? [] : ['Backspace', 'Delete']}
+        deleteKeyCode={interactionDisabled ? [] : ['Backspace', 'Delete']}
         proOptions={{ hideAttribution: true }}
       >
         <Background
@@ -209,9 +220,11 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         )}
       </ReactFlow>
 
-      <AnnotationOverlay tabId={tabId} width={containerSize.width} height={containerSize.height} />
+      {!isReadOnly && (
+        <AnnotationOverlay tabId={tabId} width={containerSize.width} height={containerSize.height} />
+      )}
 
-      {contextMenu && (
+      {contextMenu && !isReadOnly && (
         <ContextMenu
           x={contextMenu.x}
           y={contextMenu.y}

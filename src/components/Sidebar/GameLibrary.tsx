@@ -3,7 +3,19 @@ import { useTranslation } from 'react-i18next';
 import { games, getMainlineGames, getSpinoffGames } from '../../data/games';
 import { GameCard } from './GameCard';
 
-export function GameLibrary() {
+function ChevronLeft() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m15 18-6-6 6-6" />
+    </svg>
+  );
+}
+
+interface GameLibraryProps {
+  onCollapse: () => void;
+}
+
+export function GameLibrary({ onCollapse }: GameLibraryProps) {
   const { t, i18n } = useTranslation();
   const [search, setSearch] = useState('');
 
@@ -34,10 +46,17 @@ export function GameLibrary() {
   return (
     <div className="w-72 h-full bg-[var(--color-surface)] border-r border-[var(--color-surface-light)] flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-[var(--color-surface-light)]">
+      <div className="p-4 border-b border-[var(--color-surface-light)] flex items-center justify-between">
         <h2 className="text-lg font-semibold text-[var(--color-text)]">
           {t('sidebar.title')}
         </h2>
+        <button
+          onClick={onCollapse}
+          className="p-1 rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors"
+          title="Collapse sidebar"
+        >
+          <ChevronLeft />
+        </button>
       </div>
 
       {/* Search */}

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, clearLocalStorage } from './helpers/canvas';
+import { getNodeCount, switchToEditableTab } from './helpers/canvas';
 
 test.describe('Toolbar', () => {
   test.beforeEach(async ({ page }) => {
@@ -12,6 +12,9 @@ test.describe('Toolbar', () => {
   });
 
   test('language switcher changes UI language', async ({ page }) => {
+    // Switch to editable tab to see sidebar
+    await switchToEditableTab(page);
+
     // Switch to Japanese
     await page.locator('button', { hasText: '日本語' }).click();
     await expect(page.getByRole('heading', { name: 'ゲームライブラリ' })).toBeVisible();
@@ -29,9 +32,11 @@ test.describe('Toolbar', () => {
     await expect(page.getByRole('heading', { name: 'Game Library' })).toBeVisible();
   });
 
-  test('clear button shows confirmation dialog', async ({ page }) => {
-    await page.locator('button[title="Clear timeline"]').click();
+  test('clear button in floating toolbar shows confirmation dialog', async ({ page }) => {
+    // Switch to editable tab (floating toolbar only shows on editable tabs)
+    await switchToEditableTab(page);
 
+    await page.locator('button[title="Clear"]').click();
     await expect(page.locator('text=Clear Timeline?')).toBeVisible();
 
     // Cancel
@@ -40,9 +45,11 @@ test.describe('Toolbar', () => {
   });
 
   test('clear button removes all nodes when confirmed', async ({ page }) => {
-    await page.locator('button[title="Clear timeline"]').click();
+    await switchToEditableTab(page);
+    await page.waitForSelector('.react-flow__node');
 
-    // Click the confirm button in the dialog
+    await page.locator('button[title="Clear"]').click();
+
     const confirmButton = page.locator('.fixed.z-50 button', { hasText: 'Clear' });
     await confirmButton.click();
 
@@ -62,23 +69,29 @@ test.describe('Toolbar', () => {
     await page.locator('.react-flow').click();
   });
 
-  test('pen and eraser toggle buttons work', async ({ page }) => {
-    const penButton = page.locator('button[title="Pen"]');
+  test('pen and eraser toggle buttons work in floating toolbar', async ({ page }) => {
+    // Switch to editable tab (floating toolbar only shows on editable tabs)
+    await switchToEditableTab(page);
+
     const eraserButton = page.locator('button[title="Eraser"]');
-    await expect(penButton).toBeVisible();
     await expect(eraserButton).toBeVisible();
 
-    // Click pen to activate
-    await penButton.click();
-    // Pen button should have active (gold) background
-    await expect(penButton).toHaveCSS('background-color', /./);
+    // Click a pen button (first colored pen)
+    const penButtons = page.locator('button[title="Pen"]');
+    const firstPen = penButtons.first();
+    await firstPen.click();
 
-    // Click pen again to deactivate
-    await penButton.click();
+    // Click same pen again to deactivate
+    await firstPen.click();
 
     // Click eraser to activate
     await eraserButton.click();
     // Click eraser again to deactivate
     await eraserButton.click();
+  });
+
+  test('floating toolbar is hidden on page-0', async ({ page }) => {
+    // On page-0 by default - floating toolbar should not be visible
+    await expect(page.locator('button[title="Eraser"]')).not.toBeVisible();
   });
 });

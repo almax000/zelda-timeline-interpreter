@@ -64,6 +64,7 @@ export function ContextMenu({
   return (
     <div
       ref={menuRef}
+      data-testid="context-menu"
       className="fixed z-50 bg-[var(--color-surface)] border border-[var(--color-surface-light)] rounded-lg shadow-xl py-1 min-w-[180px]"
       style={{ left: x, top: y }}
     >

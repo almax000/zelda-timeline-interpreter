@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, getEdgeCount, clearLocalStorage } from './helpers/canvas';
+import { getNodeCount, clearLocalStorage, switchToEditableTab } from './helpers/canvas';
 
 test.describe('Canvas - Timeline', () => {
   test.beforeEach(async ({ page }) => {
@@ -14,9 +14,8 @@ test.describe('Canvas - Timeline', () => {
     await expect(canvas).toBeVisible();
   });
 
-  test('loads official timeline on first visit', async ({ page }) => {
-    // On first visit (no localStorage), official timeline should be loaded
-    // 21 games + 5 era markers + 4 guide nodes = 30 total
+  test('page-0 loads official timeline by default', async ({ page }) => {
+    // Page 0 (default) shows official timeline: 21 games + 5 era markers + 4 guides = 30
     const nodeCount = await getNodeCount(page);
     expect(nodeCount).toBeGreaterThan(20);
   });
@@ -29,15 +28,16 @@ test.describe('Canvas - Timeline', () => {
     await expect(background).toBeVisible();
   });
 
-  test('can delete nodes with Delete key', async ({ page }) => {
+  test('can delete nodes with Delete key on editable tab', async ({ page }) => {
+    // Switch to editable canvas-1
+    await switchToEditableTab(page);
+    await page.waitForSelector('.react-flow__node');
+
     const initialCount = await getNodeCount(page);
     if (initialCount === 0) return;
 
-    // Click a node to select it
     const firstNode = page.locator('.react-flow__node').first();
     await firstNode.click();
-
-    // Press Delete
     await page.keyboard.press('Delete');
 
     const newCount = await getNodeCount(page);
@@ -50,7 +50,6 @@ test.describe('Canvas - Timeline', () => {
   });
 
   test('shows era marker nodes in official timeline', async ({ page }) => {
-    // Check that event-type nodes (era markers) are present
     await page.waitForSelector('.react-flow__node');
     const eventNodes = page.locator('.react-flow__node-event');
     const count = await eventNodes.count();
@@ -64,25 +63,42 @@ test.describe('Canvas - Timeline', () => {
     expect(count).toBeGreaterThanOrEqual(4);
   });
 
-  test('tab is visible with Canvas 1 tab', async ({ page }) => {
-    await expect(page.locator('text=Canvas 1')).toBeVisible();
+  test('page-0 button shows ▲ and page 1 shows number', async ({ page }) => {
+    // Page tabs are on the right side
+    await expect(page.locator('button', { hasText: '▲' })).toBeVisible();
+    await expect(page.locator('button', { hasText: '1' }).first()).toBeVisible();
   });
 
-  test('can create and switch tabs', async ({ page }) => {
+  test('can create and switch tabs via PageTabs', async ({ page }) => {
     // Click + to create new tab
     const addButton = page.getByTitle('New canvas');
     await addButton.click();
 
-    // New tab should appear
-    await expect(page.locator('text=Canvas 2')).toBeVisible();
+    // New tab button (index 2) should appear
+    await expect(page.locator('button', { hasText: '2' }).first()).toBeVisible();
 
     // New tab should be empty
     const nodeCount = await getNodeCount(page);
     expect(nodeCount).toBe(0);
 
-    // Switch back to Canvas 1 tab
-    await page.locator('text=Canvas 1').click();
+    // Switch back to page 1 (canvas-1 with official timeline)
+    await switchToEditableTab(page);
     const canvas1NodeCount = await getNodeCount(page);
     expect(canvas1NodeCount).toBeGreaterThan(20);
+  });
+
+  test('page-0 is read-only: nodes cannot be deleted', async ({ page }) => {
+    // On page-0 by default
+    await page.waitForSelector('.react-flow__node');
+
+    const initialCount = await getNodeCount(page);
+    // Use force:true because elementsSelectable=false makes pane intercept clicks
+    const firstNode = page.locator('.react-flow__node').first();
+    await firstNode.click({ force: true });
+    await page.keyboard.press('Delete');
+
+    // Count should not change (read-only)
+    const newCount = await getNodeCount(page);
+    expect(newCount).toBe(initialCount);
   });
 });

@@ -1,5 +1,5 @@
 import { create, type StoreApi, type UseBoundStore } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { temporal, type TemporalState } from 'zundo';
 import {
   applyNodeChanges,
@@ -34,7 +34,16 @@ export type CanvasStoreWithTemporal = UseBoundStore<StoreApi<CanvasStore>> & {
   temporal: StoreApi<TemporalState<Pick<CanvasStore, 'nodes' | 'edges'>>>;
 };
 
+// No-op storage that never persists (for read-only page-0)
+const noopStorage = {
+  getItem: () => null,
+  setItem: () => {},
+  removeItem: () => {},
+};
+
 export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
+  const isReadOnly = tabId === 'page-0';
+
   return create<CanvasStore>()(
     temporal(
       persist(
@@ -108,11 +117,12 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
           },
         }),
         {
-          name: `zelda-tab-${tabId}`,
-          partialize: (state) => ({
+          name: isReadOnly ? `zelda-noop-${tabId}` : `zelda-tab-${tabId}`,
+          ...(isReadOnly ? { storage: createJSONStorage(() => noopStorage) } : {}),
+          partialize: (state: CanvasStore) => ({
             nodes: state.nodes,
             edges: state.edges,
-          }),
+          } as unknown as CanvasStore),
         }
       ),
       {

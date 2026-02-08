@@ -5,6 +5,7 @@ export interface Game {
   releaseYear: number;
   isMainline: boolean;
   isCanon?: boolean; // For spin-offs that are officially canon
+  logo: string;
   covers: {
     us?: string;
     jp?: string;

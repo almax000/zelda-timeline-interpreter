@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, clearLocalStorage } from './helpers/canvas';
+import { getNodeCount, clearLocalStorage, switchToEditableTab } from './helpers/canvas';
 
 test.describe('Undo/Redo', () => {
   test.beforeEach(async ({ page }) => {
@@ -7,6 +7,8 @@ test.describe('Undo/Redo', () => {
     await clearLocalStorage(page);
     await page.reload();
     await page.waitForSelector('.react-flow');
+    // Switch to editable tab (undo/redo needs editable canvas)
+    await switchToEditableTab(page);
     await page.waitForSelector('.react-flow__node');
   });
 
