@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import {
   ReactFlow,
   Background,
@@ -16,15 +16,21 @@ import {
 import '@xyflow/react/dist/style.css';
 
 import { GameNode } from './GameNode';
+import { EventNode } from './EventNode';
+import { GuideNode } from './GuideNode';
 import { TimelineEdge } from './TimelineEdge';
 import { ContextMenu } from './ContextMenu';
-import { useTimelineStore } from '../../stores/timelineStore';
+import { AnnotationOverlay } from '../Annotation/AnnotationOverlay';
+import { getCanvasStore } from '../../stores/canvasRegistry';
 import { useSettingsStore } from '../../stores/settingsStore';
+import { useAnnotationStore } from '../../stores/annotationStore';
 import type { TimelineNode } from '../../types/timeline';
 import type { BranchType } from '../../types/timeline';
 
 const nodeTypes: NodeTypes = {
   game: GameNode as NodeTypes['game'],
+  event: EventNode as NodeTypes['event'],
+  guide: GuideNode as NodeTypes['guide'],
 };
 
 const edgeTypes: EdgeTypes = {
@@ -34,15 +40,34 @@ const edgeTypes: EdgeTypes = {
 interface ContextMenuState {
   x: number;
   y: number;
-  type: 'node' | 'edge';
+  type: 'node' | 'edge' | 'pane';
   targetId: string;
 }
 
-export function TimelineCanvas() {
+interface TimelineCanvasProps {
+  tabId: string;
+}
+
+export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const { screenToFlowPosition } = useReactFlow();
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  const isAnnotationMode = useAnnotationStore((s) => s.isAnnotationMode);
 
-  const { nodes, edges, onNodesChange, onEdgesChange, addNode, addEdge, removeNode, removeEdge, updateEdgeBranchType, updateEdgeLabel } = useTimelineStore();
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      setContainerSize({ width, height });
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const store = getCanvasStore(tabId);
+  const { nodes, edges, onNodesChange, onEdgesChange, addNode, addEdge, removeNode, removeEdge, updateEdgeBranchType, updateEdgeLabel } = store();
   const showMinimap = useSettingsStore((state) => state.showMinimap);
   const snapToGrid = useSettingsStore((state) => state.snapToGrid);
 
@@ -112,6 +137,19 @@ export function TimelineCanvas() {
     setContextMenu(null);
   }, []);
 
+  const onPaneContextMenu = useCallback(
+    (event: MouseEvent | React.MouseEvent) => {
+      event.preventDefault();
+      setContextMenu({
+        x: event.clientX,
+        y: event.clientY,
+        type: 'pane',
+        targetId: '',
+      });
+    },
+    []
+  );
+
   const contextEdge = contextMenu?.type === 'edge'
     ? edges.find((e) => e.id === contextMenu.targetId)
     : null;
@@ -123,7 +161,7 @@ export function TimelineCanvas() {
   }), []);
 
   return (
-    <div className="flex-1 h-full">
+    <div ref={containerRef} className="flex-1 h-full relative">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -135,6 +173,7 @@ export function TimelineCanvas() {
         onNodeContextMenu={onNodeContextMenu}
         onEdgeContextMenu={onEdgeContextMenu}
         onPaneClick={onPaneClick}
+        onPaneContextMenu={onPaneContextMenu}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
@@ -143,7 +182,12 @@ export function TimelineCanvas() {
         fitView
         minZoom={0.1}
         maxZoom={2}
-        deleteKeyCode={['Backspace', 'Delete']}
+        nodesDraggable={!isAnnotationMode}
+        nodesConnectable={!isAnnotationMode}
+        elementsSelectable={!isAnnotationMode}
+        panOnDrag={!isAnnotationMode}
+        zoomOnScroll={!isAnnotationMode}
+        deleteKeyCode={isAnnotationMode ? [] : ['Backspace', 'Delete']}
         proOptions={{ hideAttribution: true }}
       >
         <Background
@@ -165,6 +209,8 @@ export function TimelineCanvas() {
         )}
       </ReactFlow>
 
+      <AnnotationOverlay tabId={tabId} width={containerSize.width} height={containerSize.height} />
+
       {contextMenu && (
         <ContextMenu
           x={contextMenu.x}
@@ -175,7 +221,7 @@ export function TimelineCanvas() {
           onDelete={() => {
             if (contextMenu.type === 'node') {
               removeNode(contextMenu.targetId);
-            } else {
+            } else if (contextMenu.type === 'edge') {
               removeEdge(contextMenu.targetId);
             }
           }}
@@ -184,6 +230,18 @@ export function TimelineCanvas() {
           }}
           onChangeLabel={(label: string) => {
             updateEdgeLabel(contextMenu.targetId, label);
+          }}
+          onAddEvent={() => {
+            const position = screenToFlowPosition({
+              x: contextMenu.x,
+              y: contextMenu.y,
+            });
+            addNode({
+              id: `event-${Date.now()}`,
+              type: 'event',
+              position,
+              data: { label: 'New Event', isEraMarker: false },
+            } as TimelineNode);
           }}
           onClose={() => setContextMenu(null)}
         />

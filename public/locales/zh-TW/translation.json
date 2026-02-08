@@ -21,7 +21,6 @@
     "exportPDF": "匯出為 PDF",
     "exportJSON": "匯出為 JSON",
     "import": "匯入",
-    "loadOfficial": "載入官方時間線",
     "undo": "復原",
     "redo": "重做"
   },
@@ -49,7 +48,8 @@
     "delete": "刪除",
     "changeBranch": "更改分支類型",
     "addLabel": "新增標籤",
-    "editLabel": "編輯標籤"
+    "editLabel": "編輯標籤",
+    "addEvent": "新增事件節點"
   },
   "dialog": {
     "clearConfirm": {
@@ -57,13 +57,32 @@
       "message": "這將刪除所有遊戲和連接。此操作無法復原。",
       "confirm": "清空",
       "cancel": "取消"
-    },
-    "loadOfficialConfirm": {
-      "title": "載入官方時間線？",
-      "message": "這將覆蓋目前的時間線內容。此操作無法復原。",
-      "confirm": "載入",
-      "cancel": "取消"
     }
+  },
+  "guide": {
+    "welcome": {
+      "title": "歡迎使用 ZTI",
+      "content": "薩爾達時間線模擬器讓你探索和建立自己的時間線理論。\n\n這是任天堂官方時間線。你可以使用上方的 + 標籤建立新畫布。"
+    },
+    "dragDrop": {
+      "title": "拖放遊戲",
+      "content": "從左側遊戲庫拖曳遊戲到畫布來新增它們。\n\n從一個節點的連接點拖到另一個來建立連接。"
+    },
+    "editing": {
+      "title": "時間線編輯",
+      "content": "右鍵點擊連線來更改分支類型或新增標籤。\n右鍵空白處新增事件節點。\n使用分支選擇器設定新連接的顏色。"
+    },
+    "annotation": {
+      "title": "批註模式",
+      "content": "點擊工具列的「Draw」進入批註模式。\n在畫布上直接繪製來標註或批註。\n使用橡皮擦刪除筆畫。"
+    }
+  },
+  "eraMarker": {
+    "hyruleanCivilWar": "海拉爾統一戰爭",
+    "imprisoningWar": "封印戰爭",
+    "hyruleFlooded": "海拉爾被洪水淹沒",
+    "declineOfHyrule": "海拉爾王國的衰落",
+    "newHyrule": "新海拉爾王國"
   },
   "officialTimeline": {
     "childSplit": "幼年林克回到過去",

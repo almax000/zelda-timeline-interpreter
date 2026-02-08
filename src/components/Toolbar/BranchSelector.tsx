@@ -1,17 +1,20 @@
 import { useTranslation } from 'react-i18next';
-import { useTimelineStore } from '../../stores/timelineStore';
+import { getCanvasStore } from '../../stores/canvasRegistry';
+import { useTabStore } from '../../stores/tabStore';
 import type { BranchType } from '../../types/timeline';
 
 const branches: { type: BranchType; color: string }[] = [
   { type: 'main', color: 'var(--color-branch-main)' },
+  { type: 'fallen', color: 'var(--color-branch-fallen)' },
   { type: 'child', color: 'var(--color-branch-child)' },
   { type: 'adult', color: 'var(--color-branch-adult)' },
-  { type: 'fallen', color: 'var(--color-branch-fallen)' },
 ];
 
 export function BranchSelector() {
   const { t } = useTranslation();
-  const { selectedBranchType, setSelectedBranchType } = useTimelineStore();
+  const activeTabId = useTabStore((state) => state.activeTabId);
+  const store = getCanvasStore(activeTabId);
+  const { selectedBranchType, setSelectedBranchType } = store();
 
   return (
     <div className="flex items-center gap-2">

@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { exportToPng, exportToPdf, exportToJson, importFromJson } from '../../utils/export';
-import { useTimelineStore } from '../../stores/timelineStore';
+import { getCanvasStore } from '../../stores/canvasRegistry';
+import { useTabStore } from '../../stores/tabStore';
 
 export function ExportMenu() {
   const { t } = useTranslation();
@@ -9,7 +10,9 @@ export function ExportMenu() {
   const menuRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { nodes, edges, loadTimeline } = useTimelineStore();
+  const activeTabId = useTabStore((state) => state.activeTabId);
+  const store = getCanvasStore(activeTabId);
+  const { nodes, edges, loadTimeline } = store();
 
   // Close menu when clicking outside
   useEffect(() => {

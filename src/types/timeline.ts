@@ -7,7 +7,19 @@ export interface TimelineNodeData extends Record<string, unknown> {
   label?: string;
 }
 
-export type TimelineNode = Node<TimelineNodeData, 'game'>;
+export interface EventNodeData extends Record<string, unknown> {
+  labelKey?: string;     // i18n key (for official era markers)
+  label?: string;        // plain text (for user custom events)
+  isEraMarker: boolean;
+}
+
+export interface GuideNodeData extends Record<string, unknown> {
+  titleKey: string;
+  contentKey: string;
+  isCollapsed: boolean;
+}
+
+export type TimelineNode = Node<TimelineNodeData, 'game'> | Node<EventNodeData, 'event'> | Node<GuideNodeData, 'guide'>;
 
 export interface TimelineEdgeData extends Record<string, unknown> {
   branchType: BranchType;

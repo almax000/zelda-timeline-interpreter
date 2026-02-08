@@ -38,9 +38,6 @@ export function GameLibrary() {
         <h2 className="text-lg font-semibold text-[var(--color-text)]">
           {t('sidebar.title')}
         </h2>
-        <p className="text-xs text-[var(--color-text-muted)] mt-1">
-          {t('sidebar.dragHint')}
-        </p>
       </div>
 
       {/* Search */}

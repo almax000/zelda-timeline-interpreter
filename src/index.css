@@ -23,7 +23,7 @@
   --color-branch-main: #C9A227;
   --color-branch-child: #22C55E;
   --color-branch-adult: #3B82F6;
-  --color-branch-fallen: #A855F7;
+  --color-branch-fallen: #EF4444;
 }
 
 @theme {
@@ -71,3 +71,16 @@ html, body, #root {
 .react-flow__controls-button:hover {
   background-color: var(--color-surface-light) !important;
 }
+
+/* Custom scrollbar - Webkit */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-surface-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+
+/* Firefox */
+* { scrollbar-width: thin; scrollbar-color: var(--color-surface-light) transparent; }
+
+/* Hide scrollbar for tab overflow */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }

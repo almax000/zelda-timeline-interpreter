@@ -21,7 +21,6 @@
     "exportPDF": "Export as PDF",
     "exportJSON": "Export as JSON",
     "import": "Import",
-    "loadOfficial": "Load Official Timeline",
     "undo": "Undo",
     "redo": "Redo"
   },
@@ -49,7 +48,8 @@
     "delete": "Delete",
     "changeBranch": "Change Branch Type",
     "addLabel": "Add Label",
-    "editLabel": "Edit Label"
+    "editLabel": "Edit Label",
+    "addEvent": "Add Event Node"
   },
   "dialog": {
     "clearConfirm": {
@@ -57,13 +57,32 @@
       "message": "This will remove all games and connections. This action cannot be undone.",
       "confirm": "Clear",
       "cancel": "Cancel"
-    },
-    "loadOfficialConfirm": {
-      "title": "Load Official Timeline?",
-      "message": "This will replace the current timeline. This action cannot be undone.",
-      "confirm": "Load",
-      "cancel": "Cancel"
     }
+  },
+  "guide": {
+    "welcome": {
+      "title": "Welcome to ZTI",
+      "content": "Zelda Timeline Interpreter lets you explore and create your own Zelda timeline theories.\n\nThis is the official Nintendo timeline. You can also create new canvases using the + tab above."
+    },
+    "dragDrop": {
+      "title": "Drag & Drop Games",
+      "content": "Drag games from the left sidebar onto the canvas to add them to your timeline.\n\nConnect games by dragging from one handle to another."
+    },
+    "editing": {
+      "title": "Timeline Editing",
+      "content": "Right-click edges to change branch type or add labels.\nRight-click empty space to add event nodes.\nUse the branch selector to set the color for new connections."
+    },
+    "annotation": {
+      "title": "Annotation Mode",
+      "content": "Click 'Draw' in the toolbar to enter annotation mode.\nDraw directly on the canvas to highlight or annotate.\nUse the eraser to remove strokes."
+    }
+  },
+  "eraMarker": {
+    "hyruleanCivilWar": "The Hyrulean Civil War",
+    "imprisoningWar": "The Imprisoning War",
+    "hyruleFlooded": "Hyrule is Flooded",
+    "declineOfHyrule": "Decline of Hyrule Kingdom",
+    "newHyrule": "A New Hyrule Kingdom"
   },
   "officialTimeline": {
     "childSplit": "Young Link returns to the past",

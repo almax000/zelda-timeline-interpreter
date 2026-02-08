@@ -2,10 +2,10 @@ import { useTranslation } from 'react-i18next';
 import { useSettingsStore } from '../../stores/settingsStore';
 
 const languages = [
-  { code: 'en', label: 'EN' },
+  { code: 'en', label: 'English' },
   { code: 'ja', label: '日本語' },
-  { code: 'zh-CN', label: '简中' },
-  { code: 'zh-TW', label: '繁中' },
+  { code: 'zh-CN', label: '简体中文' },
+  { code: 'zh-TW', label: '繁體中文' },
 ] as const;
 
 export function LanguageSwitcher() {
@@ -24,7 +24,7 @@ export function LanguageSwitcher() {
           key={code}
           onClick={() => handleChange(code)}
           className={`
-            px-2 py-1 text-xs rounded transition-colors
+            px-3 py-1 text-xs rounded transition-colors
             ${i18n.language === code
               ? 'bg-[var(--color-gold)] text-[var(--color-background)] font-medium'
               : 'text-[var(--color-text-muted)] hover:bg-[var(--color-surface-light)]'

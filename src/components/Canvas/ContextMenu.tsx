@@ -4,20 +4,21 @@ import type { BranchType } from '../../types/timeline';
 
 const branchOptions: { type: BranchType; color: string }[] = [
   { type: 'main', color: 'var(--color-branch-main)' },
+  { type: 'fallen', color: 'var(--color-branch-fallen)' },
   { type: 'child', color: 'var(--color-branch-child)' },
   { type: 'adult', color: 'var(--color-branch-adult)' },
-  { type: 'fallen', color: 'var(--color-branch-fallen)' },
 ];
 
 interface ContextMenuProps {
   x: number;
   y: number;
-  type: 'node' | 'edge';
+  type: 'node' | 'edge' | 'pane';
   edgeBranchType?: BranchType;
   edgeLabel?: string;
   onDelete: () => void;
   onChangeBranch?: (branchType: BranchType) => void;
   onChangeLabel?: (label: string) => void;
+  onAddEvent?: () => void;
   onClose: () => void;
 }
 
@@ -30,6 +31,7 @@ export function ContextMenu({
   onDelete,
   onChangeBranch,
   onChangeLabel,
+  onAddEvent,
   onClose,
 }: ContextMenuProps) {
   const { t } = useTranslation();
@@ -65,12 +67,23 @@ export function ContextMenu({
       className="fixed z-50 bg-[var(--color-surface)] border border-[var(--color-surface-light)] rounded-lg shadow-xl py-1 min-w-[180px]"
       style={{ left: x, top: y }}
     >
-      <button
-        onClick={() => { onDelete(); onClose(); }}
-        className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-[var(--color-surface-light)] flex items-center gap-2"
-      >
-        {t('contextMenu.delete')}
-      </button>
+      {type === 'pane' && (
+        <button
+          onClick={() => { onAddEvent?.(); onClose(); }}
+          className="w-full px-4 py-2 text-left text-sm text-[var(--color-text)] hover:bg-[var(--color-surface-light)] flex items-center gap-2"
+        >
+          {t('contextMenu.addEvent')}
+        </button>
+      )}
+
+      {(type === 'node' || type === 'edge') && (
+        <button
+          onClick={() => { onDelete(); onClose(); }}
+          className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-[var(--color-surface-light)] flex items-center gap-2"
+        >
+          {t('contextMenu.delete')}
+        </button>
+      )}
 
       {type === 'edge' && (
         <>

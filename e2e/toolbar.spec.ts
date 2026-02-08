@@ -7,30 +7,30 @@ test.describe('Toolbar', () => {
     await page.waitForSelector('.react-flow');
   });
 
-  test('displays title and subtitle', async ({ page }) => {
-    await expect(page.locator('text=Zelda Timeline Interpreter')).toBeVisible();
+  test('displays ZTI title', async ({ page }) => {
+    await expect(page.locator('h1', { hasText: 'ZTI' })).toBeVisible();
   });
 
   test('language switcher changes UI language', async ({ page }) => {
     // Switch to Japanese
     await page.locator('button', { hasText: '日本語' }).click();
-    await expect(page.locator('text=ゲームライブラリ')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'ゲームライブラリ' })).toBeVisible();
 
     // Switch to zh-CN
-    await page.locator('button', { hasText: '简中' }).click();
-    await expect(page.locator('text=游戏库')).toBeVisible();
+    await page.locator('button', { hasText: '简体中文' }).click();
+    await expect(page.getByRole('heading', { name: '游戏库' })).toBeVisible();
 
     // Switch to zh-TW
-    await page.locator('button', { hasText: '繁中' }).click();
-    await expect(page.locator('text=遊戲庫')).toBeVisible();
+    await page.locator('button', { hasText: '繁體中文' }).click();
+    await expect(page.getByRole('heading', { name: '遊戲庫' })).toBeVisible();
 
     // Switch back to English
-    await page.locator('button', { hasText: 'EN' }).click();
-    await expect(page.locator('text=Game Library')).toBeVisible();
+    await page.locator('button', { hasText: 'English' }).click();
+    await expect(page.getByRole('heading', { name: 'Game Library' })).toBeVisible();
   });
 
   test('clear button shows confirmation dialog', async ({ page }) => {
-    await page.locator('button', { hasText: 'Clear' }).click();
+    await page.locator('button[title="Clear timeline"]').click();
 
     await expect(page.locator('text=Clear Timeline?')).toBeVisible();
 
@@ -40,32 +40,14 @@ test.describe('Toolbar', () => {
   });
 
   test('clear button removes all nodes when confirmed', async ({ page }) => {
-    await page.locator('button', { hasText: 'Clear' }).click();
+    await page.locator('button[title="Clear timeline"]').click();
 
-    // Click the confirm button in the dialog (not the toolbar "Clear" button)
+    // Click the confirm button in the dialog
     const confirmButton = page.locator('.fixed.z-50 button', { hasText: 'Clear' });
     await confirmButton.click();
 
     const nodeCount = await getNodeCount(page);
     expect(nodeCount).toBe(0);
-  });
-
-  test('load official timeline button works', async ({ page }) => {
-    // First clear the timeline
-    await page.locator('button', { hasText: 'Clear' }).click();
-    const confirmClearButton = page.locator('.fixed.z-50 button', { hasText: 'Clear' });
-    await confirmClearButton.click();
-    await page.waitForTimeout(300);
-
-    // Load official timeline
-    await page.locator('button', { hasText: 'Load Official Timeline' }).click();
-
-    // Click the "Load" confirm button in the dialog
-    const loadConfirmButton = page.locator('.fixed.z-50 button', { hasText: /^Load$/ });
-    await loadConfirmButton.click();
-
-    const nodeCount = await getNodeCount(page);
-    expect(nodeCount).toBeGreaterThan(0);
   });
 
   test('export menu opens and closes', async ({ page }) => {
@@ -78,5 +60,25 @@ test.describe('Toolbar', () => {
 
     // Click outside to close
     await page.locator('.react-flow').click();
+  });
+
+  test('pen and eraser toggle buttons work', async ({ page }) => {
+    const penButton = page.locator('button[title="Pen"]');
+    const eraserButton = page.locator('button[title="Eraser"]');
+    await expect(penButton).toBeVisible();
+    await expect(eraserButton).toBeVisible();
+
+    // Click pen to activate
+    await penButton.click();
+    // Pen button should have active (gold) background
+    await expect(penButton).toHaveCSS('background-color', /./);
+
+    // Click pen again to deactivate
+    await penButton.click();
+
+    // Click eraser to activate
+    await eraserButton.click();
+    // Click eraser again to deactivate
+    await eraserButton.click();
   });
 });

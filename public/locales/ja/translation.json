@@ -21,7 +21,6 @@
     "exportPDF": "PDFでエクスポート",
     "exportJSON": "JSONでエクスポート",
     "import": "インポート",
-    "loadOfficial": "公式タイムラインを読み込む",
     "undo": "元に戻す",
     "redo": "やり直す"
   },
@@ -49,7 +48,8 @@
     "delete": "削除",
     "changeBranch": "分岐タイプを変更",
     "addLabel": "ラベルを追加",
-    "editLabel": "ラベルを編集"
+    "editLabel": "ラベルを編集",
+    "addEvent": "イベントノードを追加"
   },
   "dialog": {
     "clearConfirm": {
@@ -57,13 +57,32 @@
       "message": "すべてのゲームと接続が削除されます。この操作は元に戻せません。",
       "confirm": "クリア",
       "cancel": "キャンセル"
-    },
-    "loadOfficialConfirm": {
-      "title": "公式タイムラインを読み込みますか？",
-      "message": "現在のタイムラインが上書きされます。この操作は元に戻せません。",
-      "confirm": "読み込む",
-      "cancel": "キャンセル"
     }
+  },
+  "guide": {
+    "welcome": {
+      "title": "ZTIへようこそ",
+      "content": "ゼルダ タイムライン インタープリターで、自分だけのタイムライン理論を探求・作成できます。\n\nこれは任天堂公式タイムラインです。上部の + タブから新しいキャンバスを作成できます。"
+    },
+    "dragDrop": {
+      "title": "ドラッグ＆ドロップ",
+      "content": "左側のサイドバーからゲームをキャンバスにドラッグして追加します。\n\nハンドルをドラッグして接続を作成します。"
+    },
+    "editing": {
+      "title": "タイムライン編集",
+      "content": "エッジを右クリックして分岐タイプやラベルを変更。\n空白を右クリックしてイベントノードを追加。\nブランチセレクターで新しい接続の色を設定。"
+    },
+    "annotation": {
+      "title": "批注モード",
+      "content": "ツールバーの「Draw」をクリックして批注モードに入ります。\nキャンバスに直接描画してハイライトや注釈を追加。\n消しゴムでストロークを削除。"
+    }
+  },
+  "eraMarker": {
+    "hyruleanCivilWar": "ハイラル統一戦争",
+    "imprisoningWar": "封印戦争",
+    "hyruleFlooded": "ハイラル水没",
+    "declineOfHyrule": "ハイラル王国の衰退",
+    "newHyrule": "新ハイラル王国"
   },
   "officialTimeline": {
     "childSplit": "子供リンクが過去に戻る",
