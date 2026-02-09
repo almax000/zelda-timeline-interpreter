@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, clearLocalStorage, switchToEditableTab } from './helpers/canvas';
+import { getNodeCount, clearLocalStorage, switchToEditableTab, switchToPage0 } from './helpers/canvas';
 
 test.describe('Canvas - Timeline', () => {
   test.beforeEach(async ({ page }) => {
@@ -15,15 +15,13 @@ test.describe('Canvas - Timeline', () => {
   });
 
   test('page-0 loads official timeline by default', async ({ page }) => {
-    // Page 0 (default) shows official timeline: 21 games + 5 era markers + 4 guides = 30
+    // Page 0 (default) shows official timeline:
+    // 21 games + 5 era markers + 4 guides + 3 labelPoint nodes = 33
     const nodeCount = await getNodeCount(page);
     expect(nodeCount).toBeGreaterThan(20);
   });
 
-  test('shows controls and background', async ({ page }) => {
-    const controls = page.locator('.react-flow__controls');
-    await expect(controls).toBeVisible();
-
+  test('shows background dots', async ({ page }) => {
     const background = page.locator('.react-flow__background');
     await expect(background).toBeVisible();
   });
@@ -44,11 +42,6 @@ test.describe('Canvas - Timeline', () => {
     expect(newCount).toBeLessThan(initialCount);
   });
 
-  test('shows minimap by default', async ({ page }) => {
-    const minimap = page.locator('.react-flow__minimap');
-    await expect(minimap).toBeVisible();
-  });
-
   test('shows era marker nodes in official timeline', async ({ page }) => {
     await page.waitForSelector('.react-flow__node');
     const eventNodes = page.locator('.react-flow__node-event');
@@ -63,9 +56,17 @@ test.describe('Canvas - Timeline', () => {
     expect(count).toBeGreaterThanOrEqual(4);
   });
 
-  test('page-0 button shows ▲ and page 1 shows number', async ({ page }) => {
-    // Page tabs are on the right side
-    await expect(page.locator('button', { hasText: '▲' })).toBeVisible();
+  test('shows labelPoint nodes in official timeline', async ({ page }) => {
+    await page.waitForSelector('.react-flow__node');
+    const labelNodes = page.locator('.react-flow__node-labelPoint');
+    const count = await labelNodes.count();
+    expect(count).toBeGreaterThanOrEqual(3);
+  });
+
+  test('page-0 button shows Triforce icon and page 1 shows number', async ({ page }) => {
+    // Page-0 uses TriforceIcon SVG (has polygon elements)
+    const page0Button = page.locator('button:has(svg polygon)').first();
+    await expect(page0Button).toBeVisible();
     await expect(page.locator('button', { hasText: '1' }).first()).toBeVisible();
   });
 
@@ -87,7 +88,7 @@ test.describe('Canvas - Timeline', () => {
     expect(canvas1NodeCount).toBeGreaterThan(20);
   });
 
-  test('page-0 is read-only: nodes cannot be deleted', async ({ page }) => {
+  test('page-0 is locked: nodes cannot be deleted', async ({ page }) => {
     // On page-0 by default
     await page.waitForSelector('.react-flow__node');
 
@@ -97,7 +98,7 @@ test.describe('Canvas - Timeline', () => {
     await firstNode.click({ force: true });
     await page.keyboard.press('Delete');
 
-    // Count should not change (read-only)
+    // Count should not change (locked)
     const newCount = await getNodeCount(page);
     expect(newCount).toBe(initialCount);
   });

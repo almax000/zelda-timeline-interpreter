@@ -1,59 +1,75 @@
-import { useTabStore } from '../../stores/tabStore';
+import { useState } from 'react';
+import { useTabStore, type Tab } from '../../stores/tabStore';
+import { TriforceIcon } from '../UI/TriforceIcon';
+import { TabContextMenu } from './TabContextMenu';
+
+interface ContextMenuState {
+  x: number;
+  y: number;
+  tab: Tab;
+}
 
 export function PageTabs() {
-  const { tabs, activeTabId, addTab, removeTab, setActiveTab } = useTabStore();
-  const editableTabs = tabs.filter((t) => !t.isReadOnly);
+  const { tabs, activeTabId, addTab, setActiveTab } = useTabStore();
+  const editableTabs = tabs.filter((t) => t.id !== 'page-0');
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+
+  const handleContextMenu = (e: React.MouseEvent, tab: Tab) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY, tab });
+  };
 
   return (
-    <div className="fixed top-14 right-4 z-50 flex flex-col gap-1.5">
-      {tabs.map((tab, index) => {
-        const isActive = activeTabId === tab.id;
-        const isPage0 = tab.isReadOnly;
-        // Display: ▲ for page-0, numbers for editable tabs
-        const label = isPage0 ? '▲' : String(index);
+    <>
+      <div className="flex items-center gap-1">
+        {tabs.map((tab, index) => {
+          const isActive = activeTabId === tab.id;
+          const isPage0 = tab.id === 'page-0';
+          const isLocked = tab.isLocked;
 
-        return (
-          <div key={tab.id} className="relative group">
+          return (
             <button
+              key={tab.id}
               onClick={() => setActiveTab(tab.id)}
+              onContextMenu={(e) => handleContextMenu(e, tab)}
               className={`
-                w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all
+                h-7 min-w-[28px] px-2 rounded-md flex items-center justify-center text-xs font-semibold transition-all gap-1
                 ${isActive
-                  ? 'bg-[var(--color-gold)] text-white shadow-lg shadow-[var(--color-gold)]/30'
-                  : 'bg-white/5 text-white/60 hover:bg-white/15 hover:text-white'
+                  ? 'bg-[var(--color-gold)] text-[var(--color-background)]'
+                  : 'text-[var(--color-text-muted)] hover:bg-[var(--color-surface-light)] hover:text-[var(--color-text)]'
                 }
               `}
               title={tab.name}
             >
-              {label}
+              {isPage0 ? <TriforceIcon size={12} /> : String(index)}
+              {isLocked && !isPage0 && (
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              )}
             </button>
+          );
+        })}
 
-            {/* Close button on hover - only for editable tabs when there's more than 1 */}
-            {!isPage0 && editableTabs.length > 1 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeTab(tab.id);
-                }}
-                className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500/80 text-white text-[8px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
-                title="Close"
-              >
-                ×
-              </button>
-            )}
-          </div>
-        );
-      })}
+        <button
+          onClick={addTab}
+          disabled={editableTabs.length >= 10}
+          className="h-7 w-7 rounded-md flex items-center justify-center text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          title="New canvas"
+        >
+          +
+        </button>
+      </div>
 
-      {/* Add button */}
-      <button
-        onClick={addTab}
-        disabled={editableTabs.length >= 10}
-        className="w-7 h-7 rounded-full flex items-center justify-center text-xs text-white/40 hover:text-white/80 hover:bg-white/10 transition-all mx-auto disabled:opacity-30 disabled:cursor-not-allowed"
-        title="New canvas"
-      >
-        +
-      </button>
-    </div>
+      {contextMenu && (
+        <TabContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          tab={contextMenu.tab}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
+    </>
   );
 }

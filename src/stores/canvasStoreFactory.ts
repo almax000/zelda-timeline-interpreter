@@ -1,5 +1,5 @@
 import { create, type StoreApi, type UseBoundStore } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist } from 'zustand/middleware';
 import { temporal, type TemporalState } from 'zundo';
 import {
   applyNodeChanges,
@@ -28,22 +28,14 @@ export interface CanvasStore {
   loadTimeline: (nodes: TimelineNode[], edges: TimelineEdge[]) => void;
   updateEdgeBranchType: (edgeId: string, branchType: BranchType) => void;
   updateEdgeLabel: (edgeId: string, label: string) => void;
+  splitEdgeWithLabel: (edgeId: string, label: string) => void;
 }
 
 export type CanvasStoreWithTemporal = UseBoundStore<StoreApi<CanvasStore>> & {
   temporal: StoreApi<TemporalState<Pick<CanvasStore, 'nodes' | 'edges'>>>;
 };
 
-// No-op storage that never persists (for read-only page-0)
-const noopStorage = {
-  getItem: () => null,
-  setItem: () => {},
-  removeItem: () => {},
-};
-
 export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
-  const isReadOnly = tabId === 'page-0';
-
   return create<CanvasStore>()(
     temporal(
       persist(
@@ -115,10 +107,55 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
               ),
             });
           },
+
+          splitEdgeWithLabel: (edgeId, label) => {
+            const { nodes, edges } = get();
+            const edge = edges.find((e) => e.id === edgeId);
+            if (!edge) return;
+
+            const sourceNode = nodes.find((n) => n.id === edge.source);
+            const targetNode = nodes.find((n) => n.id === edge.target);
+            if (!sourceNode || !targetNode) return;
+
+            const midX = (sourceNode.position.x + targetNode.position.x) / 2;
+            const midY = (sourceNode.position.y + targetNode.position.y) / 2;
+
+            const labelNodeId = `labelPoint-${Date.now()}`;
+            const labelNode = {
+              id: labelNodeId,
+              type: 'labelPoint' as const,
+              position: { x: midX, y: midY },
+              data: { label },
+            };
+
+            const branchType = edge.data?.branchType ?? 'main';
+            const edge1: TimelineEdge = {
+              id: `${edge.source}-${labelNodeId}`,
+              source: edge.source,
+              target: labelNodeId,
+              sourceHandle: edge.sourceHandle,
+              targetHandle: 'left',
+              type: 'timeline',
+              data: { branchType },
+            };
+            const edge2: TimelineEdge = {
+              id: `${labelNodeId}-${edge.target}`,
+              source: labelNodeId,
+              target: edge.target,
+              sourceHandle: 'right',
+              targetHandle: edge.targetHandle,
+              type: 'timeline',
+              data: { branchType },
+            };
+
+            set({
+              nodes: [...nodes, labelNode as TimelineNode],
+              edges: [...edges.filter((e) => e.id !== edgeId), edge1, edge2],
+            });
+          },
         }),
         {
-          name: isReadOnly ? `zelda-noop-${tabId}` : `zelda-tab-${tabId}`,
-          ...(isReadOnly ? { storage: createJSONStorage(() => noopStorage) } : {}),
+          name: `zelda-tab-${tabId}`,
           partialize: (state: CanvasStore) => ({
             nodes: state.nodes,
             edges: state.edges,

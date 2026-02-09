@@ -14,13 +14,13 @@ const languageToCoverRegion: Record<Language, CoverRegion> = {
 interface SettingsStore {
   language: Language;
   coverRegion: CoverRegion;
-  showMinimap: boolean;
+  sidebarCollapsed: boolean;
   snapToGrid: boolean;
 
   // Actions
   setLanguage: (language: Language) => void;
   setCoverRegion: (region: CoverRegion) => void;
-  setShowMinimap: (show: boolean) => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
   setSnapToGrid: (snap: boolean) => void;
 }
 
@@ -29,7 +29,7 @@ export const useSettingsStore = create<SettingsStore>()(
     (set) => ({
       language: 'en',
       coverRegion: 'us',
-      showMinimap: true,
+      sidebarCollapsed: false,
       snapToGrid: true,
 
       setLanguage: (language) => set({
@@ -37,7 +37,7 @@ export const useSettingsStore = create<SettingsStore>()(
         coverRegion: languageToCoverRegion[language],
       }),
       setCoverRegion: (region) => set({ coverRegion: region }),
-      setShowMinimap: (show) => set({ showMinimap: show }),
+      setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
       setSnapToGrid: (snap) => set({ snapToGrid: snap }),
     }),
     {

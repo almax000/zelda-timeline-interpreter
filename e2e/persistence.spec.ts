@@ -27,7 +27,7 @@ test.describe('Persistence', () => {
     expect(edgesAfter).toBe(edgesBefore);
   });
 
-  test('page-0 always loads official timeline (not persisted)', async ({ page }) => {
+  test('page-0 loads official timeline on first visit', async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('.react-flow__node');
 
@@ -35,7 +35,7 @@ test.describe('Persistence', () => {
     const nodeCount = await getNodeCount(page);
     expect(nodeCount).toBeGreaterThan(10);
 
-    // Reload - page-0 should still show official timeline
+    // Reload - page-0 should still show official timeline (now persisted)
     await page.reload();
     await page.waitForSelector('.react-flow__node');
 

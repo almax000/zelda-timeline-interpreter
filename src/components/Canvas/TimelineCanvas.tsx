@@ -2,8 +2,6 @@ import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import {
   ReactFlow,
   Background,
-  Controls,
-  MiniMap,
   useReactFlow,
   type Connection,
   type NodeTypes,
@@ -18,13 +16,16 @@ import '@xyflow/react/dist/style.css';
 import { GameNode } from './GameNode';
 import { EventNode } from './EventNode';
 import { GuideNode } from './GuideNode';
+import { ImageNode } from './ImageNode';
+import { ShapeNode } from './ShapeNode';
+import { LabelPointNode } from './LabelPointNode';
 import { TimelineEdge } from './TimelineEdge';
 import { ContextMenu } from './ContextMenu';
 import { AnnotationOverlay } from '../Annotation/AnnotationOverlay';
 import { getCanvasStore } from '../../stores/canvasRegistry';
-import { useSettingsStore } from '../../stores/settingsStore';
 import { useAnnotationStore } from '../../stores/annotationStore';
 import { useTabStore } from '../../stores/tabStore';
+import { useUIStore } from '../../stores/uiStore';
 import type { TimelineNode } from '../../types/timeline';
 import type { BranchType } from '../../types/timeline';
 
@@ -32,6 +33,9 @@ const nodeTypes: NodeTypes = {
   game: GameNode as NodeTypes['game'],
   event: EventNode as NodeTypes['event'],
   guide: GuideNode as NodeTypes['guide'],
+  image: ImageNode as NodeTypes['image'],
+  shape: ShapeNode as NodeTypes['shape'],
+  labelPoint: LabelPointNode as NodeTypes['labelPoint'],
 };
 
 const edgeTypes: EdgeTypes = {
@@ -57,7 +61,10 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const isAnnotationMode = useAnnotationStore((s) => s.isAnnotationMode);
 
   const tab = useTabStore((s) => s.tabs.find((t) => t.id === tabId));
-  const isReadOnly = tab?.isReadOnly ?? false;
+  const isLocked = tab?.isLocked ?? false;
+
+  const activeShapeTool = useUIStore((s) => s.activeShapeTool);
+  const resetTool = useUIStore((s) => s.resetTool);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -70,17 +77,58 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
     return () => observer.disconnect();
   }, []);
 
+  // Paste handler for images
+  useEffect(() => {
+    if (isLocked) return;
+    const handlePaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          e.preventDefault();
+          const blob = item.getAsFile();
+          if (!blob) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            const src = reader.result as string;
+            const img = new Image();
+            img.onload = () => {
+              const maxW = 400;
+              const ratio = Math.min(1, maxW / img.width);
+              const width = Math.round(img.width * ratio);
+              const height = Math.round(img.height * ratio);
+              const position = screenToFlowPosition({
+                x: containerSize.width / 2,
+                y: containerSize.height / 2,
+              });
+              const store = getCanvasStore(tabId);
+              store.getState().addNode({
+                id: `img-${Date.now()}`,
+                type: 'image',
+                position,
+                data: { src, width, height },
+              } as TimelineNode);
+            };
+            img.src = src;
+          };
+          reader.readAsDataURL(blob);
+          break;
+        }
+      }
+    };
+    document.addEventListener('paste', handlePaste);
+    return () => document.removeEventListener('paste', handlePaste);
+  }, [isLocked, tabId, screenToFlowPosition, containerSize]);
+
   const store = getCanvasStore(tabId);
-  const { nodes, edges, onNodesChange, onEdgesChange, addNode, addEdge, removeNode, removeEdge, updateEdgeBranchType, updateEdgeLabel } = store();
-  const showMinimap = useSettingsStore((state) => state.showMinimap);
-  const snapToGrid = useSettingsStore((state) => state.snapToGrid);
+  const { nodes, edges, onNodesChange, onEdgesChange, addNode, addEdge, removeNode, removeEdge, updateEdgeBranchType, updateEdgeLabel, splitEdgeWithLabel } = store();
 
   const onConnect: OnConnect = useCallback(
     (connection: Connection) => {
-      if (isReadOnly) return;
+      if (isLocked) return;
       addEdge(connection);
     },
-    [addEdge, isReadOnly]
+    [addEdge, isLocked]
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -91,7 +139,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
-      if (isReadOnly) return;
+      if (isLocked) return;
 
       const gameId = event.dataTransfer.getData('application/zelda-game');
       if (!gameId) return;
@@ -110,12 +158,12 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
 
       addNode(newNode);
     },
-    [addNode, screenToFlowPosition, isReadOnly]
+    [addNode, screenToFlowPosition, isLocked]
   );
 
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: TimelineNode) => {
-      if (isReadOnly) return;
+      if (isLocked) return;
       event.preventDefault();
       setContextMenu({
         x: event.clientX,
@@ -124,12 +172,12 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         targetId: node.id,
       });
     },
-    [isReadOnly]
+    [isLocked]
   );
 
   const onEdgeContextMenu = useCallback(
     (event: React.MouseEvent, edge: { id: string }) => {
-      if (isReadOnly) return;
+      if (isLocked) return;
       event.preventDefault();
       setContextMenu({
         x: event.clientX,
@@ -138,16 +186,41 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         targetId: edge.id,
       });
     },
-    [isReadOnly]
+    [isLocked]
   );
 
-  const onPaneClick = useCallback(() => {
-    setContextMenu(null);
-  }, []);
+  const onPaneClick = useCallback(
+    (event: React.MouseEvent) => {
+      setContextMenu(null);
+
+      // Shape placement on pane click
+      if (activeShapeTool && !isLocked) {
+        const position = screenToFlowPosition({
+          x: event.clientX,
+          y: event.clientY,
+        });
+        addNode({
+          id: `shape-${Date.now()}`,
+          type: 'shape',
+          position,
+          data: {
+            shapeType: activeShapeTool,
+            width: activeShapeTool === 'line' || activeShapeTool === 'arrow' ? 150 : 100,
+            height: activeShapeTool === 'line' || activeShapeTool === 'arrow' ? 40 : 100,
+            fill: 'transparent',
+            stroke: 'var(--color-text)',
+            strokeWidth: 2,
+          },
+        } as TimelineNode);
+        resetTool();
+      }
+    },
+    [activeShapeTool, isLocked, addNode, screenToFlowPosition, resetTool]
+  );
 
   const onPaneContextMenu = useCallback(
     (event: MouseEvent | React.MouseEvent) => {
-      if (isReadOnly) return;
+      if (isLocked) return;
       event.preventDefault();
       setContextMenu({
         x: event.clientX,
@@ -156,7 +229,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         targetId: '',
       });
     },
-    [isReadOnly]
+    [isLocked]
   );
 
   const contextEdge = contextMenu?.type === 'edge'
@@ -169,15 +242,18 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
     interactionWidth: 20,
   }), []);
 
-  const interactionDisabled = isReadOnly || isAnnotationMode;
+  const interactionDisabled = isLocked || isAnnotationMode;
+
+  // Cursor style for shape placement
+  const cursorClass = activeShapeTool && !isLocked ? 'cursor-crosshair' : '';
 
   return (
-    <div ref={containerRef} className="flex-1 h-full relative">
+    <div ref={containerRef} className={`flex-1 h-full relative ${cursorClass}`}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodesChange={isReadOnly ? undefined : onNodesChange as OnNodesChange}
-        onEdgesChange={isReadOnly ? undefined : onEdgesChange as OnEdgesChange}
+        onNodesChange={isLocked ? undefined : onNodesChange as OnNodesChange}
+        onEdgesChange={isLocked ? undefined : onEdgesChange as OnEdgesChange}
         onConnect={onConnect}
         onDragOver={onDragOver}
         onDrop={onDrop}
@@ -188,7 +264,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
-        snapToGrid={snapToGrid}
+        snapToGrid
         snapGrid={[20, 20]}
         fitView
         minZoom={0.1}
@@ -196,7 +272,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         nodesDraggable={!interactionDisabled}
         nodesConnectable={!interactionDisabled}
         elementsSelectable={!interactionDisabled}
-        panOnDrag={!isAnnotationMode}
+        panOnDrag={!isAnnotationMode && !activeShapeTool}
         zoomOnScroll={!isAnnotationMode}
         deleteKeyCode={interactionDisabled ? [] : ['Backspace', 'Delete']}
         proOptions={{ hideAttribution: true }}
@@ -207,24 +283,13 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
           size={1}
           color="var(--color-surface-light)"
         />
-        <Controls
-          showInteractive={false}
-          className="!bottom-4 !left-4"
-        />
-        {showMinimap && (
-          <MiniMap
-            nodeColor="var(--color-gold)"
-            maskColor="rgba(3, 7, 18, 0.8)"
-            className="!bottom-4 !right-4"
-          />
-        )}
       </ReactFlow>
 
-      {!isReadOnly && (
+      {!isLocked && (
         <AnnotationOverlay tabId={tabId} width={containerSize.width} height={containerSize.height} />
       )}
 
-      {contextMenu && !isReadOnly && (
+      {contextMenu && !isLocked && (
         <ContextMenu
           x={contextMenu.x}
           y={contextMenu.y}
@@ -243,6 +308,9 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
           }}
           onChangeLabel={(label: string) => {
             updateEdgeLabel(contextMenu.targetId, label);
+          }}
+          onSplitEdge={(label: string) => {
+            splitEdgeWithLabel(contextMenu.targetId, label);
           }}
           onAddEvent={() => {
             const position = screenToFlowPosition({

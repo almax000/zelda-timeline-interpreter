@@ -22,7 +22,11 @@
     "exportJSON": "Export as JSON",
     "import": "Import",
     "undo": "Undo",
-    "redo": "Redo"
+    "redo": "Redo",
+    "select": "Select",
+    "shapes": "Shapes",
+    "share": "Share Link",
+    "shareCopied": "Link copied!"
   },
   "canvas": {
     "dropHint": "Drop game here to add to timeline"
@@ -33,10 +37,18 @@
     "adult": "Adult Timeline",
     "fallen": "Fallen Hero Timeline"
   },
+  "tabs": {
+    "contextMenu": {
+      "delete": "Delete Tab",
+      "lock": "Lock Tab",
+      "unlock": "Unlock Tab",
+      "rename": "Rename Tab"
+    },
+    "locked": "This tab is locked"
+  },
   "settings": {
     "language": "Language",
     "coverRegion": "Cover Region",
-    "showMinimap": "Show Minimap",
     "snapToGrid": "Snap to Grid"
   },
   "region": {
@@ -62,7 +74,7 @@
   "guide": {
     "welcome": {
       "title": "Welcome to ZTI",
-      "content": "Zelda Timeline Interpreter lets you explore and create your own Zelda timeline theories.\n\nThis is the official Nintendo timeline. You can also create new canvases using the + tab above."
+      "content": "Zelda Timeline Interpreter lets you explore and create your own Zelda timeline theories.\n\nThis is the official Nintendo timeline. Right-click the ▲ tab to unlock and edit it, or create new canvases using the + button."
     },
     "dragDrop": {
       "title": "Drag & Drop Games",

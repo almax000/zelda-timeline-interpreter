@@ -1,1 +1,1 @@
-// TabBar has been merged into Toolbar
+export { PageTabs } from './PageTabs';

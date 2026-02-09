@@ -1,4 +1,2 @@
-export { Toolbar } from './Toolbar';
-export { FloatingToolbar } from './FloatingToolbar';
-export { LanguageSwitcher } from './LanguageSwitcher';
+export { TopBar } from './TopBar';
 export { ExportMenu } from './ExportMenu';

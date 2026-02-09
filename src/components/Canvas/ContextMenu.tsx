@@ -18,6 +18,7 @@ interface ContextMenuProps {
   onDelete: () => void;
   onChangeBranch?: (branchType: BranchType) => void;
   onChangeLabel?: (label: string) => void;
+  onSplitEdge?: (label: string) => void;
   onAddEvent?: () => void;
   onClose: () => void;
 }
@@ -31,6 +32,7 @@ export function ContextMenu({
   onDelete,
   onChangeBranch,
   onChangeLabel,
+  onSplitEdge,
   onAddEvent,
   onClose,
 }: ContextMenuProps) {
@@ -132,12 +134,25 @@ export function ContextMenu({
               </button>
             </div>
           ) : (
-            <button
-              onClick={() => setEditingLabel(true)}
-              className="w-full px-4 py-2 text-left text-sm text-[var(--color-text)] hover:bg-[var(--color-surface-light)]"
-            >
-              {edgeLabel ? t('contextMenu.editLabel') : t('contextMenu.addLabel')}
-            </button>
+            <>
+              <button
+                onClick={() => setEditingLabel(true)}
+                className="w-full px-4 py-2 text-left text-sm text-[var(--color-text)] hover:bg-[var(--color-surface-light)]"
+              >
+                {edgeLabel ? t('contextMenu.editLabel') : t('contextMenu.addLabel')}
+              </button>
+              {onSplitEdge && (
+                <button
+                  onClick={() => {
+                    onSplitEdge('Label');
+                    onClose();
+                  }}
+                  className="w-full px-4 py-2 text-left text-sm text-[var(--color-text)] hover:bg-[var(--color-surface-light)]"
+                >
+                  Add Label Node
+                </button>
+              )}
+            </>
           )}
         </>
       )}

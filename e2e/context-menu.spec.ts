@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, clearLocalStorage, switchToEditableTab } from './helpers/canvas';
+import { getNodeCount, clearLocalStorage, switchToEditableTab, switchToPage0 } from './helpers/canvas';
 
 test.describe('Context Menu', () => {
   test.beforeEach(async ({ page }) => {
@@ -7,7 +7,7 @@ test.describe('Context Menu', () => {
     await clearLocalStorage(page);
     await page.reload();
     await page.waitForSelector('.react-flow');
-    // Switch to editable tab (context menu disabled on page-0)
+    // Switch to editable tab (context menu disabled on locked page-0)
     await switchToEditableTab(page);
     await page.waitForSelector('.react-flow__node');
   });
@@ -61,16 +61,16 @@ test.describe('Context Menu', () => {
     await expect(contextMenu).not.toBeVisible();
   });
 
-  test('context menu does not appear on page-0', async ({ page }) => {
+  test('context menu does not appear on locked page-0', async ({ page }) => {
     // Switch to page-0
-    await page.locator('button', { hasText: '▲' }).click();
+    await switchToPage0(page);
     await page.waitForSelector('.react-flow__node');
 
-    // Use force:true since elementsSelectable=false on page-0
+    // Use force:true since elementsSelectable=false on locked page-0
     const firstNode = page.locator('.react-flow__node').first();
     await firstNode.click({ button: 'right', force: true });
 
-    // Context menu should NOT appear on read-only page
+    // Context menu should NOT appear on locked page
     const contextMenu = page.locator('[data-testid="context-menu"]');
     await expect(contextMenu).not.toBeVisible();
   });

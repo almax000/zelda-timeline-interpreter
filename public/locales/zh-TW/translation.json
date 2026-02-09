@@ -22,7 +22,11 @@
     "exportJSON": "匯出為 JSON",
     "import": "匯入",
     "undo": "復原",
-    "redo": "重做"
+    "redo": "重做",
+    "select": "選擇",
+    "shapes": "形狀",
+    "share": "分享連結",
+    "shareCopied": "連結已複製！"
   },
   "canvas": {
     "dropHint": "將遊戲拖放到此處加入時間線"
@@ -33,10 +37,18 @@
     "adult": "成年線",
     "fallen": "失敗線"
   },
+  "tabs": {
+    "contextMenu": {
+      "delete": "刪除標籤",
+      "lock": "鎖定標籤",
+      "unlock": "解鎖標籤",
+      "rename": "重新命名標籤"
+    },
+    "locked": "此標籤已鎖定"
+  },
   "settings": {
     "language": "語言",
     "coverRegion": "封面區域",
-    "showMinimap": "顯示小地圖",
     "snapToGrid": "對齊網格"
   },
   "region": {
@@ -62,7 +74,7 @@
   "guide": {
     "welcome": {
       "title": "歡迎使用 ZTI",
-      "content": "薩爾達時間線模擬器讓你探索和建立自己的時間線理論。\n\n這是任天堂官方時間線。你可以使用上方的 + 標籤建立新畫布。"
+      "content": "薩爾達時間線模擬器讓你探索和建立自己的時間線理論。\n\n這是任天堂官方時間線。右鍵點擊 ▲ 標籤可解鎖並編輯，或使用 + 按鈕建立新畫布。"
     },
     "dragDrop": {
       "title": "拖放遊戲",

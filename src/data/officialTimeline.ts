@@ -1,10 +1,10 @@
 import type { TimelineNode, TimelineEdge } from '../types/timeline';
 
-const COL_WIDTH = 220;       // Horizontal spacing between nodes
+const COL_WIDTH = 250;       // Horizontal spacing between nodes
 const ROW_FALLEN = 0;        // Fallen hero timeline (top)
-const ROW_MAIN = 300;        // Main trunk / Child timeline (middle)
-const ROW_ADULT = 600;       // Adult timeline (bottom)
-const ROW_STANDALONE = -300;  // BotW/TotK standalone (above all)
+const ROW_MAIN = 400;        // Main trunk / Child timeline (middle)
+const ROW_ADULT = 800;       // Adult timeline (bottom)
+const ROW_STANDALONE = -400;  // BotW/TotK standalone (above all)
 
 export const officialTimelineNodes: TimelineNode[] = [
   // === Main trunk (before split) ===
@@ -13,13 +13,18 @@ export const officialTimelineNodes: TimelineNode[] = [
   { id: 'game-four-swords-official', type: 'game', position: { x: COL_WIDTH * 2, y: ROW_MAIN }, data: { gameId: 'four-swords' } },
 
   // Era marker: Hyrulean Civil War (between FS and OoT)
-  { id: 'era-hyrulean-civil-war', type: 'event', position: { x: COL_WIDTH * 2.5, y: ROW_MAIN - 10 }, data: { labelKey: 'eraMarker.hyruleanCivilWar', isEraMarker: true } },
+  { id: 'era-hyrulean-civil-war', type: 'event', position: { x: COL_WIDTH * 2.5, y: ROW_MAIN - 80 }, data: { labelKey: 'eraMarker.hyruleanCivilWar', isEraMarker: true } },
 
   { id: 'game-ocarina-of-time-official', type: 'game', position: { x: COL_WIDTH * 3, y: ROW_MAIN }, data: { gameId: 'ocarina-of-time' } },
 
+  // === Split LabelPoint nodes (replacing edge labels) ===
+  { id: 'label-fallen-split', type: 'labelPoint', position: { x: COL_WIDTH * 3.25, y: (ROW_MAIN + ROW_FALLEN) / 2 }, data: { label: 'Fallen Hero', labelKey: 'officialTimeline.fallenSplit' } },
+  { id: 'label-child-split', type: 'labelPoint', position: { x: COL_WIDTH * 3.5, y: ROW_MAIN }, data: { label: 'Child Era', labelKey: 'officialTimeline.childSplit' } },
+  { id: 'label-adult-split', type: 'labelPoint', position: { x: COL_WIDTH * 3.25, y: (ROW_MAIN + ROW_ADULT) / 2 }, data: { label: 'Adult Era', labelKey: 'officialTimeline.adultSplit' } },
+
   // === Fallen Hero Timeline (top row, branching up from OoT) ===
   // Era marker: The Imprisoning War (between OoT and LttP on fallen branch)
-  { id: 'era-imprisoning-war', type: 'event', position: { x: COL_WIDTH * 3.5, y: ROW_FALLEN - 10 }, data: { labelKey: 'eraMarker.imprisoningWar', isEraMarker: true } },
+  { id: 'era-imprisoning-war', type: 'event', position: { x: COL_WIDTH * 3.75, y: ROW_FALLEN - 80 }, data: { labelKey: 'eraMarker.imprisoningWar', isEraMarker: true } },
 
   { id: 'game-link-to-the-past-official', type: 'game', position: { x: COL_WIDTH * 4, y: ROW_FALLEN }, data: { gameId: 'link-to-the-past' } },
   { id: 'game-links-awakening-official', type: 'game', position: { x: COL_WIDTH * 5, y: ROW_FALLEN }, data: { gameId: 'links-awakening' } },
@@ -29,7 +34,7 @@ export const officialTimelineNodes: TimelineNode[] = [
   { id: 'game-echoes-of-wisdom-official', type: 'game', position: { x: COL_WIDTH * 9, y: ROW_FALLEN }, data: { gameId: 'echoes-of-wisdom' } },
 
   // Era marker: Decline of Hyrule Kingdom (between EoW and LoZ)
-  { id: 'era-decline-of-hyrule', type: 'event', position: { x: COL_WIDTH * 9.5, y: ROW_FALLEN - 10 }, data: { labelKey: 'eraMarker.declineOfHyrule', isEraMarker: true } },
+  { id: 'era-decline-of-hyrule', type: 'event', position: { x: COL_WIDTH * 9.5, y: ROW_FALLEN - 80 }, data: { labelKey: 'eraMarker.declineOfHyrule', isEraMarker: true } },
 
   { id: 'game-legend-of-zelda-official', type: 'game', position: { x: COL_WIDTH * 10, y: ROW_FALLEN }, data: { gameId: 'legend-of-zelda' } },
   { id: 'game-adventure-of-link-official', type: 'game', position: { x: COL_WIDTH * 11, y: ROW_FALLEN }, data: { gameId: 'adventure-of-link' } },
@@ -41,13 +46,13 @@ export const officialTimelineNodes: TimelineNode[] = [
 
   // === Adult Timeline (bottom row, branching down from OoT) ===
   // Era marker: Hyrule is Flooded (between OoT and WW on adult branch)
-  { id: 'era-hyrule-flooded', type: 'event', position: { x: COL_WIDTH * 3.5, y: ROW_ADULT - 10 }, data: { labelKey: 'eraMarker.hyruleFlooded', isEraMarker: true } },
+  { id: 'era-hyrule-flooded', type: 'event', position: { x: COL_WIDTH * 3.75, y: ROW_ADULT - 80 }, data: { labelKey: 'eraMarker.hyruleFlooded', isEraMarker: true } },
 
   { id: 'game-wind-waker-official', type: 'game', position: { x: COL_WIDTH * 4, y: ROW_ADULT }, data: { gameId: 'wind-waker' } },
   { id: 'game-phantom-hourglass-official', type: 'game', position: { x: COL_WIDTH * 5, y: ROW_ADULT }, data: { gameId: 'phantom-hourglass' } },
 
   // Era marker: New Hyrule Kingdom (between PH and ST)
-  { id: 'era-new-hyrule', type: 'event', position: { x: COL_WIDTH * 5.5, y: ROW_ADULT - 10 }, data: { labelKey: 'eraMarker.newHyrule', isEraMarker: true } },
+  { id: 'era-new-hyrule', type: 'event', position: { x: COL_WIDTH * 5.5, y: ROW_ADULT - 80 }, data: { labelKey: 'eraMarker.newHyrule', isEraMarker: true } },
 
   { id: 'game-spirit-tracks-official', type: 'game', position: { x: COL_WIDTH * 6, y: ROW_ADULT }, data: { gameId: 'spirit-tracks' } },
 
@@ -56,10 +61,10 @@ export const officialTimelineNodes: TimelineNode[] = [
   { id: 'game-tears-of-the-kingdom-official', type: 'game', position: { x: COL_WIDTH, y: ROW_STANDALONE }, data: { gameId: 'tears-of-the-kingdom' } },
 
   // === Guide Nodes ===
-  { id: 'guide-welcome', type: 'guide', position: { x: -350, y: ROW_STANDALONE - 50 }, data: { titleKey: 'guide.welcome.title', contentKey: 'guide.welcome.content', isCollapsed: false } },
-  { id: 'guide-dragdrop', type: 'guide', position: { x: -350, y: ROW_MAIN - 30 }, data: { titleKey: 'guide.dragDrop.title', contentKey: 'guide.dragDrop.content', isCollapsed: false } },
-  { id: 'guide-editing', type: 'guide', position: { x: COL_WIDTH * 3, y: ROW_MAIN + 260 }, data: { titleKey: 'guide.editing.title', contentKey: 'guide.editing.content', isCollapsed: true } },
-  { id: 'guide-annotation', type: 'guide', position: { x: COL_WIDTH * 8, y: ROW_ADULT + 260 }, data: { titleKey: 'guide.annotation.title', contentKey: 'guide.annotation.content', isCollapsed: true } },
+  { id: 'guide-welcome', type: 'guide', position: { x: -380, y: ROW_STANDALONE - 80 }, data: { titleKey: 'guide.welcome.title', contentKey: 'guide.welcome.content', isCollapsed: false } },
+  { id: 'guide-dragdrop', type: 'guide', position: { x: -380, y: ROW_MAIN - 60 }, data: { titleKey: 'guide.dragDrop.title', contentKey: 'guide.dragDrop.content', isCollapsed: false } },
+  { id: 'guide-editing', type: 'guide', position: { x: COL_WIDTH * 3, y: ROW_MAIN + 300 }, data: { titleKey: 'guide.editing.title', contentKey: 'guide.editing.content', isCollapsed: true } },
+  { id: 'guide-annotation', type: 'guide', position: { x: COL_WIDTH * 8, y: ROW_ADULT + 300 }, data: { titleKey: 'guide.annotation.title', contentKey: 'guide.annotation.content', isCollapsed: true } },
 ];
 
 export const officialTimelineEdges: TimelineEdge[] = [
@@ -69,11 +74,19 @@ export const officialTimelineEdges: TimelineEdge[] = [
   { id: 'e-fs-era-civil', source: 'game-four-swords-official', target: 'era-hyrulean-civil-war', sourceHandle: 'right', targetHandle: 'left', type: 'timeline', data: { branchType: 'main' } },
   { id: 'e-era-civil-oot', source: 'era-hyrulean-civil-war', target: 'game-ocarina-of-time-official', sourceHandle: 'right', targetHandle: 'left', type: 'timeline', data: { branchType: 'main' } },
 
-  // === OoT splits (with labelKey for i18n labels) ===
-  { id: 'e-oot-lttp', source: 'game-ocarina-of-time-official', target: 'era-imprisoning-war', sourceHandle: 'top', targetHandle: 'left', type: 'timeline', data: { branchType: 'fallen', labelKey: 'officialTimeline.fallenSplit' } },
+  // === OoT splits (via LabelPoint nodes instead of edge labels) ===
+  // Fallen: OoT → label-fallen-split → era-imprisoning-war → LttP
+  { id: 'e-oot-fallen-label', source: 'game-ocarina-of-time-official', target: 'label-fallen-split', sourceHandle: 'top', targetHandle: 'left', type: 'timeline', data: { branchType: 'fallen' } },
+  { id: 'e-fallen-label-era', source: 'label-fallen-split', target: 'era-imprisoning-war', sourceHandle: 'right', targetHandle: 'left', type: 'timeline', data: { branchType: 'fallen' } },
   { id: 'e-era-imprison-lttp', source: 'era-imprisoning-war', target: 'game-link-to-the-past-official', sourceHandle: 'right', targetHandle: 'left', type: 'timeline', data: { branchType: 'fallen' } },
-  { id: 'e-oot-mm', source: 'game-ocarina-of-time-official', target: 'game-majoras-mask-official', sourceHandle: 'right', targetHandle: 'left', type: 'timeline', data: { branchType: 'child', labelKey: 'officialTimeline.childSplit' } },
-  { id: 'e-oot-ww', source: 'game-ocarina-of-time-official', target: 'era-hyrule-flooded', sourceHandle: 'bottom', targetHandle: 'left', type: 'timeline', data: { branchType: 'adult', labelKey: 'officialTimeline.adultSplit' } },
+
+  // Child: OoT → label-child-split → MM
+  { id: 'e-oot-child-label', source: 'game-ocarina-of-time-official', target: 'label-child-split', sourceHandle: 'right', targetHandle: 'left', type: 'timeline', data: { branchType: 'child' } },
+  { id: 'e-child-label-mm', source: 'label-child-split', target: 'game-majoras-mask-official', sourceHandle: 'right', targetHandle: 'left', type: 'timeline', data: { branchType: 'child' } },
+
+  // Adult: OoT → label-adult-split → era-hyrule-flooded → WW
+  { id: 'e-oot-adult-label', source: 'game-ocarina-of-time-official', target: 'label-adult-split', sourceHandle: 'bottom', targetHandle: 'left', type: 'timeline', data: { branchType: 'adult' } },
+  { id: 'e-adult-label-era', source: 'label-adult-split', target: 'era-hyrule-flooded', sourceHandle: 'right', targetHandle: 'left', type: 'timeline', data: { branchType: 'adult' } },
   { id: 'e-era-flood-ww', source: 'era-hyrule-flooded', target: 'game-wind-waker-official', sourceHandle: 'right', targetHandle: 'left', type: 'timeline', data: { branchType: 'adult' } },
 
   // === Fallen Hero Timeline chain (horizontal) ===

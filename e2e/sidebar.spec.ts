@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { clearLocalStorage, switchToEditableTab } from './helpers/canvas';
+import { clearLocalStorage, switchToEditableTab, expandSidebar } from './helpers/canvas';
 
 test.describe('Sidebar - Game Library', () => {
   test.beforeEach(async ({ page }) => {
@@ -7,13 +7,16 @@ test.describe('Sidebar - Game Library', () => {
     await clearLocalStorage(page);
     await page.reload();
     await page.waitForSelector('.react-flow');
-    // Switch to editable tab (sidebar is collapsed on page-0)
+    // Switch to editable tab
     await switchToEditableTab(page);
+    // Ensure sidebar is expanded
+    await expandSidebar(page);
   });
 
   test('displays game library with search', async ({ page }) => {
-    const sidebar = page.locator('text=Game Library').first();
-    await expect(sidebar).toBeVisible();
+    // GameLibrary shows MAINLINE section header
+    const mainlineHeader = page.locator('text=MAINLINE').first();
+    await expect(mainlineHeader).toBeVisible();
 
     const searchInput = page.getByPlaceholder('Search games...');
     await expect(searchInput).toBeVisible();
@@ -38,7 +41,9 @@ test.describe('Sidebar - Game Library', () => {
   });
 
   test('game names change when language is switched', async ({ page }) => {
-    await page.locator('button', { hasText: '日本語' }).click();
+    // Language is now a <select> dropdown
+    const langSelect = page.locator('select');
+    await langSelect.selectOption('ja');
     await expect(page.locator('text=スカイウォードソード').first()).toBeVisible();
   });
 
@@ -48,29 +53,19 @@ test.describe('Sidebar - Game Library', () => {
   });
 
   test('sidebar can be collapsed and expanded', async ({ page }) => {
-    // Sidebar is visible
-    await expect(page.locator('text=Game Library').first()).toBeVisible();
+    // Sidebar should show game list
+    await expect(page.locator('[draggable="true"]').first()).toBeVisible();
 
     // Click collapse button
-    await page.getByTitle('Collapse sidebar').click();
+    await page.locator('button[title="Collapse sidebar"]').click();
 
-    // Sidebar should be hidden
-    await expect(page.locator('text=Game Library').first()).not.toBeVisible();
+    // Game list should be hidden when collapsed
+    await expect(page.locator('[draggable="true"]').first()).not.toBeVisible();
 
-    // Click the expand chevron
-    const expandBtn = page.locator('button svg path[d="m9 18 6-6-6-6"]').locator('..');
-    await expandBtn.click();
+    // Click expand button
+    await page.locator('button[title="Expand sidebar"]').click();
 
-    // Sidebar should be visible again
-    await expect(page.locator('text=Game Library').first()).toBeVisible();
-  });
-
-  test('sidebar is collapsed on page-0', async ({ page }) => {
-    // Switch to page-0
-    await page.locator('button', { hasText: '▲' }).click();
-    await page.waitForTimeout(300);
-
-    // Sidebar should not be visible
-    await expect(page.locator('text=Game Library').first()).not.toBeVisible();
+    // Game list should be visible again
+    await expect(page.locator('[draggable="true"]').first()).toBeVisible();
   });
 });

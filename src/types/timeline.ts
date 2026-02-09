@@ -19,7 +19,36 @@ export interface GuideNodeData extends Record<string, unknown> {
   isCollapsed: boolean;
 }
 
-export type TimelineNode = Node<TimelineNodeData, 'game'> | Node<EventNodeData, 'event'> | Node<GuideNodeData, 'guide'>;
+export interface ImageNodeData extends Record<string, unknown> {
+  src: string;       // data URL
+  width: number;
+  height: number;
+}
+
+export type ShapeType = 'rectangle' | 'circle' | 'arrow' | 'line';
+
+export interface ShapeNodeData extends Record<string, unknown> {
+  shapeType: ShapeType;
+  width: number;
+  height: number;
+  fill: string;
+  stroke: string;
+  strokeWidth: number;
+  label?: string;
+}
+
+export interface LabelPointNodeData extends Record<string, unknown> {
+  label: string;
+  labelKey?: string;  // i18n key (official timeline)
+}
+
+export type TimelineNode =
+  | Node<TimelineNodeData, 'game'>
+  | Node<EventNodeData, 'event'>
+  | Node<GuideNodeData, 'guide'>
+  | Node<ImageNodeData, 'image'>
+  | Node<ShapeNodeData, 'shape'>
+  | Node<LabelPointNodeData, 'labelPoint'>;
 
 export interface TimelineEdgeData extends Record<string, unknown> {
   branchType: BranchType;

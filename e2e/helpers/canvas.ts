@@ -43,23 +43,30 @@ export async function clearLocalStorage(page: Page) {
 
 /**
  * Switch to an editable canvas tab by clicking the numbered page button.
- * Page-0 is the ▲ button, page 1 = "1", etc.
+ * Page-0 is the Triforce icon button, page 1 = "1", etc.
  * `pageIndex` is the 1-based index of the editable tab in the PageTabs.
  */
 export async function switchToEditableTab(page: Page, pageIndex = 1) {
-  // PageTabs shows ▲ for page-0, then numbers for editable tabs
-  // Click the button with text matching the index
   const pageButton = page.locator(`button:has-text("${pageIndex}")`).first();
   await pageButton.click();
   await page.waitForTimeout(300);
 }
 
 /**
- * Expand sidebar if collapsed (click the chevron-right expand button).
+ * Switch to page-0 by clicking the Triforce icon button (first button in PageTabs).
+ */
+export async function switchToPage0(page: Page) {
+  // Page-0 uses TriforceIcon SVG, it's the first button with an SVG containing polygons
+  const page0Button = page.locator('button:has(svg polygon)').first();
+  await page0Button.click();
+  await page.waitForTimeout(300);
+}
+
+/**
+ * Expand sidebar if collapsed (click the expand button).
  */
 export async function expandSidebar(page: Page) {
-  // The sidebar expand button is a narrow button with a chevron
-  const expandBtn = page.locator('button svg path[d="m9 18 6-6-6-6"]').locator('..');
+  const expandBtn = page.locator('button[title="Expand sidebar"]');
   if (await expandBtn.isVisible()) {
     await expandBtn.click();
     await page.waitForTimeout(200);
