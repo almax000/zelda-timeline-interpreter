@@ -63,12 +63,9 @@ export async function switchToPage0(page: Page) {
 }
 
 /**
- * Expand sidebar if collapsed (click the expand button).
+ * No-op kept for backward compatibility with existing tests.
+ * Sidebar is now always expanded.
  */
-export async function expandSidebar(page: Page) {
-  const expandBtn = page.locator('button[title="Expand sidebar"]');
-  if (await expandBtn.isVisible()) {
-    await expandBtn.click();
-    await page.waitForTimeout(200);
-  }
+export async function expandSidebar(_page: Page) {
+  // Sidebar no longer collapses — nothing to do
 }

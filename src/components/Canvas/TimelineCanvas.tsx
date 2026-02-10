@@ -26,6 +26,7 @@ import { getCanvasStore } from '../../stores/canvasRegistry';
 import { useAnnotationStore } from '../../stores/annotationStore';
 import { useTabStore } from '../../stores/tabStore';
 import { useUIStore } from '../../stores/uiStore';
+import { useSpacePan } from '../../hooks/useSpacePan';
 import type { TimelineNode } from '../../types/timeline';
 import type { BranchType } from '../../types/timeline';
 
@@ -65,6 +66,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
 
   const activeShapeTool = useUIStore((s) => s.activeShapeTool);
   const resetTool = useUIStore((s) => s.resetTool);
+  const spaceHeld = useSpacePan();
 
   useEffect(() => {
     const el = containerRef.current;
@@ -244,8 +246,12 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
 
   const interactionDisabled = isLocked || isAnnotationMode;
 
-  // Cursor style for shape placement
-  const cursorClass = activeShapeTool && !isLocked ? 'cursor-crosshair' : '';
+  // Cursor style for shape placement or space-pan
+  const cursorClass = activeShapeTool && !isLocked
+    ? 'cursor-crosshair'
+    : spaceHeld
+      ? 'space-pan'
+      : '';
 
   return (
     <div ref={containerRef} className={`flex-1 h-full relative ${cursorClass}`}>
@@ -272,7 +278,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         nodesDraggable={!interactionDisabled}
         nodesConnectable={!interactionDisabled}
         elementsSelectable={!interactionDisabled}
-        panOnDrag={!isAnnotationMode && !activeShapeTool}
+        panOnDrag={spaceHeld && !isAnnotationMode && !activeShapeTool}
         zoomOnScroll={!isAnnotationMode}
         deleteKeyCode={interactionDisabled ? [] : ['Backspace', 'Delete']}
         proOptions={{ hideAttribution: true }}

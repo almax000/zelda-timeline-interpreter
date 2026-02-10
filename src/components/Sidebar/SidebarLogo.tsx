@@ -21,6 +21,9 @@ const fontStyle = { fontFamily: "'Hylia Serif', serif" };
 const iconBtn =
   'w-7 h-7 flex items-center justify-center rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors';
 
+const xUrl = import.meta.env.VITE_X_URL;
+const githubUrl = import.meta.env.VITE_GITHUB_URL || 'https://github.com/almax000/zelda-timeline-interpreter';
+
 export function SidebarLogo() {
   return (
     <div className="px-4 py-3">
@@ -39,7 +42,7 @@ export function SidebarLogo() {
         <div className="flex items-center gap-0.5 shrink-0">
           <LanguageDropdown />
           <a
-            href="https://github.com/almax000/zelda-timeline-interpreter"
+            href={githubUrl}
             target="_blank"
             rel="noopener noreferrer"
             className={iconBtn}
@@ -47,15 +50,17 @@ export function SidebarLogo() {
           >
             <GitHubIcon />
           </a>
-          <a
-            href="https://x.com/placeholder"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={iconBtn}
-            title="X / Twitter"
-          >
-            <XIcon />
-          </a>
+          {xUrl && (
+            <a
+              href={xUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={iconBtn}
+              title="X / Twitter"
+            >
+              <XIcon />
+            </a>
+          )}
         </div>
       </div>
     </div>

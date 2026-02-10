@@ -60,6 +60,10 @@ html, body, #root {
 /* Firefox */
 * { scrollbar-width: thin; scrollbar-color: var(--color-surface-light) transparent; }
 
+/* Space-pan cursor (Figma-like) */
+.space-pan .react-flow__pane { cursor: grab; }
+.space-pan .react-flow__pane:active { cursor: grabbing; }
+
 /* Hide scrollbar for tab overflow */
 .scrollbar-none::-webkit-scrollbar { display: none; }
 .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
