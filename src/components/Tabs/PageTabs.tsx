@@ -41,7 +41,7 @@ export function PageTabs() {
               `}
               title={tab.name}
             >
-              {isPage0 ? <TriforceIcon size={12} /> : String(index)}
+              {isPage0 ? <TriforceIcon size={16} /> : String(index)}
               {isLocked && !isPage0 && (
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />

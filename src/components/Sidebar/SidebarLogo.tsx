@@ -46,7 +46,7 @@ export function SidebarLogo() {
             target="_blank"
             rel="noopener noreferrer"
             className={iconBtn}
-            title="GitHub"
+            title="Repository"
           >
             <GitHubIcon />
           </a>
@@ -56,7 +56,7 @@ export function SidebarLogo() {
               target="_blank"
               rel="noopener noreferrer"
               className={iconBtn}
-              title="X / Twitter"
+              title="Developer's X"
             >
               <XIcon />
             </a>
