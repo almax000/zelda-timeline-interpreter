@@ -26,10 +26,12 @@ test.describe('Tab Context Menu', () => {
     const lockButton = page.locator('.fixed.z-\\[100\\] button', { hasText: 'Lock Tab' });
     await lockButton.click();
 
-    // Verify tab is locked — tools should be hidden
+    // Verify tab is locked — tools should be disabled (opacity-40)
     await switchToEditableTab(page);
     await page.waitForTimeout(300);
-    await expect(page.locator('button[title="Eraser"]')).not.toBeVisible();
+    const selectButton = page.locator('[data-testid="toolbar-select"]');
+    const parentDiv = selectButton.locator('..');
+    await expect(parentDiv).toHaveClass(/opacity-40/);
 
     // Unlock: right-click tab again
     const tabButton2 = page.locator('button', { hasText: '1' }).first();
@@ -38,10 +40,10 @@ test.describe('Tab Context Menu', () => {
     const unlockButton = page.locator('.fixed.z-\\[100\\] button', { hasText: 'Unlock Tab' });
     await unlockButton.click();
 
-    // Tools should be visible again
+    // Tools should be enabled again
     await switchToEditableTab(page);
     await page.waitForTimeout(300);
-    await expect(page.locator('button[title="Eraser"]')).toBeVisible();
+    await expect(parentDiv).not.toHaveClass(/opacity-40/);
   });
 
   test('can rename a tab', async ({ page }) => {

@@ -4,6 +4,7 @@ import type { BranchType } from '../../types/timeline';
 
 interface TimelineEdgeData extends Record<string, unknown> {
   branchType: BranchType;
+  isAnnotationConnector?: boolean;
 }
 
 type TimelineEdgeType = Edge<TimelineEdgeData>;
@@ -35,8 +36,9 @@ function TimelineEdgeComponent({
     targetPosition,
   });
 
+  const isConnector = data?.isAnnotationConnector === true;
   const branchType = data?.branchType || 'main';
-  const color = branchColors[branchType];
+  const color = isConnector ? 'var(--color-text-muted)' : branchColors[branchType];
 
   return (
     <BaseEdge
@@ -44,8 +46,9 @@ function TimelineEdgeComponent({
       path={edgePath}
       style={{
         stroke: color,
-        strokeWidth: selected ? 4 : 3,
-        filter: selected ? `drop-shadow(0 0 6px ${color})` : undefined,
+        strokeWidth: isConnector ? 1 : (selected ? 4 : 3),
+        strokeDasharray: isConnector ? '4 2' : undefined,
+        filter: selected && !isConnector ? `drop-shadow(0 0 6px ${color})` : undefined,
       }}
     />
   );

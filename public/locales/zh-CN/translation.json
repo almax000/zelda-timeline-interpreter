@@ -26,7 +26,10 @@
     "select": "选择",
     "shapes": "形状",
     "share": "分享",
-    "shareCopied": "链接已复制！"
+    "shareCopied": "链接已复制！",
+    "annotate": "标注",
+    "draw": "绘制",
+    "branch": "分支"
   },
   "canvas": {
     "dropHint": "将游戏拖放到此处添加到时间线"
@@ -69,16 +72,6 @@
       "message": "这将删除所有游戏和连接。此操作无法撤销。",
       "confirm": "清空",
       "cancel": "取消"
-    }
-  },
-  "guide": {
-    "welcome": {
-      "title": "欢迎使用 ZTI",
-      "content": "这是任天堂官方时间线，展示了时之笛之后的三条分支。\n\n本页为只读。点击 + 创建你自己的画布，构建你的时间线理论。"
-    },
-    "navigation": {
-      "title": "导航",
-      "content": "按住 Space 拖拽平移。\n滚轮缩放。\n点击 + 创建新的可编辑画布。"
     }
   },
   "eraMarker": {

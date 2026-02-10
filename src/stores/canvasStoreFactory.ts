@@ -29,6 +29,7 @@ export interface CanvasStore {
   updateEdgeBranchType: (edgeId: string, branchType: BranchType) => void;
   updateEdgeLabel: (edgeId: string, label: string) => void;
   splitEdgeWithLabel: (edgeId: string, label: string) => void;
+  insertAnnotation: (edgeId: string, clickPosition: { x: number; y: number }) => void;
 }
 
 export type CanvasStoreWithTemporal = UseBoundStore<StoreApi<CanvasStore>> & {
@@ -151,6 +152,68 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
             set({
               nodes: [...nodes, labelNode as TimelineNode],
               edges: [...edges.filter((e) => e.id !== edgeId), edge1, edge2],
+            });
+          },
+
+          insertAnnotation: (edgeId, clickPosition) => {
+            const { nodes, edges } = get();
+            const edge = edges.find((e) => e.id === edgeId);
+            if (!edge) return;
+
+            const ts = Date.now();
+            const anchorId = `ann-anchor-${ts}`;
+            const labelId = `ann-label-${ts}`;
+
+            const anchorNode: TimelineNode = {
+              id: anchorId,
+              type: 'annotationAnchor',
+              position: { x: clickPosition.x, y: clickPosition.y },
+              data: {},
+            };
+
+            const labelNode: TimelineNode = {
+              id: labelId,
+              type: 'annotationLabel',
+              position: { x: clickPosition.x - 40, y: clickPosition.y - 80 },
+              data: { label: 'Annotation' },
+            };
+
+            const branchType = edge.data?.branchType ?? 'main';
+
+            // Split original edge: source → anchor → target
+            const edge1: TimelineEdge = {
+              id: `${edge.source}-${anchorId}`,
+              source: edge.source,
+              target: anchorId,
+              sourceHandle: edge.sourceHandle,
+              targetHandle: 'left',
+              type: 'timeline',
+              data: { branchType },
+            };
+            const edge2: TimelineEdge = {
+              id: `${anchorId}-${edge.target}`,
+              source: anchorId,
+              target: edge.target,
+              sourceHandle: 'right',
+              targetHandle: edge.targetHandle,
+              type: 'timeline',
+              data: { branchType },
+            };
+
+            // Connector: anchor → label (dashed line)
+            const connector: TimelineEdge = {
+              id: `${anchorId}-${labelId}`,
+              source: anchorId,
+              target: labelId,
+              sourceHandle: 'top',
+              targetHandle: 'bottom',
+              type: 'timeline',
+              data: { branchType: 'main', isAnnotationConnector: true },
+            };
+
+            set({
+              nodes: [...nodes, anchorNode, labelNode],
+              edges: [...edges.filter((e) => e.id !== edgeId), edge1, edge2, connector],
             });
           },
         }),

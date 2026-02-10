@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { getNodeCount, clearLocalStorage, switchToEditableTab, switchToPage0 } from './helpers/canvas';
+import { selectShape } from './helpers/popover';
 
 test.describe('Shape Tools', () => {
   test.beforeEach(async ({ page }) => {
@@ -13,10 +14,8 @@ test.describe('Shape Tools', () => {
   test('can place a rectangle on canvas', async ({ page }) => {
     const initialCount = await getNodeCount(page);
 
-    // Click Rectangle tool
-    await page.locator('button[title="Rectangle"]').click();
+    await selectShape(page, 'Rectangle');
 
-    // Click on canvas to place shape
     const canvas = page.locator('.react-flow__pane');
     await canvas.click({ position: { x: 300, y: 200 } });
 
@@ -24,7 +23,6 @@ test.describe('Shape Tools', () => {
     const newCount = await getNodeCount(page);
     expect(newCount).toBe(initialCount + 1);
 
-    // Verify it's a shape node
     const shapeNodes = page.locator('.react-flow__node-shape');
     await expect(shapeNodes.first()).toBeVisible();
   });
@@ -32,7 +30,7 @@ test.describe('Shape Tools', () => {
   test('can place a circle on canvas', async ({ page }) => {
     const initialCount = await getNodeCount(page);
 
-    await page.locator('button[title="Circle"]').click();
+    await selectShape(page, 'Circle');
 
     const canvas = page.locator('.react-flow__pane');
     await canvas.click({ position: { x: 300, y: 200 } });
@@ -45,7 +43,7 @@ test.describe('Shape Tools', () => {
   test('can place an arrow on canvas', async ({ page }) => {
     const initialCount = await getNodeCount(page);
 
-    await page.locator('button[title="Arrow"]').click();
+    await selectShape(page, 'Arrow');
 
     const canvas = page.locator('.react-flow__pane');
     await canvas.click({ position: { x: 300, y: 200 } });
@@ -58,7 +56,7 @@ test.describe('Shape Tools', () => {
   test('can place a line on canvas', async ({ page }) => {
     const initialCount = await getNodeCount(page);
 
-    await page.locator('button[title="Line"]').click();
+    await selectShape(page, 'Line');
 
     const canvas = page.locator('.react-flow__pane');
     await canvas.click({ position: { x: 300, y: 200 } });
@@ -71,9 +69,8 @@ test.describe('Shape Tools', () => {
   test('shape tool deactivates after placing', async ({ page }) => {
     const initialCount = await getNodeCount(page);
 
-    await page.locator('button[title="Rectangle"]').click();
+    await selectShape(page, 'Rectangle');
 
-    // Place shape
     const canvas = page.locator('.react-flow__pane');
     await canvas.click({ position: { x: 300, y: 200 } });
     await page.waitForTimeout(300);
@@ -86,28 +83,21 @@ test.describe('Shape Tools', () => {
     expect(count).toBe(initialCount + 1); // Only 1 shape placed
   });
 
-  test('shape tool can be cancelled by clicking same button again', async ({ page }) => {
-    // Activate rectangle
-    const rectButton = page.locator('button[title="Rectangle"]');
-    await rectButton.click();
+  test('shape tool activates crosshair cursor', async ({ page }) => {
+    await selectShape(page, 'Rectangle');
 
     // Verify cursor changes to crosshair
     const container = page.locator('.cursor-crosshair');
     await expect(container).toBeVisible();
-
-    // Click again to deactivate
-    await rectButton.click();
-
-    // Crosshair cursor should be gone
-    await expect(container).not.toBeVisible();
   });
 
-  test('shape tools are hidden on locked page-0', async ({ page }) => {
+  test('shapes popover is disabled on locked page-0', async ({ page }) => {
     await switchToPage0(page);
     await page.waitForTimeout(300);
 
-    // Shape buttons should not be visible on locked page
-    await expect(page.locator('button[title="Rectangle"]')).not.toBeVisible();
-    await expect(page.locator('button[title="Circle"]')).not.toBeVisible();
+    // Select button should be inside disabled container (opacity-40)
+    const selectButton = page.locator('[data-testid="toolbar-select"]');
+    const parentDiv = selectButton.locator('..');
+    await expect(parentDiv).toHaveClass(/opacity-40/);
   });
 });

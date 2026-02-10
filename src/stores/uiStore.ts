@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 type ShapeTool = 'rectangle' | 'circle' | 'arrow' | 'line' | null;
-type ActiveTool = 'select' | 'pen' | 'eraser' | 'shape';
+type ActiveTool = 'select' | 'pen' | 'eraser' | 'shape' | 'annotate';
 
 interface UIStore {
   activeTool: ActiveTool;

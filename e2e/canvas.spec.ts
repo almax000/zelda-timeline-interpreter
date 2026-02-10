@@ -14,10 +14,10 @@ test.describe('Canvas - Timeline', () => {
     await expect(canvas).toBeVisible();
   });
 
-  test('page-0 loads official timeline by default', async ({ page }) => {
-    await page.waitForSelector('.react-flow__node');
+  test('page-0 starts empty (official timeline cleared)', async ({ page }) => {
+    // Official timeline data is now empty — page-0 should have 0 nodes
     const nodeCount = await getNodeCount(page);
-    expect(nodeCount).toBeGreaterThanOrEqual(28);
+    expect(nodeCount).toBe(0);
   });
 
   test('shows background dots', async ({ page }) => {
@@ -42,27 +42,6 @@ test.describe('Canvas - Timeline', () => {
     expect(newCount).toBeLessThan(initialCount);
   });
 
-  test('shows era marker nodes in official timeline', async ({ page }) => {
-    await page.waitForSelector('.react-flow__node');
-    const eventNodes = page.locator('.react-flow__node-event');
-    const count = await eventNodes.count();
-    expect(count).toBeGreaterThanOrEqual(5);
-  });
-
-  test('shows guide nodes in official timeline', async ({ page }) => {
-    await page.waitForSelector('.react-flow__node');
-    const guideNodes = page.locator('.react-flow__node-guide');
-    const count = await guideNodes.count();
-    expect(count).toBeGreaterThanOrEqual(2);
-  });
-
-  test('shows labelPoint nodes in official timeline', async ({ page }) => {
-    await page.waitForSelector('.react-flow__node');
-    const labelNodes = page.locator('.react-flow__node-labelPoint');
-    const count = await labelNodes.count();
-    expect(count).toBeGreaterThanOrEqual(3);
-  });
-
   test('page-0 button shows Triforce icon and page 1 shows number', async ({ page }) => {
     // Page-0 uses TriforceIcon SVG (has polygon elements)
     const page0Button = page.locator('button:has(svg polygon)').first();
@@ -81,17 +60,16 @@ test.describe('Canvas - Timeline', () => {
     // New tab should be empty
     const nodeCount = await getNodeCount(page);
     expect(nodeCount).toBe(0);
-
-    // Switch back to page 1 (canvas-1 — preloaded with official timeline on first visit)
-    await switchToEditableTab(page);
-    await page.waitForSelector('.react-flow__node');
-    const canvas1NodeCount = await getNodeCount(page);
-    expect(canvas1NodeCount).toBeGreaterThanOrEqual(28);
   });
 
-  test('page-0 is locked: tools are hidden', async ({ page }) => {
-    // On page-0 by default — locked page hides toolbar tools
-    await expect(page.locator('button[title="Eraser"]')).not.toBeVisible();
-    await expect(page.locator('button[title="Clear"]')).not.toBeVisible();
+  test('page-0 is locked: toolbar shows lock button with disabled controls', async ({ page }) => {
+    // On page-0 by default — lock button should be visible
+    const lockButton = page.locator('[data-testid="toolbar-lock"]');
+    await expect(lockButton).toBeVisible();
+
+    // Select button should exist but be in disabled container
+    const selectButton = page.locator('[data-testid="toolbar-select"]');
+    const parentDiv = selectButton.locator('..');
+    await expect(parentDiv).toHaveClass(/opacity-40/);
   });
 });

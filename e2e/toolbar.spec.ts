@@ -40,10 +40,8 @@ test.describe('Toolbar', () => {
   });
 
   test('clear button shows confirmation dialog', async ({ page }) => {
-    // Switch to editable tab (tools only show on editable tabs)
     await switchToEditableTab(page);
 
-    // Clear button uses trash icon with toolbar.clear title
     const clearButton = page.locator('button[title="Clear"]');
     await clearButton.click();
     await expect(page.locator('text=Clear Timeline?')).toBeVisible();
@@ -80,29 +78,105 @@ test.describe('Toolbar', () => {
     await page.locator('.react-flow').click();
   });
 
-  test('pen and eraser toggle buttons work', async ({ page }) => {
-    // Switch to editable tab (tools only show on editable tabs)
+  test('lock button toggles lock state', async ({ page }) => {
     await switchToEditableTab(page);
 
-    const eraserButton = page.locator('button[title="Eraser"]');
-    await expect(eraserButton).toBeVisible();
+    const lockButton = page.locator('[data-testid="toolbar-lock"]');
+    await expect(lockButton).toBeVisible();
 
-    // Click a pen button (first colored pen)
-    const penButtons = page.locator('button[title="Pen"]');
-    const firstPen = penButtons.first();
-    await firstPen.click();
+    // Lock the tab
+    await lockButton.click();
+    await page.waitForTimeout(200);
 
-    // Click same pen again to deactivate
-    await firstPen.click();
+    // Other buttons should be visually disabled (opacity-40)
+    const selectButton = page.locator('[data-testid="toolbar-select"]');
+    const parentDiv = selectButton.locator('..');
+    await expect(parentDiv).toHaveClass(/opacity-40/);
 
-    // Click eraser to activate
-    await eraserButton.click();
-    // Click eraser again to deactivate
-    await eraserButton.click();
+    // Unlock the tab
+    await lockButton.click();
+    await page.waitForTimeout(200);
+
+    // Buttons should be enabled again
+    await expect(parentDiv).not.toHaveClass(/opacity-40/);
   });
 
-  test('tools are hidden on locked page-0', async ({ page }) => {
-    // On page-0 by default - tool buttons should not be visible (locked)
-    await expect(page.locator('button[title="Eraser"]')).not.toBeVisible();
+  test('annotate button activates annotate mode', async ({ page }) => {
+    await switchToEditableTab(page);
+
+    const annotateButton = page.locator('[data-testid="toolbar-annotate"]');
+    await expect(annotateButton).toBeVisible();
+    await annotateButton.click();
+
+    // Canvas should have crosshair cursor
+    const canvasContainer = page.locator('.flex-1.h-full.relative');
+    await expect(canvasContainer).toHaveClass(/cursor-crosshair/);
+
+    // Click select to deactivate
+    await page.locator('[data-testid="toolbar-select"]').click();
+    await expect(canvasContainer).not.toHaveClass(/cursor-crosshair/);
+  });
+
+  test('shapes popover opens and shows shape options', async ({ page }) => {
+    await switchToEditableTab(page);
+
+    const shapesButton = page.locator('[data-testid="toolbar-shapes"]');
+    await shapesButton.click();
+
+    // Popover should appear with shape buttons
+    await expect(page.locator('button[title="Rectangle"]')).toBeVisible();
+    await expect(page.locator('button[title="Circle"]')).toBeVisible();
+    await expect(page.locator('button[title="Arrow"]')).toBeVisible();
+    await expect(page.locator('button[title="Line"]')).toBeVisible();
+
+    // Click rectangle to select and close popover (dispatchEvent: popover may be outside viewport)
+    await page.locator('button[title="Rectangle"]').dispatchEvent('click');
+    await page.waitForTimeout(200);
+
+    // Canvas should have crosshair cursor for shape placement
+    const canvasContainer = page.locator('.flex-1.h-full.relative');
+    await expect(canvasContainer).toHaveClass(/cursor-crosshair/);
+  });
+
+  test('draw popover opens and shows pen colors + widths', async ({ page }) => {
+    await switchToEditableTab(page);
+
+    const drawButton = page.locator('[data-testid="toolbar-draw"]');
+    await drawButton.click();
+
+    // Pen buttons should be visible inside the popover
+    const penButtons = page.locator('button[title="Pen"]');
+    await expect(penButtons.first()).toBeVisible();
+
+    // Width buttons should be visible
+    await expect(page.locator('button[title="2px"]')).toBeVisible();
+    await expect(page.locator('button[title="4px"]')).toBeVisible();
+
+    // Eraser should be visible
+    await expect(page.locator('button[title="Eraser"]')).toBeVisible();
+  });
+
+  test('branch popover shows branch color options', async ({ page }) => {
+    await switchToEditableTab(page);
+
+    const branchButton = page.locator('[data-testid="toolbar-branch"]');
+    await branchButton.click();
+
+    // Branch options should appear
+    await expect(page.locator(`button[title="Main"]`)).toBeVisible();
+    await expect(page.locator(`button[title="Child Timeline"]`)).toBeVisible();
+    await expect(page.locator(`button[title="Adult Timeline"]`)).toBeVisible();
+    await expect(page.locator(`button[title="Fallen Hero Timeline"]`)).toBeVisible();
+  });
+
+  test('locked page shows toolbar with disabled buttons', async ({ page }) => {
+    // On page-0 by default - lock button should be visible
+    const lockButton = page.locator('[data-testid="toolbar-lock"]');
+    await expect(lockButton).toBeVisible();
+
+    // Other buttons should exist but be disabled (opacity-40)
+    const selectButton = page.locator('[data-testid="toolbar-select"]');
+    const parentDiv = selectButton.locator('..');
+    await expect(parentDiv).toHaveClass(/opacity-40/);
   });
 });

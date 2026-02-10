@@ -19,6 +19,8 @@ import { GuideNode } from './GuideNode';
 import { ImageNode } from './ImageNode';
 import { ShapeNode } from './ShapeNode';
 import { LabelPointNode } from './LabelPointNode';
+import { AnnotationAnchorNode } from './AnnotationAnchorNode';
+import { AnnotationLabelNode } from './AnnotationLabelNode';
 import { TimelineEdge } from './TimelineEdge';
 import { ContextMenu } from './ContextMenu';
 import { AnnotationOverlay } from '../Annotation/AnnotationOverlay';
@@ -37,6 +39,8 @@ const nodeTypes: NodeTypes = {
   image: ImageNode as NodeTypes['image'],
   shape: ShapeNode as NodeTypes['shape'],
   labelPoint: LabelPointNode as NodeTypes['labelPoint'],
+  annotationAnchor: AnnotationAnchorNode as NodeTypes['annotationAnchor'],
+  annotationLabel: AnnotationLabelNode as NodeTypes['annotationLabel'],
 };
 
 const edgeTypes: EdgeTypes = {
@@ -64,6 +68,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const tab = useTabStore((s) => s.tabs.find((t) => t.id === tabId));
   const isLocked = tab?.isLocked ?? false;
 
+  const activeTool = useUIStore((s) => s.activeTool);
   const activeShapeTool = useUIStore((s) => s.activeShapeTool);
   const resetTool = useUIStore((s) => s.resetTool);
   const spaceHeld = useSpacePan();
@@ -123,7 +128,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   }, [isLocked, tabId, screenToFlowPosition, containerSize]);
 
   const store = getCanvasStore(tabId);
-  const { nodes, edges, onNodesChange, onEdgesChange, addNode, addEdge, removeNode, removeEdge, updateEdgeBranchType, updateEdgeLabel, splitEdgeWithLabel } = store();
+  const { nodes, edges, onNodesChange, onEdgesChange, addNode, addEdge, removeNode, removeEdge, updateEdgeBranchType, updateEdgeLabel, splitEdgeWithLabel, insertAnnotation } = store();
 
   const onConnect: OnConnect = useCallback(
     (connection: Connection) => {
@@ -234,6 +239,19 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
     [isLocked]
   );
 
+  const onEdgeClick = useCallback(
+    (event: React.MouseEvent, edge: { id: string }) => {
+      if (isLocked || activeTool !== 'annotate') return;
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+      insertAnnotation(edge.id, position);
+      resetTool();
+    },
+    [isLocked, activeTool, screenToFlowPosition, insertAnnotation, resetTool]
+  );
+
   const contextEdge = contextMenu?.type === 'edge'
     ? edges.find((e) => e.id === contextMenu.targetId)
     : null;
@@ -246,8 +264,8 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
 
   const interactionDisabled = isLocked || isAnnotationMode;
 
-  // Cursor style for shape placement or space-pan
-  const cursorClass = activeShapeTool && !isLocked
+  // Cursor style for shape placement, annotate mode, or space-pan
+  const cursorClass = (activeShapeTool || activeTool === 'annotate') && !isLocked
     ? 'cursor-crosshair'
     : spaceHeld
       ? 'space-pan'
@@ -265,6 +283,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         onDrop={onDrop}
         onNodeContextMenu={onNodeContextMenu}
         onEdgeContextMenu={onEdgeContextMenu}
+        onEdgeClick={onEdgeClick}
         onPaneClick={onPaneClick}
         onPaneContextMenu={onPaneContextMenu}
         nodeTypes={nodeTypes}

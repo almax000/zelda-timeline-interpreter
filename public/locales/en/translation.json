@@ -26,7 +26,10 @@
     "select": "Select",
     "shapes": "Shapes",
     "share": "Share",
-    "shareCopied": "Link copied!"
+    "shareCopied": "Link copied!",
+    "annotate": "Annotate",
+    "draw": "Draw",
+    "branch": "Branch"
   },
   "canvas": {
     "dropHint": "Drop game here to add to timeline"
@@ -69,16 +72,6 @@
       "message": "This will remove all games and connections. This action cannot be undone.",
       "confirm": "Clear",
       "cancel": "Cancel"
-    }
-  },
-  "guide": {
-    "welcome": {
-      "title": "Welcome to ZTI",
-      "content": "This is the official Nintendo timeline, showing the three branches created after Ocarina of Time.\n\nThis page is read-only. Press + to create your own canvas and build your own theory."
-    },
-    "navigation": {
-      "title": "Navigation",
-      "content": "Hold Space and drag to pan.\nScroll to zoom in/out.\nPress + to create a new editable canvas."
     }
   },
   "eraMarker": {

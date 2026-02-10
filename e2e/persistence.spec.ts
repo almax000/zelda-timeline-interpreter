@@ -28,24 +28,18 @@ test.describe('Persistence', () => {
     expect(edgesAfter).toBe(edgesBefore);
   });
 
-  test('page-0 loads official timeline on first visit', async ({ page }) => {
+  test('page-0 starts empty with cleared official timeline', async ({ page }) => {
     await page.goto('/');
-    await page.waitForSelector('.react-flow');
-    await page.waitForSelector('.react-flow__node');
-
-    const nodeCount = await getNodeCount(page);
-    expect(nodeCount).toBeGreaterThan(10);
-
-    // Reload - page-0 should still have official timeline
+    await clearLocalStorage(page);
     await page.reload();
     await page.waitForSelector('.react-flow');
-    await page.waitForSelector('.react-flow__node');
 
-    const nodeCountAfter = await getNodeCount(page);
-    expect(nodeCountAfter).toBeGreaterThan(10);
+    // Official timeline is now empty — page-0 should have 0 nodes
+    const nodeCount = await getNodeCount(page);
+    expect(nodeCount).toBe(0);
   });
 
-  test('first visit loads official timeline into canvas-1', async ({ page }) => {
+  test('canvas-1 starts empty on first visit', async ({ page }) => {
     await page.goto('/');
     await clearLocalStorage(page);
     await page.reload();
@@ -53,11 +47,11 @@ test.describe('Persistence', () => {
 
     // Switch to canvas-1
     await switchToEditableTab(page);
-    await page.waitForSelector('.react-flow__node');
+    await page.waitForTimeout(300);
 
-    // canvas-1 also gets official timeline preloaded on first visit
+    // canvas-1 starts empty (official timeline cleared)
     const nodeCount = await getNodeCount(page);
-    expect(nodeCount).toBeGreaterThan(10);
+    expect(nodeCount).toBe(0);
   });
 
   test('new tab persists as empty after reload', async ({ page }) => {
