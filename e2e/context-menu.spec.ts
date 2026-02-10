@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, clearLocalStorage, switchToEditableTab, switchToPage0 } from './helpers/canvas';
+import { getNodeCount, clearLocalStorage, switchToEditableTab, switchToPage0, importFixtureViaUI } from './helpers/canvas';
 
 test.describe('Context Menu', () => {
   test.beforeEach(async ({ page }) => {
@@ -7,8 +7,9 @@ test.describe('Context Menu', () => {
     await clearLocalStorage(page);
     await page.reload();
     await page.waitForSelector('.react-flow');
-    // Switch to editable tab (context menu disabled on locked page-0)
+    // Switch to editable tab and import fixture (3 nodes, 2 edges)
     await switchToEditableTab(page);
+    await importFixtureViaUI(page);
     await page.waitForSelector('.react-flow__node');
   });
 
@@ -62,13 +63,13 @@ test.describe('Context Menu', () => {
   });
 
   test('context menu does not appear on locked page-0', async ({ page }) => {
-    // Switch to page-0
+    // Switch to page-0 (empty but locked)
     await switchToPage0(page);
-    await page.waitForSelector('.react-flow__node');
+    await page.waitForTimeout(300);
 
-    // Use force:true since elementsSelectable=false on locked page-0
-    const firstNode = page.locator('.react-flow__node').first();
-    await firstNode.click({ button: 'right', force: true });
+    // Right-click on the canvas pane itself
+    const pane = page.locator('.react-flow__pane');
+    await pane.click({ button: 'right' });
 
     // Context menu should NOT appear on locked page
     const contextMenu = page.locator('[data-testid="context-menu"]');

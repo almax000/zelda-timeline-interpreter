@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, clearLocalStorage, switchToEditableTab } from './helpers/canvas';
+import { getNodeCount, clearLocalStorage, switchToEditableTab, importFixtureViaUI } from './helpers/canvas';
 
 test.describe('Undo/Redo', () => {
   test.beforeEach(async ({ page }) => {
@@ -7,8 +7,9 @@ test.describe('Undo/Redo', () => {
     await clearLocalStorage(page);
     await page.reload();
     await page.waitForSelector('.react-flow');
-    // Switch to editable tab (undo/redo needs editable canvas)
+    // Switch to editable tab and import fixture (3 nodes, 2 edges)
     await switchToEditableTab(page);
+    await importFixtureViaUI(page);
     await page.waitForSelector('.react-flow__node');
   });
 

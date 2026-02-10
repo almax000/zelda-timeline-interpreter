@@ -1,4 +1,9 @@
 import { type Page } from '@playwright/test';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export async function dragGameToCanvas(
   page: Page,
@@ -68,4 +73,21 @@ export async function switchToPage0(page: Page) {
  */
 export async function expandSidebar(_page: Page) {
   // Sidebar no longer collapses — nothing to do
+}
+
+/**
+ * Import the test fixture (3 nodes, 2 edges) via the Export menu's file input.
+ * After import, switches to the editable tab so nodes are visible.
+ */
+export async function importFixtureViaUI(page: Page) {
+  // Open export menu
+  const exportButton = page.locator('button', { hasText: /Export/ });
+  await exportButton.click();
+
+  // Use the hidden file input to load the fixture
+  const testFile = path.join(__dirname, '..', 'fixtures', 'test-timeline.json');
+  const fileInput = page.locator('input[type="file"]');
+  await fileInput.setInputFiles(testFile);
+
+  await page.waitForTimeout(500);
 }

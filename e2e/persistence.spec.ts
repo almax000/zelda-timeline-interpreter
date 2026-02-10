@@ -1,13 +1,14 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, getEdgeCount, clearLocalStorage, switchToEditableTab } from './helpers/canvas';
+import { getNodeCount, getEdgeCount, clearLocalStorage, switchToEditableTab, importFixtureViaUI } from './helpers/canvas';
 
 test.describe('Persistence', () => {
   test('state persists after page reload on editable tab', async ({ page }) => {
     await page.goto('/');
-    await page.waitForSelector('.react-flow__node');
+    await page.waitForSelector('.react-flow');
 
-    // Switch to editable canvas-1
+    // Switch to editable canvas-1 and import fixture
     await switchToEditableTab(page);
+    await importFixtureViaUI(page);
     await page.waitForSelector('.react-flow__node');
 
     const nodesBefore = await getNodeCount(page);
@@ -29,18 +30,18 @@ test.describe('Persistence', () => {
 
   test('page-0 loads official timeline on first visit', async ({ page }) => {
     await page.goto('/');
-    await page.waitForSelector('.react-flow__node');
+    await page.waitForSelector('.react-flow');
 
-    // Default is page-0 with official timeline
+    // Official timeline cleared — page-0 is empty
     const nodeCount = await getNodeCount(page);
-    expect(nodeCount).toBeGreaterThan(10);
+    expect(nodeCount).toBe(0);
 
-    // Reload - page-0 should still show official timeline (now persisted)
+    // Reload - page-0 should still be empty
     await page.reload();
-    await page.waitForSelector('.react-flow__node');
+    await page.waitForSelector('.react-flow');
 
     const nodeCountAfter = await getNodeCount(page);
-    expect(nodeCountAfter).toBeGreaterThan(10);
+    expect(nodeCountAfter).toBe(0);
   });
 
   test('first visit loads official timeline into canvas-1', async ({ page }) => {
@@ -48,14 +49,14 @@ test.describe('Persistence', () => {
     await clearLocalStorage(page);
     await page.reload();
     await page.waitForSelector('.react-flow');
-    await page.waitForSelector('.react-flow__node', { timeout: 5000 });
 
     // Switch to canvas-1
     await switchToEditableTab(page);
-    await page.waitForSelector('.react-flow__node', { timeout: 5000 });
+    await page.waitForTimeout(300);
 
+    // Official timeline cleared — canvas-1 is empty
     const nodeCount = await getNodeCount(page);
-    expect(nodeCount).toBeGreaterThan(10);
+    expect(nodeCount).toBe(0);
   });
 
   test('new tab persists as empty after reload', async ({ page }) => {

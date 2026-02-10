@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, getEdgeCount, switchToEditableTab } from './helpers/canvas';
+import { getNodeCount, getEdgeCount, switchToEditableTab, importFixtureViaUI } from './helpers/canvas';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
@@ -10,9 +10,9 @@ test.describe('Export & Import', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('.react-flow');
-    await page.waitForSelector('.react-flow__node');
-    // Switch to editable tab for import/export tests
+    // Switch to editable tab and import fixture for export tests
     await switchToEditableTab(page);
+    await importFixtureViaUI(page);
     await page.waitForSelector('.react-flow__node');
   });
 

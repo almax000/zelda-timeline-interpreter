@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, switchToEditableTab, expandSidebar } from './helpers/canvas';
+import { getNodeCount, switchToEditableTab, expandSidebar, importFixtureViaUI } from './helpers/canvas';
 
 test.describe('Toolbar', () => {
   test.beforeEach(async ({ page }) => {
@@ -55,6 +55,7 @@ test.describe('Toolbar', () => {
 
   test('clear button removes all nodes when confirmed', async ({ page }) => {
     await switchToEditableTab(page);
+    await importFixtureViaUI(page);
     await page.waitForSelector('.react-flow__node');
 
     const clearButton = page.locator('button[title="Clear"]');

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, clearLocalStorage, switchToEditableTab, switchToPage0 } from './helpers/canvas';
+import { getNodeCount, clearLocalStorage, switchToEditableTab, switchToPage0, importFixtureViaUI } from './helpers/canvas';
 
 test.describe('Canvas - Timeline', () => {
   test.beforeEach(async ({ page }) => {
@@ -15,10 +15,9 @@ test.describe('Canvas - Timeline', () => {
   });
 
   test('page-0 loads official timeline by default', async ({ page }) => {
-    // Page 0 (default) shows official timeline:
-    // 21 games + 5 era markers + 4 guides + 3 labelPoint nodes = 33
+    // Official timeline is cleared for E2E-first rebuild
     const nodeCount = await getNodeCount(page);
-    expect(nodeCount).toBeGreaterThan(20);
+    expect(nodeCount).toBe(0);
   });
 
   test('shows background dots', async ({ page }) => {
@@ -27,12 +26,13 @@ test.describe('Canvas - Timeline', () => {
   });
 
   test('can delete nodes with Delete key on editable tab', async ({ page }) => {
-    // Switch to editable canvas-1
+    // Switch to editable canvas-1 and import fixture
     await switchToEditableTab(page);
+    await importFixtureViaUI(page);
     await page.waitForSelector('.react-flow__node');
 
     const initialCount = await getNodeCount(page);
-    if (initialCount === 0) return;
+    expect(initialCount).toBe(3);
 
     const firstNode = page.locator('.react-flow__node').first();
     await firstNode.click();
@@ -43,24 +43,24 @@ test.describe('Canvas - Timeline', () => {
   });
 
   test('shows era marker nodes in official timeline', async ({ page }) => {
-    await page.waitForSelector('.react-flow__node');
+    // Official timeline cleared — no era markers
     const eventNodes = page.locator('.react-flow__node-event');
     const count = await eventNodes.count();
-    expect(count).toBeGreaterThanOrEqual(5);
+    expect(count).toBe(0);
   });
 
   test('shows guide nodes in official timeline', async ({ page }) => {
-    await page.waitForSelector('.react-flow__node');
+    // Official timeline cleared — no guide nodes
     const guideNodes = page.locator('.react-flow__node-guide');
     const count = await guideNodes.count();
-    expect(count).toBeGreaterThanOrEqual(4);
+    expect(count).toBe(0);
   });
 
   test('shows labelPoint nodes in official timeline', async ({ page }) => {
-    await page.waitForSelector('.react-flow__node');
+    // Official timeline cleared — no labelPoint nodes
     const labelNodes = page.locator('.react-flow__node-labelPoint');
     const count = await labelNodes.count();
-    expect(count).toBeGreaterThanOrEqual(3);
+    expect(count).toBe(0);
   });
 
   test('page-0 button shows Triforce icon and page 1 shows number', async ({ page }) => {
@@ -82,24 +82,15 @@ test.describe('Canvas - Timeline', () => {
     const nodeCount = await getNodeCount(page);
     expect(nodeCount).toBe(0);
 
-    // Switch back to page 1 (canvas-1 with official timeline)
+    // Switch back to page 1 (canvas-1 — empty since official timeline cleared)
     await switchToEditableTab(page);
     const canvas1NodeCount = await getNodeCount(page);
-    expect(canvas1NodeCount).toBeGreaterThan(20);
+    expect(canvas1NodeCount).toBe(0);
   });
 
-  test('page-0 is locked: nodes cannot be deleted', async ({ page }) => {
-    // On page-0 by default
-    await page.waitForSelector('.react-flow__node');
-
-    const initialCount = await getNodeCount(page);
-    // Use force:true because elementsSelectable=false makes pane intercept clicks
-    const firstNode = page.locator('.react-flow__node').first();
-    await firstNode.click({ force: true });
-    await page.keyboard.press('Delete');
-
-    // Count should not change (locked)
-    const newCount = await getNodeCount(page);
-    expect(newCount).toBe(initialCount);
+  test('page-0 is locked: tools are hidden', async ({ page }) => {
+    // On page-0 by default — locked page hides toolbar tools
+    await expect(page.locator('button[title="Eraser"]')).not.toBeVisible();
+    await expect(page.locator('button[title="Clear"]')).not.toBeVisible();
   });
 });
