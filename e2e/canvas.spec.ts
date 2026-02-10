@@ -15,9 +15,9 @@ test.describe('Canvas - Timeline', () => {
   });
 
   test('page-0 loads official timeline by default', async ({ page }) => {
-    // Official timeline is cleared for E2E-first rebuild
+    await page.waitForSelector('.react-flow__node');
     const nodeCount = await getNodeCount(page);
-    expect(nodeCount).toBe(0);
+    expect(nodeCount).toBeGreaterThanOrEqual(30);
   });
 
   test('shows background dots', async ({ page }) => {
@@ -43,24 +43,24 @@ test.describe('Canvas - Timeline', () => {
   });
 
   test('shows era marker nodes in official timeline', async ({ page }) => {
-    // Official timeline cleared — no era markers
+    await page.waitForSelector('.react-flow__node');
     const eventNodes = page.locator('.react-flow__node-event');
     const count = await eventNodes.count();
-    expect(count).toBe(0);
+    expect(count).toBeGreaterThanOrEqual(5);
   });
 
   test('shows guide nodes in official timeline', async ({ page }) => {
-    // Official timeline cleared — no guide nodes
+    await page.waitForSelector('.react-flow__node');
     const guideNodes = page.locator('.react-flow__node-guide');
     const count = await guideNodes.count();
-    expect(count).toBe(0);
+    expect(count).toBeGreaterThanOrEqual(4);
   });
 
   test('shows labelPoint nodes in official timeline', async ({ page }) => {
-    // Official timeline cleared — no labelPoint nodes
+    await page.waitForSelector('.react-flow__node');
     const labelNodes = page.locator('.react-flow__node-labelPoint');
     const count = await labelNodes.count();
-    expect(count).toBe(0);
+    expect(count).toBeGreaterThanOrEqual(3);
   });
 
   test('page-0 button shows Triforce icon and page 1 shows number', async ({ page }) => {
@@ -82,10 +82,11 @@ test.describe('Canvas - Timeline', () => {
     const nodeCount = await getNodeCount(page);
     expect(nodeCount).toBe(0);
 
-    // Switch back to page 1 (canvas-1 — empty since official timeline cleared)
+    // Switch back to page 1 (canvas-1 — preloaded with official timeline on first visit)
     await switchToEditableTab(page);
+    await page.waitForSelector('.react-flow__node');
     const canvas1NodeCount = await getNodeCount(page);
-    expect(canvas1NodeCount).toBe(0);
+    expect(canvas1NodeCount).toBeGreaterThanOrEqual(30);
   });
 
   test('page-0 is locked: tools are hidden', async ({ page }) => {

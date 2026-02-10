@@ -62,7 +62,10 @@ test.describe('Share', () => {
     await clearLocalStorage(page);
     await page.reload();
     await page.waitForSelector('.react-flow');
-    await switchToEditableTab(page);
+
+    // Create a new empty tab (canvas-1 has official timeline preloaded)
+    await page.getByTitle('New canvas').click();
+    await page.waitForTimeout(300);
 
     // Share empty canvas
     const shareButton = page.locator('button', { hasText: /Share/ }).first();

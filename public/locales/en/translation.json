@@ -74,19 +74,19 @@
   "guide": {
     "welcome": {
       "title": "Welcome to ZTI",
-      "content": "Zelda Timeline Interpreter lets you explore and create your own Zelda timeline theories.\n\nThis is the official Nintendo timeline. Right-click the ▲ tab to unlock and edit it, or create new canvases using the + button."
+      "content": "Zelda Timeline Interpreter lets you explore and create your own Zelda timeline theories.\n\nThis is the official Nintendo timeline (read-only). Create a new canvas with the + button. Hold Space to pan around."
     },
     "dragDrop": {
       "title": "Drag & Drop Games",
-      "content": "Drag games from the left sidebar onto the canvas to add them to your timeline.\n\nConnect games by dragging from one handle to another."
+      "content": "Drag games from the sidebar onto the canvas to add them.\n\nConnect games by dragging between handles. Use the branch color picker in the floating toolbar to set connection types."
     },
     "editing": {
       "title": "Timeline Editing",
-      "content": "Right-click edges to change branch type or add labels.\nRight-click empty space to add event nodes.\nUse the branch selector to set the color for new connections."
+      "content": "Right-click edges to change branch type or add labels.\nRight-click empty space to add event nodes.\nPlace shapes (Rectangle, Circle, Arrow, Line) from the toolbar.\nHold Space to pan the canvas."
     },
     "annotation": {
       "title": "Annotation Mode",
-      "content": "Click 'Draw' in the toolbar to enter annotation mode.\nDraw directly on the canvas to highlight or annotate.\nUse the eraser to remove strokes."
+      "content": "Click a pen color in the toolbar to start drawing.\nChoose stroke width from the width selector.\nUse the eraser to remove strokes, or Clear to remove all."
     }
   },
   "eraMarker": {

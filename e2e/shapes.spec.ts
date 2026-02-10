@@ -69,6 +69,8 @@ test.describe('Shape Tools', () => {
   });
 
   test('shape tool deactivates after placing', async ({ page }) => {
+    const initialCount = await getNodeCount(page);
+
     await page.locator('button[title="Rectangle"]').click();
 
     // Place shape
@@ -81,7 +83,7 @@ test.describe('Shape Tools', () => {
     await page.waitForTimeout(300);
 
     const count = await getNodeCount(page);
-    expect(count).toBe(1); // Only 1 shape placed
+    expect(count).toBe(initialCount + 1); // Only 1 shape placed
   });
 
   test('shape tool can be cancelled by clicking same button again', async ({ page }) => {
