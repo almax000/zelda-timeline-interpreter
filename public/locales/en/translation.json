@@ -74,19 +74,11 @@
   "guide": {
     "welcome": {
       "title": "Welcome to ZTI",
-      "content": "Zelda Timeline Interpreter lets you explore and create your own Zelda timeline theories.\n\nThis is the official Nintendo timeline (read-only). Create a new canvas with the + button. Hold Space to pan around."
+      "content": "This is the official Nintendo timeline, showing the three branches created after Ocarina of Time.\n\nThis page is read-only. Press + to create your own canvas and build your own theory."
     },
-    "dragDrop": {
-      "title": "Drag & Drop Games",
-      "content": "Drag games from the sidebar onto the canvas to add them.\n\nConnect games by dragging between handles. Use the branch color picker in the floating toolbar to set connection types."
-    },
-    "editing": {
-      "title": "Timeline Editing",
-      "content": "Right-click edges to change branch type or add labels.\nRight-click empty space to add event nodes.\nPlace shapes (Rectangle, Circle, Arrow, Line) from the toolbar.\nHold Space to pan the canvas."
-    },
-    "annotation": {
-      "title": "Annotation Mode",
-      "content": "Click a pen color in the toolbar to start drawing.\nChoose stroke width from the width selector.\nUse the eraser to remove strokes, or Clear to remove all."
+    "navigation": {
+      "title": "Navigation",
+      "content": "Hold Space and drag to pan.\nScroll to zoom in/out.\nPress + to create a new editable canvas."
     }
   },
   "eraMarker": {
@@ -100,5 +92,10 @@
     "childSplit": "Young Link returns to the past",
     "adultSplit": "Adult Link seals Ganon",
     "fallenSplit": "Link falls in battle"
+  },
+  "about": {
+    "title": "About",
+    "text": "Zelda Timeline Interpreter is an interactive tool for visualizing and exploring Zelda timeline theories. This is an unofficial fan project and is not affiliated with or endorsed by Nintendo. All game titles, images, and trademarks are the property of Nintendo Co., Ltd. This project is intended solely for educational and fan community purposes.",
+    "close": "Close"
   }
 }

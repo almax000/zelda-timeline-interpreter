@@ -17,7 +17,7 @@ test.describe('Canvas - Timeline', () => {
   test('page-0 loads official timeline by default', async ({ page }) => {
     await page.waitForSelector('.react-flow__node');
     const nodeCount = await getNodeCount(page);
-    expect(nodeCount).toBeGreaterThanOrEqual(30);
+    expect(nodeCount).toBeGreaterThanOrEqual(28);
   });
 
   test('shows background dots', async ({ page }) => {
@@ -53,7 +53,7 @@ test.describe('Canvas - Timeline', () => {
     await page.waitForSelector('.react-flow__node');
     const guideNodes = page.locator('.react-flow__node-guide');
     const count = await guideNodes.count();
-    expect(count).toBeGreaterThanOrEqual(4);
+    expect(count).toBeGreaterThanOrEqual(2);
   });
 
   test('shows labelPoint nodes in official timeline', async ({ page }) => {
@@ -86,7 +86,7 @@ test.describe('Canvas - Timeline', () => {
     await switchToEditableTab(page);
     await page.waitForSelector('.react-flow__node');
     const canvas1NodeCount = await getNodeCount(page);
-    expect(canvas1NodeCount).toBeGreaterThanOrEqual(30);
+    expect(canvas1NodeCount).toBeGreaterThanOrEqual(28);
   });
 
   test('page-0 is locked: tools are hidden', async ({ page }) => {
