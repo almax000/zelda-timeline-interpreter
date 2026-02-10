@@ -14,10 +14,11 @@ test.describe('Annotation', () => {
     // Click first pen button (red)
     const penButton = page.locator('button[title="Pen"]').first();
     await penButton.click();
+    await page.waitForTimeout(200);
 
-    // Annotation overlay should appear with crosshair cursor
-    const overlay = page.locator('.absolute.inset-0.z-10');
-    await expect(overlay).toBeVisible();
+    // Annotation overlay should appear — Konva Stage renders a canvas element
+    const konvaCanvas = page.locator('canvas').first();
+    await expect(konvaCanvas).toBeVisible();
   });
 
   test('can draw a stroke on canvas', async ({ page }) => {
@@ -41,16 +42,13 @@ test.describe('Annotation', () => {
     await page.mouse.up();
     await page.waitForTimeout(300);
 
-    // Verify stroke was drawn — Konva renders <line> elements or canvas
-    // Check that the annotation overlay still exists (it stays when strokes exist)
-    await expect(page.locator('.absolute.inset-0.z-10')).toBeVisible();
-
     // Deactivate pen by clicking again
     await penButton.click();
     await page.waitForTimeout(200);
 
-    // Overlay should still be visible because strokes exist (even when not in draw mode)
-    await expect(page.locator('.absolute.inset-0.z-10')).toBeVisible();
+    // Konva canvas should still be visible because strokes exist (even when not in draw mode)
+    const konvaCanvas = page.locator('canvas').first();
+    await expect(konvaCanvas).toBeVisible();
   });
 
   test('eraser can remove strokes', async ({ page }) => {
@@ -120,8 +118,9 @@ test.describe('Annotation', () => {
     await clearButton.click();
     await page.waitForTimeout(300);
 
-    // Overlay should disappear (no strokes and not in annotation mode)
-    await expect(page.locator('.absolute.inset-0.z-10')).not.toBeVisible();
+    // Konva canvas should disappear (no strokes and not in annotation mode)
+    // The overlay returns null when !isAnnotationMode && strokes.length === 0
+    await expect(page.locator('canvas')).toHaveCount(0);
   });
 
   test('pen color can be changed', async ({ page }) => {
@@ -130,6 +129,9 @@ test.describe('Annotation', () => {
     const firstPen = penButtons.first();
     await firstPen.click();
     await page.waitForTimeout(100);
+
+    // Konva canvas should be visible
+    await expect(page.locator('canvas').first()).toBeVisible();
 
     // Deactivate
     await firstPen.click();
@@ -140,9 +142,8 @@ test.describe('Annotation', () => {
     await secondPen.click();
     await page.waitForTimeout(100);
 
-    // Should activate annotation mode again
-    const overlay = page.locator('.absolute.inset-0.z-10');
-    await expect(overlay).toBeVisible();
+    // Should activate annotation mode again — canvas visible
+    await expect(page.locator('canvas').first()).toBeVisible();
 
     await secondPen.click(); // deactivate
   });

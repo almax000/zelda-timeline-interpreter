@@ -60,9 +60,9 @@ test.describe('Tab Context Menu', () => {
     await input.fill('My Timeline');
     await input.press('Enter');
 
-    // Tab should show new name
+    // Tab button's title attribute should reflect the new name
     await page.waitForTimeout(300);
-    await expect(page.locator('button', { hasText: 'My Timeline' }).first()).toBeVisible();
+    await expect(page.locator('button[title="My Timeline"]')).toBeVisible();
   });
 
   test('rename is disabled for page-0', async ({ page }) => {
