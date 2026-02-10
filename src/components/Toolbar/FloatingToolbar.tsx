@@ -5,14 +5,11 @@ import { useTabStore } from '../../stores/tabStore';
 import { useAnnotationStore } from '../../stores/annotationStore';
 import { useUIStore } from '../../stores/uiStore';
 import { ConfirmDialog } from '../UI/ConfirmDialog';
-import { ExportMenu } from './ExportMenu';
-import { PageTabs } from '../Tabs/PageTabs';
 
 const PEN_COLORS = ['#EF4444', '#F97316', '#EAB308', '#22C55E'];
 const MORE_COLORS = ['#3B82F6', '#A855F7', '#EC4899', '#F8FAFC'];
 const WIDTHS = [2, 4, 6, 8];
 
-// --- SVG Icons (16x16) ---
 function IconCursor() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -126,7 +123,7 @@ function Divider() {
   return <div className="w-px h-5 bg-[var(--color-surface-light)] mx-0.5" />;
 }
 
-export function TopBar() {
+export function FloatingToolbar() {
   const { t } = useTranslation();
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [showMoreColors, setShowMoreColors] = useState(false);
@@ -151,6 +148,8 @@ export function TopBar() {
   const canUndo = pastStates.length > 0;
   const canRedo = futureStates.length > 0;
   const hasStrokes = useAnnotationStore((s) => (s.strokes.get(activeTabId)?.length ?? 0) > 0);
+
+  if (isLocked) return null;
 
   const handleClear = () => {
     clearTimeline();
@@ -215,160 +214,147 @@ export function TopBar() {
 
   return (
     <>
-      <div className="h-10 bg-[var(--color-surface)] border-b border-[var(--color-surface-light)] px-2 flex items-center gap-0.5 shrink-0">
-        {/* Tool groups - hidden when locked */}
-        {!isLocked && (
-          <>
-            {/* Select tool */}
+      <div className="pointer-events-auto flex items-center gap-0.5 px-2 py-1.5 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-xl shadow-xl border border-[var(--color-surface-light)]">
+        {/* Select tool */}
+        <button
+          onClick={handleSelectTool}
+          className={activeTool === 'select' && !isAnnotationMode ? btnActive : btnMuted}
+          title={t('toolbar.select')}
+        >
+          <IconCursor />
+        </button>
+
+        <Divider />
+
+        {/* Branch type selector */}
+        {branchTypes.map(({ type, color: c }) => (
+          <button
+            key={type}
+            onClick={() => setSelectedBranchType(type)}
+            className={`${btn} hover:bg-[var(--color-surface-light)]`}
+            title={t(`branch.${type}`)}
+          >
+            <span
+              className="w-3 h-3 rounded-full"
+              style={{
+                backgroundColor: c,
+                boxShadow: selectedBranchType === type ? `0 0 0 2px var(--color-surface), 0 0 0 3px ${c}` : 'none',
+              }}
+            />
+          </button>
+        ))}
+
+        <Divider />
+
+        {/* Shape tools */}
+        {shapes.map(({ type, icon, label }) => (
+          <button
+            key={type}
+            onClick={() => handleShapeTool(type)}
+            className={activeShapeTool === type ? btnActive : btnMuted}
+            title={label}
+          >
+            {icon}
+          </button>
+        ))}
+
+        <Divider />
+
+        {/* Pen colors */}
+        {PEN_COLORS.map((c) => {
+          const isActive = isAnnotationMode && tool === 'pen' && color === c;
+          return (
             <button
-              onClick={handleSelectTool}
-              className={activeTool === 'select' && !isAnnotationMode ? btnActive : btnMuted}
-              title={t('toolbar.select')}
+              key={c}
+              onClick={() => handlePenClick(c)}
+              className={`${btn} relative hover:bg-[var(--color-surface-light)]`}
+              title="Pen"
             >
-              <IconCursor />
+              <PenIcon color={c} />
+              {isActive && (
+                <span className="absolute bottom-0.5 left-1.5 right-1.5 h-0.5 rounded-full" style={{ backgroundColor: c }} />
+              )}
             </button>
+          );
+        })}
 
-            <Divider />
-
-            {/* Branch type selector */}
-            {branchTypes.map(({ type, color: c }) => (
-              <button
-                key={type}
-                onClick={() => setSelectedBranchType(type)}
-                className={`${btn} hover:bg-[var(--color-surface-light)]`}
-                title={t(`branch.${type}`)}
-              >
-                <span
-                  className="w-3 h-3 rounded-full"
-                  style={{
-                    backgroundColor: c,
-                    boxShadow: selectedBranchType === type ? `0 0 0 2px var(--color-surface), 0 0 0 3px ${c}` : 'none',
-                  }}
-                />
-              </button>
-            ))}
-
-            <Divider />
-
-            {/* Shape tools */}
-            {shapes.map(({ type, icon, label }) => (
-              <button
-                key={type}
-                onClick={() => handleShapeTool(type)}
-                className={activeShapeTool === type ? btnActive : btnMuted}
-                title={label}
-              >
-                {icon}
-              </button>
-            ))}
-
-            <Divider />
-
-            {/* Pen colors */}
-            {PEN_COLORS.map((c) => {
-              const isActive = isAnnotationMode && tool === 'pen' && color === c;
-              return (
+        {/* More colors popover */}
+        <div className="relative">
+          <button
+            onClick={() => setShowMoreColors(!showMoreColors)}
+            className={`${btn} text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)]`}
+            title="More colors"
+          >
+            <IconMore />
+          </button>
+          {showMoreColors && (
+            <div className="absolute bottom-full left-0 mb-1 flex gap-0.5 p-1.5 bg-[var(--color-surface)] border border-[var(--color-surface-light)] rounded-lg shadow-xl z-50">
+              {MORE_COLORS.map((c) => (
                 <button
                   key={c}
-                  onClick={() => handlePenClick(c)}
-                  className={`${btn} relative hover:bg-[var(--color-surface-light)]`}
-                  title="Pen"
+                  onClick={() => { handlePenClick(c); setShowMoreColors(false); }}
+                  className={`${btn} hover:bg-[var(--color-surface-light)]`}
                 >
                   <PenIcon color={c} />
-                  {isActive && (
-                    <span className="absolute bottom-0.5 left-1.5 right-1.5 h-0.5 rounded-full" style={{ backgroundColor: c }} />
-                  )}
                 </button>
-              );
-            })}
-
-            {/* More colors popover */}
-            <div className="relative">
-              <button
-                onClick={() => setShowMoreColors(!showMoreColors)}
-                className={`${btn} text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)]`}
-                title="More colors"
-              >
-                <IconMore />
-              </button>
-              {showMoreColors && (
-                <div className="absolute top-full left-0 mt-1 flex gap-0.5 p-1.5 bg-[var(--color-surface)] border border-[var(--color-surface-light)] rounded-lg shadow-xl z-50">
-                  {MORE_COLORS.map((c) => (
-                    <button
-                      key={c}
-                      onClick={() => { handlePenClick(c); setShowMoreColors(false); }}
-                      className={`${btn} hover:bg-[var(--color-surface-light)]`}
-                    >
-                      <PenIcon color={c} />
-                    </button>
-                  ))}
-                </div>
-              )}
+              ))}
             </div>
+          )}
+        </div>
 
-            {/* Width selector (when pen active) */}
-            {isAnnotationMode && tool === 'pen' && (
-              <>
-                <Divider />
-                {WIDTHS.map((w) => (
-                  <button
-                    key={w}
-                    onClick={() => setStrokeWidth(w)}
-                    className={`${btn} ${strokeWidth === w ? 'bg-[var(--color-surface-light)]' : 'hover:bg-[var(--color-surface-light)]'}`}
-                    title={`${w}px`}
-                  >
-                    <span className="rounded-full bg-[var(--color-text)]/60" style={{ width: w + 2, height: w + 2 }} />
-                  </button>
-                ))}
-              </>
-            )}
-
+        {/* Width selector (when pen active) */}
+        {isAnnotationMode && tool === 'pen' && (
+          <>
             <Divider />
-
-            {/* Eraser + Clear strokes */}
-            <button
-              onClick={handleEraserClick}
-              className={isAnnotationMode && tool === 'eraser' ? btnActive : btnMuted}
-              title="Eraser"
-            >
-              <IconEraser />
-            </button>
-            {hasStrokes && (
+            {WIDTHS.map((w) => (
               <button
-                onClick={() => clearStrokes(activeTabId)}
-                className={`${btn} text-red-400 hover:bg-[var(--color-surface-light)]`}
-                title="Clear strokes"
+                key={w}
+                onClick={() => setStrokeWidth(w)}
+                className={`${btn} ${strokeWidth === w ? 'bg-[var(--color-surface-light)]' : 'hover:bg-[var(--color-surface-light)]'}`}
+                title={`${w}px`}
               >
-                <IconClearStrokes />
+                <span className="rounded-full bg-[var(--color-text)]/60" style={{ width: w + 2, height: w + 2 }} />
               </button>
-            )}
-
-            <Divider />
-
-            {/* Undo / Redo / Clear */}
-            <button onClick={() => undo()} disabled={!canUndo} className={canUndo ? btnMuted : btnDisabled} title={t('toolbar.undo')}>
-              <IconUndo />
-            </button>
-            <button onClick={() => redo()} disabled={!canRedo} className={canRedo ? btnMuted : btnDisabled} title={t('toolbar.redo')}>
-              <IconRedo />
-            </button>
-            <button
-              onClick={() => setShowClearDialog(true)}
-              className={`${btn} text-[var(--color-text-muted)] hover:text-red-400 hover:bg-[var(--color-surface-light)]`}
-              title={t('toolbar.clear')}
-            >
-              <IconTrash />
-            </button>
+            ))}
           </>
         )}
 
-        {/* Spacer */}
-        <div className="flex-1" />
-
-        {/* Right: PageTabs + Export */}
-        <PageTabs />
         <Divider />
-        <ExportMenu />
+
+        {/* Eraser + Clear strokes */}
+        <button
+          onClick={handleEraserClick}
+          className={isAnnotationMode && tool === 'eraser' ? btnActive : btnMuted}
+          title="Eraser"
+        >
+          <IconEraser />
+        </button>
+        {hasStrokes && (
+          <button
+            onClick={() => clearStrokes(activeTabId)}
+            className={`${btn} text-red-400 hover:bg-[var(--color-surface-light)]`}
+            title="Clear strokes"
+          >
+            <IconClearStrokes />
+          </button>
+        )}
+
+        <Divider />
+
+        {/* Undo / Redo / Clear */}
+        <button onClick={() => undo()} disabled={!canUndo} className={canUndo ? btnMuted : btnDisabled} title={t('toolbar.undo')}>
+          <IconUndo />
+        </button>
+        <button onClick={() => redo()} disabled={!canRedo} className={canRedo ? btnMuted : btnDisabled} title={t('toolbar.redo')}>
+          <IconRedo />
+        </button>
+        <button
+          onClick={() => setShowClearDialog(true)}
+          className={`${btn} text-[var(--color-text-muted)] hover:text-red-400 hover:bg-[var(--color-surface-light)]`}
+          title={t('toolbar.clear')}
+        >
+          <IconTrash />
+        </button>
       </div>
 
       <ConfirmDialog

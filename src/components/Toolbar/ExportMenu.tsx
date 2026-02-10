@@ -1,14 +1,22 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { exportToPng, exportToPdf, exportToJson, importFromJson } from '../../utils/export';
-import { encodeTimeline } from '../../utils/sharing';
 import { getCanvasStore } from '../../stores/canvasRegistry';
 import { useTabStore } from '../../stores/tabStore';
 
-export function ExportMenu() {
+function IconDownload() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  );
+}
+
+export function ExportButton() {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  const [shareStatus, setShareStatus] = useState<'idle' | 'copied' | 'too-large'>('idle');
   const menuRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -20,7 +28,6 @@ export function ExportMenu() {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
-        setShareStatus('idle');
       }
     };
 
@@ -48,21 +55,6 @@ export function ExportMenu() {
     exportToJson(nodes, edges);
   };
 
-  const handleShare = async () => {
-    const url = encodeTimeline(nodes, edges);
-    if (!url) {
-      setShareStatus('too-large');
-      setTimeout(() => setShareStatus('idle'), 3000);
-      return;
-    }
-    await navigator.clipboard.writeText(url);
-    setShareStatus('copied');
-    setTimeout(() => {
-      setShareStatus('idle');
-      setIsOpen(false);
-    }, 1500);
-  };
-
   const handleImport = () => {
     fileInputRef.current?.click();
   };
@@ -85,12 +77,13 @@ export function ExportMenu() {
   const itemClass = "w-full px-4 py-2 text-left text-sm text-[var(--color-text)] hover:bg-[var(--color-surface-light)]";
 
   return (
-    <div ref={menuRef} className="relative">
+    <div ref={menuRef} className="relative pointer-events-auto">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="px-2.5 py-1 text-sm bg-[var(--color-gold)] text-[var(--color-background)] rounded-md font-medium hover:bg-[var(--color-gold-light)] transition-colors"
+        className="px-2.5 py-1 text-sm rounded-lg font-medium flex items-center gap-1.5 bg-[var(--color-gold)] text-[var(--color-background)] hover:bg-[var(--color-gold-light)] transition-colors shadow-lg"
       >
-        {t('toolbar.export')} ▾
+        <IconDownload />
+        {t('toolbar.export')}
       </button>
 
       {isOpen && (
@@ -103,15 +96,6 @@ export function ExportMenu() {
           </button>
           <button onClick={handleExportJson} className={itemClass}>
             {t('toolbar.exportJSON')}
-          </button>
-          <hr className="my-1 border-[var(--color-surface-light)]" />
-          <button onClick={handleShare} className={itemClass}>
-            {shareStatus === 'copied'
-              ? t('toolbar.shareCopied')
-              : shareStatus === 'too-large'
-                ? 'Too large for URL — use JSON export'
-                : t('toolbar.share')
-            }
           </button>
           <hr className="my-1 border-[var(--color-surface-light)]" />
           <button onClick={handleImport} className={itemClass}>
@@ -130,3 +114,6 @@ export function ExportMenu() {
     </div>
   );
 }
+
+// Keep backward-compatible named export
+export { ExportButton as ExportMenu };

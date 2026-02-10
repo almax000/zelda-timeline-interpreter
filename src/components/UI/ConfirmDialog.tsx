@@ -41,7 +41,7 @@ export function ConfirmDialog({
       : 'bg-[var(--color-gold)] hover:bg-[var(--color-gold-light)] text-[var(--color-background)]';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-auto">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"

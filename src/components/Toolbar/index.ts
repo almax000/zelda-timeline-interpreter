@@ -1,2 +1,3 @@
-export { TopBar } from './TopBar';
-export { ExportMenu } from './ExportMenu';
+export { FloatingToolbar } from './FloatingToolbar';
+export { ExportButton, ExportMenu } from './ExportMenu';
+export { ShareButton } from './ShareButton';

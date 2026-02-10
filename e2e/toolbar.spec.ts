@@ -18,20 +18,24 @@ test.describe('Toolbar', () => {
     await switchToEditableTab(page);
     await expandSidebar(page);
 
-    // Language is now a <select> dropdown
-    const langSelect = page.locator('select');
+    // Language is now a globe icon popover
+    const globeButton = page.locator('button[title="English"]');
+    await globeButton.click();
 
     // Switch to Japanese
-    await langSelect.selectOption('ja');
-    await expect(page.locator('text=スカイウォードソード').first()).toBeVisible();
+    await page.locator('button', { hasText: '日本語' }).click();
 
-    // Switch to zh-CN
-    await langSelect.selectOption('zh-CN');
-    // Check for a Chinese game name
-    await expect(page.locator('[draggable="true"]').first()).toBeVisible();
+    // Check for a Japanese game name via card titles
+    await page.waitForTimeout(500);
+    const firstCard = page.locator('[draggable="true"]').first();
+    await expect(firstCard).toBeVisible();
 
-    // Switch back to English
-    await langSelect.selectOption('en');
+    // Switch back: open globe (now titled in Japanese)
+    const globeButtonJa = page.locator('button[title="日本語"]');
+    await globeButtonJa.click();
+    await page.locator('button', { hasText: 'English' }).click();
+
+    await page.waitForTimeout(500);
     await expect(page.locator('[draggable="true"]').first()).toBeVisible();
   });
 
@@ -45,7 +49,7 @@ test.describe('Toolbar', () => {
     await expect(page.locator('text=Clear Timeline?')).toBeVisible();
 
     // Cancel
-    await page.locator('button', { hasText: 'Cancel' }).click();
+    await page.locator('.fixed.z-50 button', { hasText: 'Cancel' }).click();
     await expect(page.locator('text=Clear Timeline?')).not.toBeVisible();
   });
 

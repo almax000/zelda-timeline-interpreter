@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 import { Sidebar } from './components/Sidebar';
-import { TopBar } from './components/Toolbar';
 import { TimelineCanvas } from './components/Canvas';
+import { CanvasOverlay } from './components/Canvas/CanvasOverlay';
 import { useUndoRedoShortcuts } from './hooks/useUndoRedoShortcuts';
 import { useTabStore } from './stores/tabStore';
 import { getCanvasStore } from './stores/canvasRegistry';
@@ -63,13 +63,11 @@ function AppContent() {
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
-        <TopBar />
-        <div className="flex-1 relative">
-          <ReactFlowProvider key={activeTabId}>
-            <TimelineCanvas tabId={activeTabId} />
-          </ReactFlowProvider>
-        </div>
+      <div className="flex-1 relative min-w-0">
+        <ReactFlowProvider key={activeTabId}>
+          <TimelineCanvas tabId={activeTabId} />
+        </ReactFlowProvider>
+        <CanvasOverlay />
       </div>
     </div>
   );
