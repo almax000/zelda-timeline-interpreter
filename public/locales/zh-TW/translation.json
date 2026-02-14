@@ -28,7 +28,11 @@
     "share": "分享",
     "shareCopied": "連結已複製！",
     "annotate": "標註",
+    "split": "分裂點",
+    "text": "文字",
     "draw": "繪製",
+    "eraser": "橡皮擦",
+    "laser": "雷射筆",
     "branch": "分支"
   },
   "canvas": {

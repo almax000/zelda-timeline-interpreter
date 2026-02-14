@@ -1,8 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { getNodeCount, clearLocalStorage, switchToEditableTab, switchToPage0 } from './helpers/canvas';
-import { selectShape } from './helpers/popover';
 
-test.describe('Shape Tools', () => {
+test.describe('Placement Tools', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await clearLocalStorage(page);
@@ -11,10 +10,26 @@ test.describe('Shape Tools', () => {
     await switchToEditableTab(page);
   });
 
-  test('can place a rectangle on canvas', async ({ page }) => {
+  test('can place a split node on canvas', async ({ page }) => {
     const initialCount = await getNodeCount(page);
 
-    await selectShape(page, 'Rectangle');
+    await page.locator('[data-testid="toolbar-split"]').click();
+
+    const canvas = page.locator('.react-flow__pane');
+    await canvas.click({ position: { x: 300, y: 200 } });
+
+    await page.waitForTimeout(300);
+    const newCount = await getNodeCount(page);
+    expect(newCount).toBe(initialCount + 1);
+
+    const splitNodes = page.locator('.react-flow__node-split');
+    await expect(splitNodes.first()).toBeVisible();
+  });
+
+  test('can place a text node on canvas', async ({ page }) => {
+    const initialCount = await getNodeCount(page);
+
+    await page.locator('[data-testid="toolbar-text"]').click();
 
     const canvas = page.locator('.react-flow__pane');
     await canvas.click({ position: { x: 300, y: 200 } });
@@ -27,71 +42,48 @@ test.describe('Shape Tools', () => {
     await expect(shapeNodes.first()).toBeVisible();
   });
 
-  test('can place a circle on canvas', async ({ page }) => {
+  test('split tool deactivates after placing', async ({ page }) => {
     const initialCount = await getNodeCount(page);
 
-    await selectShape(page, 'Circle');
-
-    const canvas = page.locator('.react-flow__pane');
-    await canvas.click({ position: { x: 300, y: 200 } });
-
-    await page.waitForTimeout(300);
-    const newCount = await getNodeCount(page);
-    expect(newCount).toBe(initialCount + 1);
-  });
-
-  test('can place an arrow on canvas', async ({ page }) => {
-    const initialCount = await getNodeCount(page);
-
-    await selectShape(page, 'Arrow');
-
-    const canvas = page.locator('.react-flow__pane');
-    await canvas.click({ position: { x: 300, y: 200 } });
-
-    await page.waitForTimeout(300);
-    const newCount = await getNodeCount(page);
-    expect(newCount).toBe(initialCount + 1);
-  });
-
-  test('can place a line on canvas', async ({ page }) => {
-    const initialCount = await getNodeCount(page);
-
-    await selectShape(page, 'Line');
-
-    const canvas = page.locator('.react-flow__pane');
-    await canvas.click({ position: { x: 300, y: 200 } });
-
-    await page.waitForTimeout(300);
-    const newCount = await getNodeCount(page);
-    expect(newCount).toBe(initialCount + 1);
-  });
-
-  test('shape tool deactivates after placing', async ({ page }) => {
-    const initialCount = await getNodeCount(page);
-
-    await selectShape(page, 'Rectangle');
+    await page.locator('[data-testid="toolbar-split"]').click();
 
     const canvas = page.locator('.react-flow__pane');
     await canvas.click({ position: { x: 300, y: 200 } });
     await page.waitForTimeout(300);
 
-    // Click again — should NOT create another shape (tool resets after placement)
+    // Click again — should NOT create another split (tool resets after placement)
     await canvas.click({ position: { x: 400, y: 300 } });
     await page.waitForTimeout(300);
 
     const count = await getNodeCount(page);
-    expect(count).toBe(initialCount + 1); // Only 1 shape placed
+    expect(count).toBe(initialCount + 1);
   });
 
-  test('shape tool activates crosshair cursor', async ({ page }) => {
-    await selectShape(page, 'Rectangle');
+  test('text tool deactivates after placing', async ({ page }) => {
+    const initialCount = await getNodeCount(page);
 
-    // Verify cursor changes to crosshair
+    await page.locator('[data-testid="toolbar-text"]').click();
+
+    const canvas = page.locator('.react-flow__pane');
+    await canvas.click({ position: { x: 300, y: 200 } });
+    await page.waitForTimeout(300);
+
+    // Click again — should NOT create another text (tool resets)
+    await canvas.click({ position: { x: 400, y: 300 } });
+    await page.waitForTimeout(300);
+
+    const count = await getNodeCount(page);
+    expect(count).toBe(initialCount + 1);
+  });
+
+  test('split tool activates crosshair cursor', async ({ page }) => {
+    await page.locator('[data-testid="toolbar-split"]').click();
+
     const container = page.locator('.cursor-crosshair');
     await expect(container).toBeVisible();
   });
 
-  test('shapes popover is disabled on locked page-0', async ({ page }) => {
+  test('placement tools are disabled on locked page-0', async ({ page }) => {
     await switchToPage0(page);
     await page.waitForTimeout(300);
 

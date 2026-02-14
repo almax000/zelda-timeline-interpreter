@@ -63,7 +63,21 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
           },
 
           addEdge: (connection) => {
-            const { selectedBranchType, edges } = get();
+            const { selectedBranchType, edges, nodes } = get();
+
+            // Game node 1-in/1-out validation
+            const sourceNode = nodes.find((n) => n.id === connection.source);
+            const targetNode = nodes.find((n) => n.id === connection.target);
+
+            if (sourceNode?.type === 'game') {
+              const hasOutgoing = edges.some((e) => e.source === sourceNode.id);
+              if (hasOutgoing) return;
+            }
+            if (targetNode?.type === 'game') {
+              const hasIncoming = edges.some((e) => e.target === targetNode.id);
+              if (hasIncoming) return;
+            }
+
             const newEdge: TimelineEdge = {
               id: `e${connection.source}-${connection.target}`,
               source: connection.source!,
@@ -121,10 +135,10 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
             const midX = (sourceNode.position.x + targetNode.position.x) / 2;
             const midY = (sourceNode.position.y + targetNode.position.y) / 2;
 
-            const labelNodeId = `labelPoint-${Date.now()}`;
+            const labelNodeId = `event-${Date.now()}`;
             const labelNode = {
               id: labelNodeId,
-              type: 'labelPoint' as const,
+              type: 'event' as const,
               position: { x: midX, y: midY },
               data: { label },
             };
@@ -160,39 +174,30 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
             const edge = edges.find((e) => e.id === edgeId);
             if (!edge) return;
 
-            const ts = Date.now();
-            const anchorId = `ann-anchor-${ts}`;
-            const labelId = `ann-label-${ts}`;
-
-            const anchorNode: TimelineNode = {
-              id: anchorId,
-              type: 'annotationAnchor',
-              position: { x: clickPosition.x, y: clickPosition.y },
-              data: {},
-            };
-
-            const labelNode: TimelineNode = {
-              id: labelId,
-              type: 'annotationLabel',
-              position: { x: clickPosition.x - 40, y: clickPosition.y - 80 },
-              data: { label: 'Annotation' },
-            };
-
+            const eventId = `event-${Date.now()}`;
             const branchType = edge.data?.branchType ?? 'main';
 
-            // Split original edge: source → anchor → target
+            // Create event node at click position
+            const eventNode: TimelineNode = {
+              id: eventId,
+              type: 'event',
+              position: { x: clickPosition.x, y: clickPosition.y },
+              data: { label: 'Event' },
+            };
+
+            // Split original edge: source → event → target
             const edge1: TimelineEdge = {
-              id: `${edge.source}-${anchorId}`,
+              id: `${edge.source}-${eventId}`,
               source: edge.source,
-              target: anchorId,
+              target: eventId,
               sourceHandle: edge.sourceHandle,
               targetHandle: 'left',
               type: 'timeline',
               data: { branchType },
             };
             const edge2: TimelineEdge = {
-              id: `${anchorId}-${edge.target}`,
-              source: anchorId,
+              id: `${eventId}-${edge.target}`,
+              source: eventId,
               target: edge.target,
               sourceHandle: 'right',
               targetHandle: edge.targetHandle,
@@ -200,20 +205,9 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
               data: { branchType },
             };
 
-            // Connector: anchor → label (dashed line)
-            const connector: TimelineEdge = {
-              id: `${anchorId}-${labelId}`,
-              source: anchorId,
-              target: labelId,
-              sourceHandle: 'top',
-              targetHandle: 'bottom',
-              type: 'timeline',
-              data: { branchType: 'main', isAnnotationConnector: true },
-            };
-
             set({
-              nodes: [...nodes, anchorNode, labelNode],
-              edges: [...edges.filter((e) => e.id !== edgeId), edge1, edge2, connector],
+              nodes: [...nodes, eventNode],
+              edges: [...edges.filter((e) => e.id !== edgeId), edge1, edge2],
             });
           },
         }),

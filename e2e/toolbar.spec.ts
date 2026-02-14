@@ -117,25 +117,36 @@ test.describe('Toolbar', () => {
     await expect(canvasContainer).not.toHaveClass(/cursor-crosshair/);
   });
 
-  test('shapes popover opens and shows shape options', async ({ page }) => {
+  test('split button activates split placement mode', async ({ page }) => {
     await switchToEditableTab(page);
 
-    const shapesButton = page.locator('[data-testid="toolbar-shapes"]');
-    await shapesButton.click();
+    const splitButton = page.locator('[data-testid="toolbar-split"]');
+    await expect(splitButton).toBeVisible();
+    await splitButton.click();
 
-    // Popover should appear with shape buttons
-    await expect(page.locator('button[title="Rectangle"]')).toBeVisible();
-    await expect(page.locator('button[title="Circle"]')).toBeVisible();
-    await expect(page.locator('button[title="Arrow"]')).toBeVisible();
-    await expect(page.locator('button[title="Line"]')).toBeVisible();
-
-    // Click rectangle to select and close popover (dispatchEvent: popover may be outside viewport)
-    await page.locator('button[title="Rectangle"]').dispatchEvent('click');
-    await page.waitForTimeout(200);
-
-    // Canvas should have crosshair cursor for shape placement
+    // Canvas should have crosshair cursor
     const canvasContainer = page.locator('.flex-1.h-full.relative');
     await expect(canvasContainer).toHaveClass(/cursor-crosshair/);
+
+    // Click select to deactivate
+    await page.locator('[data-testid="toolbar-select"]').click();
+    await expect(canvasContainer).not.toHaveClass(/cursor-crosshair/);
+  });
+
+  test('text button activates text placement mode', async ({ page }) => {
+    await switchToEditableTab(page);
+
+    const textButton = page.locator('[data-testid="toolbar-text"]');
+    await expect(textButton).toBeVisible();
+    await textButton.click();
+
+    // Canvas should have crosshair cursor
+    const canvasContainer = page.locator('.flex-1.h-full.relative');
+    await expect(canvasContainer).toHaveClass(/cursor-crosshair/);
+
+    // Click select to deactivate
+    await page.locator('[data-testid="toolbar-select"]').click();
+    await expect(canvasContainer).not.toHaveClass(/cursor-crosshair/);
   });
 
   test('draw popover opens and shows pen colors + widths', async ({ page }) => {
@@ -151,9 +162,20 @@ test.describe('Toolbar', () => {
     // Width buttons should be visible
     await expect(page.locator('button[title="2px"]')).toBeVisible();
     await expect(page.locator('button[title="4px"]')).toBeVisible();
+  });
 
-    // Eraser should be visible
-    await expect(page.locator('button[title="Eraser"]')).toBeVisible();
+  test('eraser button is standalone', async ({ page }) => {
+    await switchToEditableTab(page);
+
+    const eraserButton = page.locator('[data-testid="toolbar-eraser"]');
+    await expect(eraserButton).toBeVisible();
+  });
+
+  test('laser button is standalone', async ({ page }) => {
+    await switchToEditableTab(page);
+
+    const laserButton = page.locator('[data-testid="toolbar-laser"]');
+    await expect(laserButton).toBeVisible();
   });
 
   test('branch popover shows branch color options', async ({ page }) => {

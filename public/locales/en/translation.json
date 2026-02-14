@@ -28,7 +28,11 @@
     "share": "Share",
     "shareCopied": "Link copied!",
     "annotate": "Annotate",
+    "split": "Split",
+    "text": "Text",
     "draw": "Draw",
+    "eraser": "Eraser",
+    "laser": "Laser",
     "branch": "Branch"
   },
   "canvas": {

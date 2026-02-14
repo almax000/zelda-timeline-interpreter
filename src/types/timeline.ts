@@ -10,13 +10,7 @@ export interface TimelineNodeData extends Record<string, unknown> {
 export interface EventNodeData extends Record<string, unknown> {
   labelKey?: string;     // i18n key (for official era markers)
   label?: string;        // plain text (for user custom events)
-  isEraMarker: boolean;
-}
-
-export interface GuideNodeData extends Record<string, unknown> {
-  titleKey: string;
-  contentKey: string;
-  isCollapsed: boolean;
+  isEraMarker?: boolean; // backward compat for old data
 }
 
 export interface ImageNodeData extends Record<string, unknown> {
@@ -25,7 +19,7 @@ export interface ImageNodeData extends Record<string, unknown> {
   height: number;
 }
 
-export type ShapeType = 'rectangle' | 'circle' | 'arrow' | 'line';
+export type ShapeType = 'rectangle' | 'circle' | 'arrow' | 'line' | 'text';
 
 export interface ShapeNodeData extends Record<string, unknown> {
   shapeType: ShapeType;
@@ -42,28 +36,23 @@ export interface LabelPointNodeData extends Record<string, unknown> {
   labelKey?: string;  // i18n key (official timeline)
 }
 
-export interface AnnotationAnchorNodeData extends Record<string, unknown> {}
-
-export interface AnnotationLabelNodeData extends Record<string, unknown> {
-  label: string;
-  labelKey?: string;  // i18n key (official timeline annotations)
+export interface SplitNodeData extends Record<string, unknown> {
+  label?: string;
+  labelKey?: string;
 }
 
 export type TimelineNode =
   | Node<TimelineNodeData, 'game'>
   | Node<EventNodeData, 'event'>
-  | Node<GuideNodeData, 'guide'>
   | Node<ImageNodeData, 'image'>
   | Node<ShapeNodeData, 'shape'>
   | Node<LabelPointNodeData, 'labelPoint'>
-  | Node<AnnotationAnchorNodeData, 'annotationAnchor'>
-  | Node<AnnotationLabelNodeData, 'annotationLabel'>;
+  | Node<SplitNodeData, 'split'>;
 
 export interface TimelineEdgeData extends Record<string, unknown> {
   branchType: BranchType;
   label?: string;
   labelKey?: string;
-  isAnnotationConnector?: boolean;
 }
 
 export type TimelineEdge = Edge<TimelineEdgeData>;

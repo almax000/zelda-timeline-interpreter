@@ -5,10 +5,24 @@ import { useTranslation } from 'react-i18next';
 interface EventNodeData extends Record<string, unknown> {
   labelKey?: string;
   label?: string;
-  isEraMarker: boolean;
+  isEraMarker?: boolean;
 }
 
 type EventNodeType = Node<EventNodeData, 'event'>;
+
+function DiamondIcon({ selected }: { selected?: boolean }) {
+  const fill = selected ? 'var(--color-gold)' : 'var(--color-surface)';
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" className="shrink-0">
+      <path
+        d="M9 1 L17 9 L9 17 L1 9 Z"
+        fill={fill}
+        stroke="var(--color-gold)"
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
+}
 
 function EventNodeComponent({ data, selected }: NodeProps<EventNodeType>) {
   const { t } = useTranslation();
@@ -16,7 +30,7 @@ function EventNodeComponent({ data, selected }: NodeProps<EventNodeType>) {
   const [editValue, setEditValue] = useState(data.label || '');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const displayLabel = data.labelKey ? t(data.labelKey) : data.label || 'Event';
+  const displayLabel = data.labelKey ? t(data.labelKey) : data.label;
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -26,7 +40,7 @@ function EventNodeComponent({ data, selected }: NodeProps<EventNodeType>) {
   }, [isEditing]);
 
   const handleDoubleClick = () => {
-    if (!data.isEraMarker) {
+    if (!data.labelKey) {
       setEditValue(data.label || '');
       setIsEditing(true);
     }
@@ -39,35 +53,25 @@ function EventNodeComponent({ data, selected }: NodeProps<EventNodeType>) {
     setIsEditing(false);
   };
 
-  const isEra = data.isEraMarker;
-
   return (
     <div
       onDoubleClick={handleDoubleClick}
-      className={`
-        relative px-4 py-2 rounded-lg transition-all duration-200
-        ${isEra
-          ? 'border-2 border-dashed border-[var(--color-gold)]/60 bg-[var(--color-surface)]/60'
-          : 'border-2 border-solid border-[var(--color-surface-light)] bg-[var(--color-surface)]'
-        }
-        ${selected
-          ? 'shadow-[0_0_15px_var(--color-gold)] border-[var(--color-gold)]'
-          : ''
-        }
-      `}
-      style={{ minWidth: 120 }}
+      className="flex items-center gap-2 group"
     >
-      {/* 4 directional handles */}
+      {/* 4-directional handles */}
       <Handle type="target" position={Position.Top} id="top"
-        className="!w-2 !h-2 !bg-[var(--color-gold)] !border-[var(--color-surface)]" />
-      <Handle type="source" position={Position.Top} id="top"
-        className="!w-0 !h-0 !opacity-0" />
-
+        className="!bg-[var(--color-gold)] !w-2 !h-2 !border-0 !opacity-0 group-hover:!opacity-100" />
+      <Handle type="source" position={Position.Bottom} id="bottom"
+        className="!bg-[var(--color-gold)] !w-2 !h-2 !border-0 !opacity-0 group-hover:!opacity-100" />
       <Handle type="target" position={Position.Left} id="left"
-        className="!w-2 !h-2 !bg-[var(--color-gold)] !border-[var(--color-surface)]" />
-      <Handle type="source" position={Position.Left} id="left"
-        className="!w-0 !h-0 !opacity-0" />
+        className="!bg-[var(--color-gold)] !w-2 !h-2 !border-0 !opacity-0 group-hover:!opacity-100" />
+      <Handle type="source" position={Position.Right} id="right"
+        className="!bg-[var(--color-gold)] !w-2 !h-2 !border-0 !opacity-0 group-hover:!opacity-100" />
 
+      {/* Diamond marker */}
+      <DiamondIcon selected={selected} />
+
+      {/* Optional text label */}
       {isEditing ? (
         <input
           ref={inputRef}
@@ -78,25 +82,18 @@ function EventNodeComponent({ data, selected }: NodeProps<EventNodeType>) {
             if (e.key === 'Enter') handleSubmit();
             if (e.key === 'Escape') setIsEditing(false);
           }}
-          className="bg-transparent outline-none text-sm text-center w-full text-[var(--color-text)] border-b border-[var(--color-gold)]"
+          className="bg-[var(--color-surface)] border border-[var(--color-gold)] rounded px-1.5 py-0.5 text-xs text-[var(--color-text)] outline-none w-36"
         />
-      ) : (
-        <p className={`text-sm font-medium text-center whitespace-nowrap ${
-          isEra ? 'text-[var(--color-gold)] italic' : 'text-[var(--color-text)]'
-        }`}>
+      ) : displayLabel ? (
+        <span
+          className="text-xs leading-tight text-[var(--color-gold)]/80 max-w-[160px] cursor-text select-none transition-colors group-hover:text-[var(--color-gold)]"
+          style={{
+            textShadow: selected ? '0 0 4px var(--color-gold)' : 'none',
+          }}
+        >
           {displayLabel}
-        </p>
-      )}
-
-      <Handle type="source" position={Position.Right} id="right"
-        className="!w-2 !h-2 !bg-[var(--color-gold)] !border-[var(--color-surface)]" />
-      <Handle type="target" position={Position.Right} id="right"
-        className="!w-0 !h-0 !opacity-0" />
-
-      <Handle type="source" position={Position.Bottom} id="bottom"
-        className="!w-2 !h-2 !bg-[var(--color-gold)] !border-[var(--color-surface)]" />
-      <Handle type="target" position={Position.Bottom} id="bottom"
-        className="!w-0 !h-0 !opacity-0" />
+        </span>
+      ) : null}
     </div>
   );
 }

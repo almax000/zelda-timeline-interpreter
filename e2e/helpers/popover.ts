@@ -10,15 +10,6 @@ export async function clickPopoverButton(page: Page, selector: string) {
 }
 
 /**
- * Open the shapes popover and select a shape tool.
- */
-export async function selectShape(page: Page, shapeTitle: string) {
-  await page.locator('[data-testid="toolbar-shapes"]').click();
-  await page.waitForTimeout(200);
-  await clickPopoverButton(page, `button[title="${shapeTitle}"]`);
-}
-
-/**
  * Open the draw popover and activate a pen (first pen button = red).
  */
 export async function activatePen(page: Page) {
@@ -30,11 +21,9 @@ export async function activatePen(page: Page) {
 }
 
 /**
- * Open the draw popover and activate the eraser.
+ * Activate the standalone eraser button.
  */
 export async function activateEraser(page: Page) {
-  await page.locator('[data-testid="toolbar-draw"]').click();
-  await page.waitForTimeout(200);
-  await page.locator('button[title="Eraser"]').dispatchEvent('click');
+  await page.locator('[data-testid="toolbar-eraser"]').dispatchEvent('click');
   await page.waitForTimeout(200);
 }

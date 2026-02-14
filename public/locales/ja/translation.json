@@ -28,7 +28,11 @@
     "share": "共有",
     "shareCopied": "リンクをコピーしました！",
     "annotate": "注釈",
+    "split": "分岐点",
+    "text": "テキスト",
     "draw": "描画",
+    "eraser": "消しゴム",
+    "laser": "レーザー",
     "branch": "分岐"
   },
   "canvas": {

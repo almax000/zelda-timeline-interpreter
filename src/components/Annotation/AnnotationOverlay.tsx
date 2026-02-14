@@ -40,11 +40,14 @@ export function AnnotationOverlay({ tabId, width, height }: AnnotationOverlayPro
     startStroke,
     addPoint,
     finishStroke,
+    finishLaserStroke,
     removeStroke,
     getStrokes,
+    getLaserStrokes,
   } = useAnnotationStore();
 
   const strokes = getStrokes(tabId);
+  const laserStrokes = getLaserStrokes(tabId);
 
   const eraseAtPoint = useCallback(
     (x: number, y: number) => {
@@ -70,7 +73,7 @@ export function AnnotationOverlay({ tabId, width, height }: AnnotationOverlayPro
       const x = e.evt.clientX - rect.left;
       const y = e.evt.clientY - rect.top;
 
-      if (tool === 'pen') {
+      if (tool === 'pen' || tool === 'laser') {
         isDrawing.current = true;
         startStroke();
         addPoint(x, y);
@@ -92,7 +95,7 @@ export function AnnotationOverlay({ tabId, width, height }: AnnotationOverlayPro
       const x = e.evt.clientX - rect.left;
       const y = e.evt.clientY - rect.top;
 
-      if (isDrawing.current && tool === 'pen') {
+      if (isDrawing.current && (tool === 'pen' || tool === 'laser')) {
         addPoint(x, y);
       } else if (isErasing.current && tool === 'eraser') {
         eraseAtPoint(x, y);
@@ -104,16 +107,25 @@ export function AnnotationOverlay({ tabId, width, height }: AnnotationOverlayPro
   const handleMouseUp = useCallback(() => {
     if (isDrawing.current) {
       isDrawing.current = false;
-      finishStroke(tabId);
+      if (tool === 'laser') {
+        finishLaserStroke(tabId);
+      } else {
+        finishStroke(tabId);
+      }
     }
     isErasing.current = false;
-  }, [finishStroke, tabId]);
+  }, [finishStroke, finishLaserStroke, tool, tabId]);
 
-  if (!isAnnotationMode && strokes.length === 0) return null;
+  const hasContent = strokes.length > 0 || laserStrokes.length > 0;
+  if (!isAnnotationMode && !hasContent) return null;
 
   const cursor = isAnnotationMode
-    ? tool === 'pen' ? 'crosshair' : 'cell'
+    ? tool === 'pen' ? 'crosshair'
+      : tool === 'laser' ? 'crosshair'
+      : 'cell'
     : 'default';
+
+  const laserColor = '#ADFF2F';
 
   return (
     <div
@@ -131,6 +143,7 @@ export function AnnotationOverlay({ tabId, width, height }: AnnotationOverlayPro
         style={{ cursor }}
       >
         <Layer>
+          {/* Regular strokes */}
           {strokes.map((stroke) => (
             <Line
               key={stroke.id}
@@ -143,15 +156,38 @@ export function AnnotationOverlay({ tabId, width, height }: AnnotationOverlayPro
               globalCompositeOperation="source-over"
             />
           ))}
-          {currentStroke && currentStroke.length >= 4 && (
+          {/* Laser strokes with glow */}
+          {laserStrokes.map((stroke) => (
             <Line
-              points={currentStroke}
-              stroke={color}
-              strokeWidth={strokeWidth}
+              key={stroke.id}
+              points={stroke.points}
+              stroke={laserColor}
+              strokeWidth={stroke.strokeWidth}
               lineCap="round"
               lineJoin="round"
               tension={0.5}
               globalCompositeOperation="source-over"
+              shadowColor={laserColor}
+              shadowBlur={10}
+              shadowOpacity={0.8}
+              opacity={1}
+            />
+          ))}
+          {/* Current stroke being drawn */}
+          {currentStroke && currentStroke.length >= 4 && (
+            <Line
+              points={currentStroke}
+              stroke={tool === 'laser' ? laserColor : color}
+              strokeWidth={tool === 'laser' ? 4 : strokeWidth}
+              lineCap="round"
+              lineJoin="round"
+              tension={0.5}
+              globalCompositeOperation="source-over"
+              {...(tool === 'laser' ? {
+                shadowColor: laserColor,
+                shadowBlur: 10,
+                shadowOpacity: 0.8,
+              } : {})}
             />
           )}
         </Layer>

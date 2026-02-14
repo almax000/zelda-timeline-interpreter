@@ -3,6 +3,7 @@ import {
   ReactFlow,
   Background,
   useReactFlow,
+  ConnectionLineType,
   type Connection,
   type NodeTypes,
   type EdgeTypes,
@@ -15,12 +16,10 @@ import '@xyflow/react/dist/style.css';
 
 import { GameNode } from './GameNode';
 import { EventNode } from './EventNode';
-import { GuideNode } from './GuideNode';
 import { ImageNode } from './ImageNode';
 import { ShapeNode } from './ShapeNode';
 import { LabelPointNode } from './LabelPointNode';
-import { AnnotationAnchorNode } from './AnnotationAnchorNode';
-import { AnnotationLabelNode } from './AnnotationLabelNode';
+import { SplitNode } from './SplitNode';
 import { TimelineEdge } from './TimelineEdge';
 import { ContextMenu } from './ContextMenu';
 import { AnnotationOverlay } from '../Annotation/AnnotationOverlay';
@@ -35,12 +34,10 @@ import type { BranchType } from '../../types/timeline';
 const nodeTypes: NodeTypes = {
   game: GameNode as NodeTypes['game'],
   event: EventNode as NodeTypes['event'],
-  guide: GuideNode as NodeTypes['guide'],
   image: ImageNode as NodeTypes['image'],
   shape: ShapeNode as NodeTypes['shape'],
   labelPoint: LabelPointNode as NodeTypes['labelPoint'],
-  annotationAnchor: AnnotationAnchorNode as NodeTypes['annotationAnchor'],
-  annotationLabel: AnnotationLabelNode as NodeTypes['annotationLabel'],
+  split: SplitNode as NodeTypes['split'],
 };
 
 const edgeTypes: EdgeTypes = {
@@ -69,7 +66,6 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const isLocked = tab?.isLocked ?? false;
 
   const activeTool = useUIStore((s) => s.activeTool);
-  const activeShapeTool = useUIStore((s) => s.activeShapeTool);
   const resetTool = useUIStore((s) => s.resetTool);
   const spaceHeld = useSpacePan();
 
@@ -196,12 +192,32 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
     [isLocked]
   );
 
+  const isPlacementTool = activeTool === 'split' || activeTool === 'text';
+
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
       setContextMenu(null);
 
-      // Shape placement on pane click
-      if (activeShapeTool && !isLocked) {
+      if (isLocked) return;
+
+      // Split placement
+      if (activeTool === 'split') {
+        const position = screenToFlowPosition({
+          x: event.clientX,
+          y: event.clientY,
+        });
+        addNode({
+          id: `split-${Date.now()}`,
+          type: 'split',
+          position,
+          data: { label: 'Split' },
+        } as TimelineNode);
+        resetTool();
+        return;
+      }
+
+      // Text placement (reuses ShapeNode text)
+      if (activeTool === 'text') {
         const position = screenToFlowPosition({
           x: event.clientX,
           y: event.clientY,
@@ -211,18 +227,20 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
           type: 'shape',
           position,
           data: {
-            shapeType: activeShapeTool,
-            width: activeShapeTool === 'line' || activeShapeTool === 'arrow' ? 150 : 100,
-            height: activeShapeTool === 'line' || activeShapeTool === 'arrow' ? 40 : 100,
+            shapeType: 'text',
+            width: 120,
+            height: 32,
+            label: 'Text',
             fill: 'transparent',
             stroke: 'var(--color-text)',
             strokeWidth: 2,
           },
         } as TimelineNode);
         resetTool();
+        return;
       }
     },
-    [activeShapeTool, isLocked, addNode, screenToFlowPosition, resetTool]
+    [activeTool, isLocked, addNode, screenToFlowPosition, resetTool]
   );
 
   const onPaneContextMenu = useCallback(
@@ -264,8 +282,8 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
 
   const interactionDisabled = isLocked || isAnnotationMode;
 
-  // Cursor style for shape placement, annotate mode, or space-pan
-  const cursorClass = (activeShapeTool || activeTool === 'annotate') && !isLocked
+  // Cursor style for placement tools, annotate mode, or space-pan
+  const cursorClass = (isPlacementTool || activeTool === 'annotate') && !isLocked
     ? 'cursor-crosshair'
     : spaceHeld
       ? 'space-pan'
@@ -289,6 +307,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
+        connectionLineType={ConnectionLineType.SmoothStep}
         snapToGrid
         snapGrid={[20, 20]}
         fitView
@@ -297,7 +316,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         nodesDraggable={!interactionDisabled}
         nodesConnectable={!interactionDisabled}
         elementsSelectable={!interactionDisabled}
-        panOnDrag={spaceHeld && !isAnnotationMode && !activeShapeTool}
+        panOnDrag={spaceHeld && !isAnnotationMode && !isPlacementTool}
         zoomOnScroll={!isAnnotationMode}
         deleteKeyCode={interactionDisabled ? [] : ['Backspace', 'Delete']}
         proOptions={{ hideAttribution: true }}
@@ -346,7 +365,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
               id: `event-${Date.now()}`,
               type: 'event',
               position,
-              data: { label: 'New Event', isEraMarker: false },
+              data: { label: 'New Event' },
             } as TimelineNode);
           }}
           onClose={() => setContextMenu(null)}

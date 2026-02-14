@@ -50,9 +50,29 @@ function IconAnnotate() {
   );
 }
 
-function IconUndo() {
+function IconSplit() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3v6" />
+      <path d="M12 15v6" />
+      <path d="M6 15l6-6 6 6" />
+    </svg>
+  );
+}
+
+function IconText() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="4 7 4 4 20 4 20 7" />
+      <line x1="9" y1="20" x2="15" y2="20" />
+      <line x1="12" y1="4" x2="12" y2="20" />
+    </svg>
+  );
+}
+
+function IconUndo() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 7v6h6" />
       <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" />
     </svg>
@@ -61,7 +81,7 @@ function IconUndo() {
 
 function IconRedo() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 7v6h-6" />
       <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13" />
     </svg>
@@ -88,6 +108,22 @@ function IconEraser() {
   );
 }
 
+function IconLaser() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2v4" />
+      <path d="m4.93 4.93 2.83 2.83" />
+      <path d="M2 12h4" />
+      <path d="m4.93 19.07 2.83-2.83" />
+      <path d="M12 18v4" />
+      <path d="m16.24 16.24 2.83 2.83" />
+      <path d="M18 12h4" />
+      <path d="m16.24 7.76 2.83-2.83" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
 function IconClearStrokes() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -107,49 +143,6 @@ function PenIcon({ color }: { color: string }) {
   );
 }
 
-function IconRect() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-    </svg>
-  );
-}
-
-function IconCircle() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-    </svg>
-  );
-}
-
-function IconArrow() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 12h14" />
-      <path d="m12 5 7 7-7 7" />
-    </svg>
-  );
-}
-
-function IconLine() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 20 20 4" />
-    </svg>
-  );
-}
-
-function IconText() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="4 7 4 4 20 4 20 7" />
-      <line x1="9" y1="20" x2="15" y2="20" />
-      <line x1="12" y1="4" x2="12" y2="20" />
-    </svg>
-  );
-}
-
 function IconChevron() {
   return (
     <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -164,7 +157,7 @@ function Divider() {
 
 // --- Main component ---
 
-type PopoverName = 'shapes' | 'draw' | 'branch' | null;
+type PopoverName = 'draw' | 'branch' | null;
 
 export function FloatingToolbar() {
   const { t } = useTranslation();
@@ -187,7 +180,7 @@ export function FloatingToolbar() {
     clearStrokes,
   } = useAnnotationStore();
 
-  const { activeTool, activeShapeTool, setActiveTool, setActiveShapeTool } = useUIStore();
+  const { activeTool, setActiveTool, resetTool } = useUIStore();
 
   const { undo, redo, pastStates, futureStates } = store.temporal.getState();
   const canUndo = pastStates.length > 0;
@@ -206,7 +199,7 @@ export function FloatingToolbar() {
   };
 
   const handleSelectTool = () => {
-    setActiveTool('select');
+    resetTool();
     setAnnotationMode(false);
     closePopover();
   };
@@ -217,10 +210,22 @@ export function FloatingToolbar() {
     closePopover();
   };
 
+  const handleSplitTool = () => {
+    setActiveTool('split');
+    setAnnotationMode(false);
+    closePopover();
+  };
+
+  const handleTextTool = () => {
+    setActiveTool('text');
+    setAnnotationMode(false);
+    closePopover();
+  };
+
   const handlePenClick = (penColor: string) => {
     if (isAnnotationMode && tool === 'pen' && color === penColor) {
       setAnnotationMode(false);
-      setActiveTool('select');
+      resetTool();
     } else {
       setAnnotationMode(true);
       setTool('pen');
@@ -233,7 +238,7 @@ export function FloatingToolbar() {
   const handleEraserClick = () => {
     if (isAnnotationMode && tool === 'eraser') {
       setAnnotationMode(false);
-      setActiveTool('select');
+      resetTool();
     } else {
       setAnnotationMode(true);
       setTool('eraser');
@@ -242,9 +247,15 @@ export function FloatingToolbar() {
     closePopover();
   };
 
-  const handleShapeTool = (shape: 'rectangle' | 'circle' | 'arrow' | 'line') => {
-    setAnnotationMode(false);
-    setActiveShapeTool(shape);
+  const handleLaserClick = () => {
+    if (isAnnotationMode && tool === 'laser') {
+      setAnnotationMode(false);
+      resetTool();
+    } else {
+      setAnnotationMode(true);
+      setTool('laser');
+      setActiveTool('laser');
+    }
     closePopover();
   };
 
@@ -258,14 +269,6 @@ export function FloatingToolbar() {
     { type: 'fallen' as const, color: 'var(--color-branch-fallen)' },
     { type: 'child' as const, color: 'var(--color-branch-child)' },
     { type: 'adult' as const, color: 'var(--color-branch-adult)' },
-  ];
-
-  const shapes = [
-    { type: 'rectangle' as const, icon: <IconRect />, label: 'Rectangle' },
-    { type: 'circle' as const, icon: <IconCircle />, label: 'Circle' },
-    { type: 'arrow' as const, icon: <IconArrow />, label: 'Arrow' },
-    { type: 'line' as const, icon: <IconLine />, label: 'Line' },
-    { type: 'text' as const, icon: <IconText />, label: 'Text' },
   ];
 
   const btn = 'w-[30px] h-[30px] flex items-center justify-center rounded-md transition-colors';
@@ -321,38 +324,33 @@ export function FloatingToolbar() {
 
         <Divider />
 
-        {/* === Popover group (disabled when locked) === */}
+        {/* === Placement tools (disabled when locked) === */}
         <div className={`flex items-center gap-0.5 ${disabledClass}`}>
-          {/* Shapes popover */}
-          <ToolbarPopover
-            isOpen={openPopover === 'shapes'}
-            onToggle={() => togglePopover('shapes')}
-            onClose={closePopover}
-            trigger={
-              <button
-                className={activeShapeTool ? btnActive : btnMuted}
-                title={t('toolbar.shapes')}
-                data-testid="toolbar-shapes"
-              >
-                <IconRect />
-                <IconChevron />
-              </button>
-            }
+          {/* Split */}
+          <button
+            onClick={handleSplitTool}
+            className={activeTool === 'split' ? btnActive : btnMuted}
+            title={t('toolbar.split')}
+            data-testid="toolbar-split"
           >
-            {shapes.map(({ type, icon, label }) => (
-              type === 'text' ? null : (
-                <button
-                  key={type}
-                  onClick={() => handleShapeTool(type as 'rectangle' | 'circle' | 'arrow' | 'line')}
-                  className={activeShapeTool === type ? btnActive : btnMuted}
-                  title={label}
-                >
-                  {icon}
-                </button>
-              )
-            ))}
-          </ToolbarPopover>
+            <IconSplit />
+          </button>
 
+          {/* Text */}
+          <button
+            onClick={handleTextTool}
+            className={activeTool === 'text' ? btnActive : btnMuted}
+            title={t('toolbar.text')}
+            data-testid="toolbar-text"
+          >
+            <IconText />
+          </button>
+        </div>
+
+        <Divider />
+
+        {/* === Draw/Eraser/Laser group (disabled when locked) === */}
+        <div className={`flex items-center gap-0.5 ${disabledClass}`}>
           {/* Draw popover */}
           <ToolbarPopover
             isOpen={openPopover === 'draw'}
@@ -360,7 +358,7 @@ export function FloatingToolbar() {
             onClose={closePopover}
             trigger={
               <button
-                className={`${activeTool === 'pen' || activeTool === 'eraser' ? btnActive : btnMuted} relative`}
+                className={`${activeTool === 'pen' ? btnActive : btnMuted} relative`}
                 title={t('toolbar.draw')}
                 data-testid="toolbar-draw"
               >
@@ -417,16 +415,9 @@ export function FloatingToolbar() {
                   </button>
                 ))}
               </div>
-              {/* Eraser + Clear strokes */}
-              <div className="flex gap-0.5 border-t border-[var(--color-surface-light)] pt-1">
-                <button
-                  onClick={handleEraserClick}
-                  className={isAnnotationMode && tool === 'eraser' ? btnActive : btnMuted}
-                  title="Eraser"
-                >
-                  <IconEraser />
-                </button>
-                {hasStrokes && (
+              {/* Clear strokes */}
+              {hasStrokes && (
+                <div className="flex gap-0.5 border-t border-[var(--color-surface-light)] pt-1">
                   <button
                     onClick={() => clearStrokes(activeTabId)}
                     className={`${btn} text-red-400 hover:bg-[var(--color-surface-light)]`}
@@ -434,12 +425,39 @@ export function FloatingToolbar() {
                   >
                     <IconClearStrokes />
                   </button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </ToolbarPopover>
 
-          {/* Branch popover */}
+          {/* Eraser — standalone */}
+          <button
+            onClick={handleEraserClick}
+            className={activeTool === 'eraser' ? btnActive : btnMuted}
+            title={t('toolbar.eraser')}
+            data-testid="toolbar-eraser"
+          >
+            <IconEraser />
+          </button>
+
+          {/* Laser — standalone */}
+          <button
+            onClick={handleLaserClick}
+            className={`${activeTool === 'laser' ? btnActive : btnMuted} relative`}
+            title={t('toolbar.laser')}
+            data-testid="toolbar-laser"
+          >
+            <IconLaser />
+            {activeTool === 'laser' && (
+              <span className="absolute bottom-0.5 left-1.5 right-1.5 h-0.5 rounded-full" style={{ backgroundColor: '#ADFF2F' }} />
+            )}
+          </button>
+        </div>
+
+        <Divider />
+
+        {/* === Branch popover (disabled when locked) === */}
+        <div className={`flex items-center gap-0.5 ${disabledClass}`}>
           <ToolbarPopover
             isOpen={openPopover === 'branch'}
             onToggle={() => togglePopover('branch')}

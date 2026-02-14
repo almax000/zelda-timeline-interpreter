@@ -12,7 +12,7 @@ export interface Stroke {
   strokeWidth: number;
 }
 
-export type AnnotationTool = 'pen' | 'eraser';
+export type AnnotationTool = 'pen' | 'eraser' | 'laser';
 
 interface AnnotationStore {
   isAnnotationMode: boolean;
@@ -20,6 +20,7 @@ interface AnnotationStore {
   color: string;
   strokeWidth: number;
   strokes: Map<string, Stroke[]>; // tabId -> strokes
+  laserStrokes: Map<string, Stroke[]>; // tabId -> laser strokes
   currentStroke: number[] | null;
 
   setAnnotationMode: (mode: boolean) => void;
@@ -30,9 +31,12 @@ interface AnnotationStore {
   startStroke: () => void;
   addPoint: (x: number, y: number) => void;
   finishStroke: (tabId: string) => void;
+  finishLaserStroke: (tabId: string) => void;
   removeStroke: (tabId: string, strokeId: string) => void;
+  removeLaserStroke: (tabId: string, strokeId: string) => void;
   clearStrokes: (tabId: string) => void;
   getStrokes: (tabId: string) => Stroke[];
+  getLaserStrokes: (tabId: string) => Stroke[];
 }
 
 export const useAnnotationStore = create<AnnotationStore>((set, get) => ({
@@ -41,6 +45,7 @@ export const useAnnotationStore = create<AnnotationStore>((set, get) => ({
   color: '#EF4444',
   strokeWidth: 3,
   strokes: new Map(),
+  laserStrokes: new Map(),
   currentStroke: null,
 
   setAnnotationMode: (mode) => set({ isAnnotationMode: mode }),
@@ -80,12 +85,44 @@ export const useAnnotationStore = create<AnnotationStore>((set, get) => ({
     }
   },
 
+  finishLaserStroke: (tabId) => {
+    const { currentStroke, laserStrokes } = get();
+    if (currentStroke && currentStroke.length >= 4) {
+      const newStroke: Stroke = {
+        id: `laser-${Date.now()}`,
+        points: currentStroke,
+        color: '#ADFF2F',
+        strokeWidth: 4,
+      };
+      const tabLaserStrokes = laserStrokes.get(tabId) || [];
+      const updated = new Map(laserStrokes);
+      updated.set(tabId, [...tabLaserStrokes, newStroke]);
+      set({ laserStrokes: updated, currentStroke: null });
+
+      // Auto-remove after 1 second
+      const strokeId = newStroke.id;
+      setTimeout(() => {
+        get().removeLaserStroke(tabId, strokeId);
+      }, 1000);
+    } else {
+      set({ currentStroke: null });
+    }
+  },
+
   removeStroke: (tabId, strokeId) => {
     const { strokes } = get();
     const tabStrokes = strokes.get(tabId) || [];
     const updated = new Map(strokes);
     updated.set(tabId, tabStrokes.filter((s) => s.id !== strokeId));
     set({ strokes: updated });
+  },
+
+  removeLaserStroke: (tabId, strokeId) => {
+    const { laserStrokes } = get();
+    const tabLaserStrokes = laserStrokes.get(tabId) || [];
+    const updated = new Map(laserStrokes);
+    updated.set(tabId, tabLaserStrokes.filter((s) => s.id !== strokeId));
+    set({ laserStrokes: updated });
   },
 
   clearStrokes: (tabId) => {
@@ -97,5 +134,9 @@ export const useAnnotationStore = create<AnnotationStore>((set, get) => ({
 
   getStrokes: (tabId) => {
     return get().strokes.get(tabId) || [];
+  },
+
+  getLaserStrokes: (tabId) => {
+    return get().laserStrokes.get(tabId) || [];
   },
 }));
