@@ -41,13 +41,24 @@ export interface SplitNodeData extends Record<string, unknown> {
   labelKey?: string;
 }
 
+export interface TextNodeData extends Record<string, unknown> {
+  text: string;
+  width: number;
+  fontSize: number;
+  fontWeight: 'normal' | 'bold';
+  fontStyle: 'normal' | 'italic';
+  textAlign: 'left' | 'center' | 'right';
+  textColor: string;
+}
+
 export type TimelineNode =
   | Node<TimelineNodeData, 'game'>
   | Node<EventNodeData, 'event'>
   | Node<ImageNodeData, 'image'>
   | Node<ShapeNodeData, 'shape'>
   | Node<LabelPointNodeData, 'labelPoint'>
-  | Node<SplitNodeData, 'split'>;
+  | Node<SplitNodeData, 'split'>
+  | Node<TextNodeData, 'textLabel'>;
 
 export interface TimelineEdgeData extends Record<string, unknown> {
   branchType: BranchType;

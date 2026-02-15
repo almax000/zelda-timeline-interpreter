@@ -99,11 +99,15 @@ test.describe('Annotation', () => {
     await page.locator('[data-testid="toolbar-select"]').click();
     await page.waitForTimeout(200);
 
-    // Open draw popover to find "Clear strokes"
+    // Activate pen to show sub-toolbar with "Clear strokes"
     await page.locator('[data-testid="toolbar-draw"]').click();
     await page.waitForTimeout(200);
 
-    await page.locator('button[title="Clear strokes"]').dispatchEvent('click');
+    await page.locator('[data-subtoolbar] button[title="Clear strokes"]').dispatchEvent('click');
+    await page.waitForTimeout(300);
+
+    // Deactivate pen mode to dismiss annotation overlay
+    await page.locator('[data-testid="toolbar-select"]').click();
     await page.waitForTimeout(300);
 
     // Konva canvas should disappear (no strokes and not in annotation mode)
@@ -111,44 +115,35 @@ test.describe('Annotation', () => {
   });
 
   test('pen color can be changed', async ({ page }) => {
-    // Open draw popover and click first pen (red)
+    // Activate pen to show sub-toolbar
     await page.locator('[data-testid="toolbar-draw"]').click();
     await page.waitForTimeout(200);
-
-    const penButtons = page.locator('button[title="Pen"]');
-    await penButtons.first().dispatchEvent('click');
-    await page.waitForTimeout(100);
 
     // Konva canvas should be visible
     await expect(page.locator('canvas').first()).toBeVisible();
 
-    // Deactivate
-    await page.locator('[data-testid="toolbar-select"]').click();
-    await page.waitForTimeout(100);
-
-    // Open draw popover again and click a different pen color
-    await page.locator('[data-testid="toolbar-draw"]').click();
-    await page.waitForTimeout(200);
+    // Click a different pen color in sub-toolbar
+    const penButtons = page.locator('[data-subtoolbar] button[title="Pen"]');
     await penButtons.nth(1).dispatchEvent('click');
     await page.waitForTimeout(100);
 
-    // Should activate annotation mode again — canvas visible
+    // Should still be in annotation mode — canvas visible
     await expect(page.locator('canvas').first()).toBeVisible();
 
     await page.locator('[data-testid="toolbar-select"]').click();
   });
 
-  test('stroke width selector is visible in draw popover', async ({ page }) => {
+  test('stroke width selector is visible in sub-toolbar', async ({ page }) => {
     await page.locator('[data-testid="toolbar-draw"]').click();
     await page.waitForTimeout(200);
 
-    // Width options should exist inside popover (may be outside viewport but still in DOM)
-    const width2 = page.locator('button[title="2px"]');
-    const width4 = page.locator('button[title="4px"]');
+    // Width options should exist inside sub-toolbar
+    const width2 = page.locator('[data-subtoolbar] button[title="2px"]');
+    const width4 = page.locator('[data-subtoolbar] button[title="4px"]');
     await expect(width2).toHaveCount(1);
     await expect(width4).toHaveCount(1);
 
-    // Click a different width via dispatchEvent
+    // Click a different width
     await width4.dispatchEvent('click');
     await page.waitForTimeout(100);
   });

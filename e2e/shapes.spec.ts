@@ -38,8 +38,8 @@ test.describe('Placement Tools', () => {
     const newCount = await getNodeCount(page);
     expect(newCount).toBe(initialCount + 1);
 
-    const shapeNodes = page.locator('.react-flow__node-shape');
-    await expect(shapeNodes.first()).toBeVisible();
+    const textNodes = page.locator('.react-flow__node-textLabel');
+    await expect(textNodes.first()).toBeVisible();
   });
 
   test('split tool deactivates after placing', async ({ page }) => {

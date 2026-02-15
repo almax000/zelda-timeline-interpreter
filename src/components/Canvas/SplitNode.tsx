@@ -1,6 +1,8 @@
-import { memo, useState, useRef, useEffect } from 'react';
+import { memo, useState, useRef, useEffect, useCallback } from 'react';
 import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
 import { useTranslation } from 'react-i18next';
+import { getCanvasStore } from '../../stores/canvasRegistry';
+import { useTabStore } from '../../stores/tabStore';
 
 interface SplitNodeData extends Record<string, unknown> {
   label?: string;
@@ -34,35 +36,12 @@ function CornerTriangle({ position }: { position: 'tl' | 'tr' | 'bl' | 'br' }) {
   );
 }
 
-function DiamondHandle({ type, position, id, className }: {
-  type: 'source' | 'target';
-  position: Position;
-  id: string;
-  className?: string;
-}) {
-  return (
-    <Handle
-      type={type}
-      position={position}
-      id={id}
-      className={className}
-      style={{
-        width: 10,
-        height: 10,
-        background: 'var(--color-surface)',
-        border: '1.5px solid var(--color-gold)',
-        borderRadius: 0,
-        transform: `${position === Position.Top || position === Position.Bottom ? 'translateX(-50%)' : 'translateY(-50%)'} rotate(45deg)`,
-      }}
-    />
-  );
-}
-
-function SplitNodeComponent({ data, selected }: NodeProps<SplitNodeType>) {
+function SplitNodeComponent({ id, data, selected }: NodeProps<SplitNodeType>) {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(data.label || '');
   const inputRef = useRef<HTMLInputElement>(null);
+  const activeTabId = useTabStore((s) => s.activeTabId);
 
   const displayLabel = data.labelKey ? t(data.labelKey) : data.label;
 
@@ -80,18 +59,21 @@ function SplitNodeComponent({ data, selected }: NodeProps<SplitNodeType>) {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     if (editValue.trim()) {
-      data.label = editValue.trim();
+      const store = getCanvasStore(activeTabId);
+      store.getState().updateNodeData(id, { label: editValue.trim() });
     }
     setIsEditing(false);
-  };
+  }, [editValue, id, activeTabId]);
+
+  const handleClass = '!w-2 !h-2 !bg-[var(--color-gold)] !border-[var(--color-surface)] !border !opacity-0 group-hover:!opacity-100';
 
   return (
     <div
       onDoubleClick={handleDoubleClick}
       className={`
-        relative px-5 py-3 min-w-[140px]
+        relative px-5 py-3 min-w-[140px] group
         bg-[var(--color-surface)] border-2 border-[var(--color-gold)]
         transition-all duration-200
         ${selected ? 'shadow-[0_0_15px_var(--color-gold)]' : ''}
@@ -103,13 +85,15 @@ function SplitNodeComponent({ data, selected }: NodeProps<SplitNodeType>) {
       <CornerTriangle position="bl" />
       <CornerTriangle position="br" />
 
-      {/* Top = target */}
-      <DiamondHandle type="target" position={Position.Top} id="top" />
-
-      {/* Bottom/Left/Right = source (multi-output) */}
-      <DiamondHandle type="source" position={Position.Bottom} id="bottom" />
-      <DiamondHandle type="source" position={Position.Left} id="left" />
-      <DiamondHandle type="source" position={Position.Right} id="right" />
+      {/* 4-directional bidirectional handles — same as GameNode */}
+      <Handle type="target" position={Position.Top} id="top" className={handleClass} />
+      <Handle type="source" position={Position.Top} id="top-src" className="!w-0 !h-0 !opacity-0 !min-w-0 !min-h-0" />
+      <Handle type="target" position={Position.Bottom} id="bottom" className={handleClass} />
+      <Handle type="source" position={Position.Bottom} id="bottom-src" className="!w-0 !h-0 !opacity-0 !min-w-0 !min-h-0" />
+      <Handle type="target" position={Position.Left} id="left" className={handleClass} />
+      <Handle type="source" position={Position.Left} id="left-src" className="!w-0 !h-0 !opacity-0 !min-w-0 !min-h-0" />
+      <Handle type="target" position={Position.Right} id="right" className={handleClass} />
+      <Handle type="source" position={Position.Right} id="right-src" className="!w-0 !h-0 !opacity-0 !min-w-0 !min-h-0" />
 
       {/* Content */}
       {isEditing ? (
@@ -126,7 +110,7 @@ function SplitNodeComponent({ data, selected }: NodeProps<SplitNodeType>) {
         />
       ) : (
         <p className="text-sm font-medium text-center whitespace-nowrap text-[var(--color-text)]">
-          {displayLabel || 'Split'}
+          {displayLabel || 'Event'}
         </p>
       )}
     </div>

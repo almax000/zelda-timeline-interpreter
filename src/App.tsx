@@ -3,42 +3,44 @@ import { ReactFlowProvider } from '@xyflow/react';
 import { Sidebar } from './components/Sidebar';
 import { TimelineCanvas } from './components/Canvas';
 import { CanvasOverlay } from './components/Canvas/CanvasOverlay';
-import { useUndoRedoShortcuts } from './hooks/useUndoRedoShortcuts';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useTabStore } from './stores/tabStore';
 import { getCanvasStore } from './stores/canvasRegistry';
 import { officialTimelineNodes, officialTimelineEdges } from './data/officialTimeline';
 import { decodeTimeline } from './utils/sharing';
 
+// Bump this when official timeline data changes to invalidate page-0 cache.
+// Runs at module level (before any Zustand store hydrates from localStorage).
+const DATA_VERSION = 2;
+(() => {
+  const stored = Number(localStorage.getItem('zelda-data-version') ?? 0);
+  if (stored < DATA_VERSION) {
+    localStorage.removeItem('zelda-tab-page-0');
+    localStorage.setItem('zelda-data-version', String(DATA_VERSION));
+  }
+  // Legacy single-store migration
+  const oldData = localStorage.getItem('zelda-timeline-storage');
+  const tabData = localStorage.getItem('zelda-tab-canvas-1');
+  if (oldData && !tabData) {
+    localStorage.setItem('zelda-tab-canvas-1', oldData);
+    localStorage.removeItem('zelda-timeline-storage');
+  }
+  const oldOfficial = localStorage.getItem('zelda-tab-official');
+  if (oldOfficial && !tabData) {
+    localStorage.setItem('zelda-tab-canvas-1', oldOfficial);
+    localStorage.removeItem('zelda-tab-official');
+  }
+})();
+
 function AppContent() {
-  useUndoRedoShortcuts();
+  useKeyboardShortcuts();
   const activeTabId = useTabStore((s) => s.activeTabId);
 
   useEffect(() => {
-    // Migrate old single-store localStorage to tab system
-    const oldData = localStorage.getItem('zelda-timeline-storage');
-    const tabData = localStorage.getItem('zelda-tab-canvas-1');
-    if (oldData && !tabData) {
-      localStorage.setItem('zelda-tab-canvas-1', oldData);
-      localStorage.removeItem('zelda-timeline-storage');
-    }
-
-    const oldOfficialData = localStorage.getItem('zelda-tab-official');
-    if (oldOfficialData && !tabData) {
-      localStorage.setItem('zelda-tab-canvas-1', oldOfficialData);
-      localStorage.removeItem('zelda-tab-official');
-    }
-
     // Page 0: load official timeline if no persisted data
     const page0Store = getCanvasStore('page-0');
     if (page0Store.getState().nodes.length === 0) {
       page0Store.getState().loadTimeline(officialTimelineNodes, officialTimelineEdges);
-    }
-
-    // Load official timeline into canvas-1 if it has no data
-    const canvas1Store = getCanvasStore('canvas-1');
-    const { nodes } = canvas1Store.getState();
-    if (nodes.length === 0) {
-      canvas1Store.getState().loadTimeline(officialTimelineNodes, officialTimelineEdges);
     }
 
     // Check URL hash for shared timeline

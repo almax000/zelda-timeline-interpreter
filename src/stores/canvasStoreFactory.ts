@@ -28,6 +28,7 @@ export interface CanvasStore {
   loadTimeline: (nodes: TimelineNode[], edges: TimelineEdge[]) => void;
   updateEdgeBranchType: (edgeId: string, branchType: BranchType) => void;
   updateEdgeLabel: (edgeId: string, label: string) => void;
+  updateNodeData: (nodeId: string, data: Partial<Record<string, unknown>>) => void;
   splitEdgeWithLabel: (edgeId: string, label: string) => void;
   insertAnnotation: (edgeId: string, clickPosition: { x: number; y: number }) => void;
 }
@@ -63,20 +64,7 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
           },
 
           addEdge: (connection) => {
-            const { selectedBranchType, edges, nodes } = get();
-
-            // Game node 1-in/1-out validation
-            const sourceNode = nodes.find((n) => n.id === connection.source);
-            const targetNode = nodes.find((n) => n.id === connection.target);
-
-            if (sourceNode?.type === 'game') {
-              const hasOutgoing = edges.some((e) => e.source === sourceNode.id);
-              if (hasOutgoing) return;
-            }
-            if (targetNode?.type === 'game') {
-              const hasIncoming = edges.some((e) => e.target === targetNode.id);
-              if (hasIncoming) return;
-            }
+            const { selectedBranchType, edges } = get();
 
             const newEdge: TimelineEdge = {
               id: `e${connection.source}-${connection.target}`,
@@ -111,6 +99,14 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
             set({
               edges: get().edges.map((e) =>
                 e.id === edgeId ? { ...e, data: { ...e.data!, branchType } } : e
+              ),
+            });
+          },
+
+          updateNodeData: (nodeId, dataUpdate) => {
+            set({
+              nodes: get().nodes.map((n) =>
+                n.id === nodeId ? { ...n, data: { ...n.data, ...dataUpdate } } as typeof n : n
               ),
             });
           },
@@ -169,46 +165,15 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
             });
           },
 
-          insertAnnotation: (edgeId, clickPosition) => {
-            const { nodes, edges } = get();
-            const edge = edges.find((e) => e.id === edgeId);
-            if (!edge) return;
-
-            const eventId = `event-${Date.now()}`;
-            const branchType = edge.data?.branchType ?? 'main';
-
-            // Create event node at click position
+          insertAnnotation: (_edgeId, clickPosition) => {
+            const { nodes } = get();
             const eventNode: TimelineNode = {
-              id: eventId,
+              id: `event-${Date.now()}`,
               type: 'event',
               position: { x: clickPosition.x, y: clickPosition.y },
-              data: { label: 'Event' },
+              data: {},
             };
-
-            // Split original edge: source → event → target
-            const edge1: TimelineEdge = {
-              id: `${edge.source}-${eventId}`,
-              source: edge.source,
-              target: eventId,
-              sourceHandle: edge.sourceHandle,
-              targetHandle: 'left',
-              type: 'timeline',
-              data: { branchType },
-            };
-            const edge2: TimelineEdge = {
-              id: `${eventId}-${edge.target}`,
-              source: eventId,
-              target: edge.target,
-              sourceHandle: 'right',
-              targetHandle: edge.targetHandle,
-              type: 'timeline',
-              data: { branchType },
-            };
-
-            set({
-              nodes: [...nodes, eventNode],
-              edges: [...edges.filter((e) => e.id !== edgeId), edge1, edge2],
-            });
+            set({ nodes: [...nodes, eventNode] });
           },
         }),
         {

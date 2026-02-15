@@ -76,6 +76,14 @@ export async function expandSidebar(_page: Page) {
 }
 
 /**
+ * Activate a tool by pressing its keyboard shortcut key.
+ */
+export async function activateToolByKey(page: Page, key: string) {
+  await page.keyboard.press(key);
+  await page.waitForTimeout(200);
+}
+
+/**
  * Import the test fixture (3 nodes, 2 edges) via the Export menu's file input.
  * After import, switches to the editable tab so nodes are visible.
  */

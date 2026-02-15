@@ -1,15 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getCanvasStore } from '../../stores/canvasRegistry';
 import { useTabStore } from '../../stores/tabStore';
 import { useAnnotationStore } from '../../stores/annotationStore';
 import { useUIStore } from '../../stores/uiStore';
 import { ConfirmDialog } from '../UI/ConfirmDialog';
-import { ToolbarPopover } from './ToolbarPopover';
-
-const PEN_COLORS = ['#EF4444', '#F97316', '#EAB308', '#22C55E'];
-const MORE_COLORS = ['#3B82F6', '#A855F7', '#EC4899', '#F8FAFC'];
-const WIDTHS = [2, 4, 6, 8];
 
 // --- Icons ---
 
@@ -42,20 +37,21 @@ function IconCursor() {
 
 function IconAnnotate() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 20V10" />
-      <circle cx="12" cy="6" r="2" />
-      <path d="M4 20h16" />
+    <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0">
+      <path d="M8 1 L15 8 L8 15 L1 8 Z" fill="var(--color-surface)" stroke="var(--color-gold)" strokeWidth="1.2"/>
+      <path d="M8 4 L12 8 L8 12 L4 8 Z" fill="var(--color-gold)"/>
     </svg>
   );
 }
 
 function IconSplit() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3v6" />
-      <path d="M12 15v6" />
-      <path d="M6 15l6-6 6 6" />
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <rect x="3" y="5" width="18" height="14" rx="1" />
+      <path d="M3 5L6 5L3 8Z" fill="currentColor" opacity="0.5" stroke="none" />
+      <path d="M21 5L18 5L21 8Z" fill="currentColor" opacity="0.5" stroke="none" />
+      <path d="M3 19L6 19L3 16Z" fill="currentColor" opacity="0.5" stroke="none" />
+      <path d="M21 19L18 19L21 16Z" fill="currentColor" opacity="0.5" stroke="none" />
     </svg>
   );
 }
@@ -110,26 +106,12 @@ function IconEraser() {
 
 function IconLaser() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2v4" />
-      <path d="m4.93 4.93 2.83 2.83" />
-      <path d="M2 12h4" />
-      <path d="m4.93 19.07 2.83-2.83" />
-      <path d="M12 18v4" />
-      <path d="m16.24 16.24 2.83 2.83" />
-      <path d="M18 12h4" />
-      <path d="m16.24 7.76 2.83-2.83" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
-
-function IconClearStrokes() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <path d="m15 9-6 6" />
-      <path d="m9 9 6 6" />
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" strokeWidth="2"
+      strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"
+        stroke="currentColor" />
+      <circle cx="19.5" cy="4.5" r="2" fill="#ADFF2F" stroke="none" />
+      <circle cx="19.5" cy="4.5" r="4" fill="#ADFF2F" opacity="0.3" stroke="none" />
     </svg>
   );
 }
@@ -143,26 +125,15 @@ function PenIcon({ color }: { color: string }) {
   );
 }
 
-function IconChevron() {
-  return (
-    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
-
 function Divider() {
   return <div className="w-px h-5 bg-[var(--color-surface-light)] mx-0.5" />;
 }
 
 // --- Main component ---
 
-type PopoverName = 'draw' | 'branch' | null;
-
 export function FloatingToolbar() {
   const { t } = useTranslation();
   const [showClearDialog, setShowClearDialog] = useState(false);
-  const [openPopover, setOpenPopover] = useState<PopoverName>(null);
 
   const activeTabId = useTabStore((s) => s.activeTabId);
   const activeTab = useTabStore((s) => s.tabs.find((tab) => tab.id === s.activeTabId));
@@ -171,13 +142,10 @@ export function FloatingToolbar() {
 
   const store = getCanvasStore(activeTabId);
   const clearTimeline = store((s) => s.clearTimeline);
-  const selectedBranchType = store((s) => s.selectedBranchType);
-  const setSelectedBranchType = store((s) => s.setSelectedBranchType);
 
   const {
-    isAnnotationMode, tool, color, strokeWidth,
-    setAnnotationMode, setTool, setColor, setStrokeWidth,
-    clearStrokes,
+    isAnnotationMode, tool, color,
+    setAnnotationMode, setTool, setColor,
   } = useAnnotationStore();
 
   const { activeTool, setActiveTool, resetTool } = useUIStore();
@@ -185,13 +153,6 @@ export function FloatingToolbar() {
   const { undo, redo, pastStates, futureStates } = store.temporal.getState();
   const canUndo = pastStates.length > 0;
   const canRedo = futureStates.length > 0;
-  const hasStrokes = useAnnotationStore((s) => (s.strokes.get(activeTabId)?.length ?? 0) > 0);
-
-  const togglePopover = useCallback((name: PopoverName) => {
-    setOpenPopover((prev) => (prev === name ? null : name));
-  }, []);
-
-  const closePopover = useCallback(() => setOpenPopover(null), []);
 
   const handleClear = () => {
     clearTimeline();
@@ -201,38 +162,33 @@ export function FloatingToolbar() {
   const handleSelectTool = () => {
     resetTool();
     setAnnotationMode(false);
-    closePopover();
   };
 
   const handleAnnotateTool = () => {
     setActiveTool('annotate');
     setAnnotationMode(false);
-    closePopover();
   };
 
   const handleSplitTool = () => {
     setActiveTool('split');
     setAnnotationMode(false);
-    closePopover();
   };
 
   const handleTextTool = () => {
     setActiveTool('text');
     setAnnotationMode(false);
-    closePopover();
   };
 
-  const handlePenClick = (penColor: string) => {
-    if (isAnnotationMode && tool === 'pen' && color === penColor) {
+  const handlePenToggle = () => {
+    if (activeTool === 'pen') {
       setAnnotationMode(false);
       resetTool();
     } else {
       setAnnotationMode(true);
       setTool('pen');
-      setColor(penColor);
+      setColor(color || '#EF4444');
       setActiveTool('pen');
     }
-    closePopover();
   };
 
   const handleEraserClick = () => {
@@ -244,7 +200,6 @@ export function FloatingToolbar() {
       setTool('eraser');
       setActiveTool('eraser');
     }
-    closePopover();
   };
 
   const handleLaserClick = () => {
@@ -256,20 +211,7 @@ export function FloatingToolbar() {
       setTool('laser');
       setActiveTool('laser');
     }
-    closePopover();
   };
-
-  const handleBranchSelect = (type: 'main' | 'fallen' | 'child' | 'adult') => {
-    setSelectedBranchType(type);
-    closePopover();
-  };
-
-  const branchTypes = [
-    { type: 'main' as const, color: 'var(--color-branch-main)' },
-    { type: 'fallen' as const, color: 'var(--color-branch-fallen)' },
-    { type: 'child' as const, color: 'var(--color-branch-child)' },
-    { type: 'adult' as const, color: 'var(--color-branch-adult)' },
-  ];
 
   const btn = 'w-[30px] h-[30px] flex items-center justify-center rounded-md transition-colors';
   const btnMuted = `${btn} text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-light)]`;
@@ -277,9 +219,6 @@ export function FloatingToolbar() {
   const btnDisabled = `${btn} text-[var(--color-text-muted)]/30 cursor-not-allowed`;
 
   const disabledClass = isLocked ? 'opacity-40 pointer-events-none' : '';
-
-  // Current branch color for indicator
-  const currentBranchColor = branchTypes.find((b) => b.type === selectedBranchType)?.color ?? 'var(--color-branch-main)';
 
   return (
     <>
@@ -299,9 +238,8 @@ export function FloatingToolbar() {
 
         <Divider />
 
-        {/* === Mode buttons (disabled when locked) === */}
+        {/* === Mode + Placement tools (Select, Annotate, Split, Text) === */}
         <div className={`flex items-center gap-0.5 ${disabledClass}`}>
-          {/* Select */}
           <button
             onClick={handleSelectTool}
             className={activeTool === 'select' && !isAnnotationMode ? btnActive : btnMuted}
@@ -311,7 +249,6 @@ export function FloatingToolbar() {
             <IconCursor />
           </button>
 
-          {/* Annotate */}
           <button
             onClick={handleAnnotateTool}
             className={activeTool === 'annotate' ? btnActive : btnMuted}
@@ -320,13 +257,7 @@ export function FloatingToolbar() {
           >
             <IconAnnotate />
           </button>
-        </div>
 
-        <Divider />
-
-        {/* === Placement tools (disabled when locked) === */}
-        <div className={`flex items-center gap-0.5 ${disabledClass}`}>
-          {/* Split */}
           <button
             onClick={handleSplitTool}
             className={activeTool === 'split' ? btnActive : btnMuted}
@@ -336,7 +267,6 @@ export function FloatingToolbar() {
             <IconSplit />
           </button>
 
-          {/* Text */}
           <button
             onClick={handleTextTool}
             className={activeTool === 'text' ? btnActive : btnMuted}
@@ -349,88 +279,22 @@ export function FloatingToolbar() {
 
         <Divider />
 
-        {/* === Draw/Eraser/Laser group (disabled when locked) === */}
+        {/* === Draw/Eraser/Laser group === */}
         <div className={`flex items-center gap-0.5 ${disabledClass}`}>
-          {/* Draw popover */}
-          <ToolbarPopover
-            isOpen={openPopover === 'draw'}
-            onToggle={() => togglePopover('draw')}
-            onClose={closePopover}
-            trigger={
-              <button
-                className={`${activeTool === 'pen' ? btnActive : btnMuted} relative`}
-                title={t('toolbar.draw')}
-                data-testid="toolbar-draw"
-              >
-                <PenIcon color={isAnnotationMode && tool === 'pen' ? color : 'currentColor'} />
-                {isAnnotationMode && tool === 'pen' && (
-                  <span className="absolute bottom-0.5 left-1.5 right-1.5 h-0.5 rounded-full" style={{ backgroundColor: color }} />
-                )}
-                <IconChevron />
-              </button>
-            }
+          {/* Pen toggle */}
+          <button
+            onClick={handlePenToggle}
+            className={`${activeTool === 'pen' ? btnActive : btnMuted} relative`}
+            title={t('toolbar.draw')}
+            data-testid="toolbar-draw"
           >
-            <div className="flex flex-col gap-1">
-              {/* Color rows */}
-              <div className="flex gap-0.5">
-                {PEN_COLORS.map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => handlePenClick(c)}
-                    className={`${btn} relative hover:bg-[var(--color-surface-light)]`}
-                    title="Pen"
-                  >
-                    <PenIcon color={c} />
-                    {isAnnotationMode && tool === 'pen' && color === c && (
-                      <span className="absolute bottom-0.5 left-1.5 right-1.5 h-0.5 rounded-full" style={{ backgroundColor: c }} />
-                    )}
-                  </button>
-                ))}
-              </div>
-              <div className="flex gap-0.5">
-                {MORE_COLORS.map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => handlePenClick(c)}
-                    className={`${btn} relative hover:bg-[var(--color-surface-light)]`}
-                    title="Pen"
-                  >
-                    <PenIcon color={c} />
-                    {isAnnotationMode && tool === 'pen' && color === c && (
-                      <span className="absolute bottom-0.5 left-1.5 right-1.5 h-0.5 rounded-full" style={{ backgroundColor: c }} />
-                    )}
-                  </button>
-                ))}
-              </div>
-              {/* Width selector */}
-              <div className="flex gap-0.5 border-t border-[var(--color-surface-light)] pt-1">
-                {WIDTHS.map((w) => (
-                  <button
-                    key={w}
-                    onClick={() => setStrokeWidth(w)}
-                    className={`${btn} ${strokeWidth === w ? 'bg-[var(--color-surface-light)]' : 'hover:bg-[var(--color-surface-light)]'}`}
-                    title={`${w}px`}
-                  >
-                    <span className="rounded-full bg-[var(--color-text)]/60" style={{ width: w + 2, height: w + 2 }} />
-                  </button>
-                ))}
-              </div>
-              {/* Clear strokes */}
-              {hasStrokes && (
-                <div className="flex gap-0.5 border-t border-[var(--color-surface-light)] pt-1">
-                  <button
-                    onClick={() => clearStrokes(activeTabId)}
-                    className={`${btn} text-red-400 hover:bg-[var(--color-surface-light)]`}
-                    title="Clear strokes"
-                  >
-                    <IconClearStrokes />
-                  </button>
-                </div>
-              )}
-            </div>
-          </ToolbarPopover>
+            <PenIcon color={isAnnotationMode && tool === 'pen' ? color : 'currentColor'} />
+            {isAnnotationMode && tool === 'pen' && (
+              <span className="absolute bottom-0.5 left-1.5 right-1.5 h-0.5 rounded-full" style={{ backgroundColor: color }} />
+            )}
+          </button>
 
-          {/* Eraser — standalone */}
+          {/* Eraser */}
           <button
             onClick={handleEraserClick}
             className={activeTool === 'eraser' ? btnActive : btnMuted}
@@ -440,7 +304,7 @@ export function FloatingToolbar() {
             <IconEraser />
           </button>
 
-          {/* Laser — standalone */}
+          {/* Laser */}
           <button
             onClick={handleLaserClick}
             className={`${activeTool === 'laser' ? btnActive : btnMuted} relative`}
@@ -456,48 +320,7 @@ export function FloatingToolbar() {
 
         <Divider />
 
-        {/* === Branch popover (disabled when locked) === */}
-        <div className={`flex items-center gap-0.5 ${disabledClass}`}>
-          <ToolbarPopover
-            isOpen={openPopover === 'branch'}
-            onToggle={() => togglePopover('branch')}
-            onClose={closePopover}
-            trigger={
-              <button
-                className={`${btnMuted} relative`}
-                title={t('toolbar.branch')}
-                data-testid="toolbar-branch"
-              >
-                <span
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: currentBranchColor }}
-                />
-                <IconChevron />
-              </button>
-            }
-          >
-            {branchTypes.map(({ type, color: c }) => (
-              <button
-                key={type}
-                onClick={() => handleBranchSelect(type)}
-                className={`${btn} hover:bg-[var(--color-surface-light)]`}
-                title={t(`branch.${type}`)}
-              >
-                <span
-                  className="w-3 h-3 rounded-full"
-                  style={{
-                    backgroundColor: c,
-                    boxShadow: selectedBranchType === type ? `0 0 0 2px var(--color-surface), 0 0 0 3px ${c}` : 'none',
-                  }}
-                />
-              </button>
-            ))}
-          </ToolbarPopover>
-        </div>
-
-        <Divider />
-
-        {/* === Actions (disabled when locked) === */}
+        {/* === Actions === */}
         <div className={`flex items-center gap-0.5 ${disabledClass}`}>
           <button onClick={() => undo()} disabled={!canUndo} className={canUndo ? btnMuted : btnDisabled} title={t('toolbar.undo')}>
             <IconUndo />

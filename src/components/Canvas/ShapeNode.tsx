@@ -60,6 +60,16 @@ export const ShapeNode = memo(function ShapeNode({ data, selected }: ShapeNodePr
             />
           </svg>
         );
+      case 'text':
+        return (
+          <div className="w-full h-full flex items-center justify-center">
+            {editing ? null : (
+              <span className="text-sm text-[var(--color-text)] px-1 text-center select-none whitespace-pre-wrap">
+                {label || 'Text'}
+              </span>
+            )}
+          </div>
+        );
     }
   };
 
@@ -80,7 +90,7 @@ export const ShapeNode = memo(function ShapeNode({ data, selected }: ShapeNodePr
       className="relative"
       style={{ width, height }}
       onDoubleClick={() => {
-        if (shapeType === 'rectangle' || shapeType === 'circle') {
+        if (shapeType === 'rectangle' || shapeType === 'circle' || shapeType === 'text') {
           setEditing(true);
         }
       }}
@@ -109,10 +119,14 @@ export const ShapeNode = memo(function ShapeNode({ data, selected }: ShapeNodePr
           />
         </div>
       )}
-      <Handle type="target" position={Position.Top} className="!bg-[var(--color-gold)] !w-2 !h-2" />
-      <Handle type="source" position={Position.Bottom} className="!bg-[var(--color-gold)] !w-2 !h-2" />
-      <Handle type="target" position={Position.Left} id="left" className="!bg-[var(--color-gold)] !w-2 !h-2" />
-      <Handle type="source" position={Position.Right} id="right" className="!bg-[var(--color-gold)] !w-2 !h-2" />
+      {shapeType !== 'text' && (
+        <>
+          <Handle type="target" position={Position.Top} className="!bg-[var(--color-gold)] !w-2 !h-2" />
+          <Handle type="source" position={Position.Bottom} className="!bg-[var(--color-gold)] !w-2 !h-2" />
+          <Handle type="target" position={Position.Left} id="left" className="!bg-[var(--color-gold)] !w-2 !h-2" />
+          <Handle type="source" position={Position.Right} id="right" className="!bg-[var(--color-gold)] !w-2 !h-2" />
+        </>
+      )}
     </div>
   );
 });

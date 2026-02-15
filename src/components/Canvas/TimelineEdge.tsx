@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { BaseEdge, getSmoothStepPath, type EdgeProps, type Edge } from '@xyflow/react';
+import { BaseEdge, getSmoothStepPath, getStraightPath, type EdgeProps, type Edge } from '@xyflow/react';
 import type { BranchType } from '../../types/timeline';
 
 interface TimelineEdgeData extends Record<string, unknown> {
@@ -7,6 +7,8 @@ interface TimelineEdgeData extends Record<string, unknown> {
 }
 
 type TimelineEdgeType = Edge<TimelineEdgeData>;
+
+const ALIGN_THRESHOLD = 20;
 
 const branchColors: Record<BranchType, string> = {
   main: 'var(--color-branch-main)',
@@ -26,15 +28,24 @@ function TimelineEdgeComponent({
   data,
   selected,
 }: EdgeProps<TimelineEdgeType>) {
-  const [edgePath] = getSmoothStepPath({
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-    sourcePosition,
-    targetPosition,
-    borderRadius: 0,
-  });
+  const isHorizontallyAligned = Math.abs(sourceY - targetY) < ALIGN_THRESHOLD;
+  const isVerticallyAligned = Math.abs(sourceX - targetX) < ALIGN_THRESHOLD;
+
+  let edgePath: string;
+
+  if (isHorizontallyAligned || isVerticallyAligned) {
+    [edgePath] = getStraightPath({ sourceX, sourceY, targetX, targetY });
+  } else {
+    [edgePath] = getSmoothStepPath({
+      sourceX,
+      sourceY,
+      targetX,
+      targetY,
+      sourcePosition,
+      targetPosition,
+      borderRadius: 0,
+    });
+  }
 
   const branchType = data?.branchType || 'main';
   const color = branchColors[branchType];

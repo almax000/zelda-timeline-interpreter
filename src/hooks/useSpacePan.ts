@@ -1,9 +1,5 @@
 import { useState, useEffect } from 'react';
-
-function isInputFocused() {
-  const tag = document.activeElement?.tagName;
-  return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
-}
+import { isInputFocused } from '../utils/dom';
 
 export function useSpacePan() {
   const [spaceHeld, setSpaceHeld] = useState(false);

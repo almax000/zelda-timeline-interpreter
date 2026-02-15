@@ -20,6 +20,7 @@ import { ImageNode } from './ImageNode';
 import { ShapeNode } from './ShapeNode';
 import { LabelPointNode } from './LabelPointNode';
 import { SplitNode } from './SplitNode';
+import { TextNode } from './TextNode';
 import { TimelineEdge } from './TimelineEdge';
 import { ContextMenu } from './ContextMenu';
 import { AnnotationOverlay } from '../Annotation/AnnotationOverlay';
@@ -38,6 +39,7 @@ const nodeTypes: NodeTypes = {
   shape: ShapeNode as NodeTypes['shape'],
   labelPoint: LabelPointNode as NodeTypes['labelPoint'],
   split: SplitNode as NodeTypes['split'],
+  textLabel: TextNode as NodeTypes['textLabel'],
 };
 
 const edgeTypes: EdgeTypes = {
@@ -124,7 +126,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   }, [isLocked, tabId, screenToFlowPosition, containerSize]);
 
   const store = getCanvasStore(tabId);
-  const { nodes, edges, onNodesChange, onEdgesChange, addNode, addEdge, removeNode, removeEdge, updateEdgeBranchType, updateEdgeLabel, splitEdgeWithLabel, insertAnnotation } = store();
+  const { nodes, edges, onNodesChange, onEdgesChange, addNode, addEdge, removeNode, removeEdge, updateEdgeBranchType } = store();
 
   const onConnect: OnConnect = useCallback(
     (connection: Connection) => {
@@ -192,13 +194,38 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
     [isLocked]
   );
 
-  const isPlacementTool = activeTool === 'split' || activeTool === 'text';
+  const isPlacementTool = activeTool === 'split' || activeTool === 'text' || activeTool === 'annotate';
+
+  const placeEventPoint = useCallback(
+    (event: React.MouseEvent) => {
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+      position.x -= 12;
+      position.y -= 12;
+      addNode({
+        id: `event-${Date.now()}`,
+        type: 'event',
+        position,
+        data: {},
+      } as TimelineNode);
+      resetTool();
+    },
+    [addNode, screenToFlowPosition, resetTool]
+  );
 
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
       setContextMenu(null);
 
       if (isLocked) return;
+
+      // Event Point placement
+      if (activeTool === 'annotate') {
+        placeEventPoint(event);
+        return;
+      }
 
       // Split placement
       if (activeTool === 'split') {
@@ -210,37 +237,37 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
           id: `split-${Date.now()}`,
           type: 'split',
           position,
-          data: { label: 'Split' },
+          data: { label: 'Event' },
         } as TimelineNode);
         resetTool();
         return;
       }
 
-      // Text placement (reuses ShapeNode text)
+      // Text placement
       if (activeTool === 'text') {
         const position = screenToFlowPosition({
           x: event.clientX,
           y: event.clientY,
         });
         addNode({
-          id: `shape-${Date.now()}`,
-          type: 'shape',
+          id: `text-${Date.now()}`,
+          type: 'textLabel',
           position,
           data: {
-            shapeType: 'text',
-            width: 120,
-            height: 32,
-            label: 'Text',
-            fill: 'transparent',
-            stroke: 'var(--color-text)',
-            strokeWidth: 2,
+            text: '',
+            width: 160,
+            fontSize: 16,
+            fontWeight: 'normal',
+            fontStyle: 'normal',
+            textAlign: 'left',
+            textColor: 'var(--color-text)',
           },
         } as TimelineNode);
         resetTool();
         return;
       }
     },
-    [activeTool, isLocked, addNode, screenToFlowPosition, resetTool]
+    [activeTool, isLocked, addNode, screenToFlowPosition, resetTool, placeEventPoint]
   );
 
   const onPaneContextMenu = useCallback(
@@ -258,16 +285,11 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   );
 
   const onEdgeClick = useCallback(
-    (event: React.MouseEvent, edge: { id: string }) => {
+    (event: React.MouseEvent, _edge: { id: string }) => {
       if (isLocked || activeTool !== 'annotate') return;
-      const position = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
-      insertAnnotation(edge.id, position);
-      resetTool();
+      placeEventPoint(event);
     },
-    [isLocked, activeTool, screenToFlowPosition, insertAnnotation, resetTool]
+    [isLocked, activeTool, placeEventPoint]
   );
 
   const contextEdge = contextMenu?.type === 'edge'
@@ -283,7 +305,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const interactionDisabled = isLocked || isAnnotationMode;
 
   // Cursor style for placement tools, annotate mode, or space-pan
-  const cursorClass = (isPlacementTool || activeTool === 'annotate') && !isLocked
+  const cursorClass = isPlacementTool && !isLocked
     ? 'cursor-crosshair'
     : spaceHeld
       ? 'space-pan'
@@ -339,7 +361,6 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
           y={contextMenu.y}
           type={contextMenu.type}
           edgeBranchType={contextEdge?.data?.branchType}
-          edgeLabel={contextEdge?.data?.label}
           onDelete={() => {
             if (contextMenu.type === 'node') {
               removeNode(contextMenu.targetId);
@@ -350,22 +371,18 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
           onChangeBranch={(branchType: BranchType) => {
             updateEdgeBranchType(contextMenu.targetId, branchType);
           }}
-          onChangeLabel={(label: string) => {
-            updateEdgeLabel(contextMenu.targetId, label);
-          }}
-          onSplitEdge={(label: string) => {
-            splitEdgeWithLabel(contextMenu.targetId, label);
-          }}
           onAddEvent={() => {
             const position = screenToFlowPosition({
               x: contextMenu.x,
               y: contextMenu.y,
             });
+            position.x -= 12;
+            position.y -= 12;
             addNode({
               id: `event-${Date.now()}`,
               type: 'event',
               position,
-              data: { label: 'New Event' },
+              data: {},
             } as TimelineNode);
           }}
           onClose={() => setContextMenu(null)}

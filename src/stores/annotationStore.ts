@@ -10,6 +10,7 @@ export interface Stroke {
   points: number[];
   color: string;
   strokeWidth: number;
+  timestamps?: number[];
 }
 
 export type AnnotationTool = 'pen' | 'eraser' | 'laser';
@@ -22,6 +23,7 @@ interface AnnotationStore {
   strokes: Map<string, Stroke[]>; // tabId -> strokes
   laserStrokes: Map<string, Stroke[]>; // tabId -> laser strokes
   currentStroke: number[] | null;
+  currentTimestamps: number[] | null;
 
   setAnnotationMode: (mode: boolean) => void;
   toggleAnnotationMode: () => void;
@@ -34,6 +36,7 @@ interface AnnotationStore {
   finishLaserStroke: (tabId: string) => void;
   removeStroke: (tabId: string, strokeId: string) => void;
   removeLaserStroke: (tabId: string, strokeId: string) => void;
+  cleanupDecayedLaser: (tabId: string) => void;
   clearStrokes: (tabId: string) => void;
   getStrokes: (tabId: string) => Stroke[];
   getLaserStrokes: (tabId: string) => Stroke[];
@@ -47,6 +50,7 @@ export const useAnnotationStore = create<AnnotationStore>((set, get) => ({
   strokes: new Map(),
   laserStrokes: new Map(),
   currentStroke: null,
+  currentTimestamps: null,
 
   setAnnotationMode: (mode) => set({ isAnnotationMode: mode }),
   toggleAnnotationMode: () => set((s) => ({ isAnnotationMode: !s.isAnnotationMode })),
@@ -54,17 +58,32 @@ export const useAnnotationStore = create<AnnotationStore>((set, get) => ({
   setColor: (color) => set({ color }),
   setStrokeWidth: (width) => set({ strokeWidth: width }),
 
-  startStroke: () => set({ currentStroke: [] }),
+  startStroke: () => {
+    const { tool } = get();
+    if (tool === 'laser') {
+      set({ currentStroke: [], currentTimestamps: [] });
+    } else {
+      set({ currentStroke: [], currentTimestamps: null });
+    }
+  },
 
   addPoint: (x, y) => {
-    const { currentStroke } = get();
+    const { currentStroke, currentTimestamps, tool } = get();
     if (!currentStroke) return;
     if (currentStroke.length >= 2) {
       const lastX = currentStroke[currentStroke.length - 2];
       const lastY = currentStroke[currentStroke.length - 1];
       if (Math.hypot(x - lastX, y - lastY) < 3) return;
     }
-    set({ currentStroke: [...currentStroke, x, y] });
+    const now = Date.now();
+    if (tool === 'laser' && currentTimestamps) {
+      set({
+        currentStroke: [...currentStroke, x, y],
+        currentTimestamps: [...currentTimestamps, now],
+      });
+    } else {
+      set({ currentStroke: [...currentStroke, x, y] });
+    }
   },
 
   finishStroke: (tabId) => {
@@ -79,33 +98,28 @@ export const useAnnotationStore = create<AnnotationStore>((set, get) => ({
       const tabStrokes = strokes.get(tabId) || [];
       const updated = new Map(strokes);
       updated.set(tabId, [...tabStrokes, newStroke]);
-      set({ strokes: updated, currentStroke: null });
+      set({ strokes: updated, currentStroke: null, currentTimestamps: null });
     } else {
-      set({ currentStroke: null });
+      set({ currentStroke: null, currentTimestamps: null });
     }
   },
 
   finishLaserStroke: (tabId) => {
-    const { currentStroke, laserStrokes } = get();
-    if (currentStroke && currentStroke.length >= 4) {
+    const { currentStroke, currentTimestamps, laserStrokes } = get();
+    if (currentStroke && currentStroke.length >= 4 && currentTimestamps) {
       const newStroke: Stroke = {
         id: `laser-${Date.now()}`,
         points: currentStroke,
         color: '#ADFF2F',
         strokeWidth: 4,
+        timestamps: currentTimestamps,
       };
       const tabLaserStrokes = laserStrokes.get(tabId) || [];
       const updated = new Map(laserStrokes);
       updated.set(tabId, [...tabLaserStrokes, newStroke]);
-      set({ laserStrokes: updated, currentStroke: null });
-
-      // Auto-remove after 1 second
-      const strokeId = newStroke.id;
-      setTimeout(() => {
-        get().removeLaserStroke(tabId, strokeId);
-      }, 1000);
+      set({ laserStrokes: updated, currentStroke: null, currentTimestamps: null });
     } else {
-      set({ currentStroke: null });
+      set({ currentStroke: null, currentTimestamps: null });
     }
   },
 
@@ -123,6 +137,23 @@ export const useAnnotationStore = create<AnnotationStore>((set, get) => ({
     const updated = new Map(laserStrokes);
     updated.set(tabId, tabLaserStrokes.filter((s) => s.id !== strokeId));
     set({ laserStrokes: updated });
+  },
+
+  cleanupDecayedLaser: (tabId) => {
+    const { laserStrokes } = get();
+    const tabLaserStrokes = laserStrokes.get(tabId) || [];
+    const now = Date.now();
+    const DECAY_TIME = 1000;
+    const alive = tabLaserStrokes.filter((stroke) => {
+      if (!stroke.timestamps || stroke.timestamps.length === 0) return false;
+      const newestTs = stroke.timestamps[stroke.timestamps.length - 1];
+      return now - newestTs < DECAY_TIME;
+    });
+    if (alive.length !== tabLaserStrokes.length) {
+      const updated = new Map(laserStrokes);
+      updated.set(tabId, alive);
+      set({ laserStrokes: updated });
+    }
   },
 
   clearStrokes: (tabId) => {

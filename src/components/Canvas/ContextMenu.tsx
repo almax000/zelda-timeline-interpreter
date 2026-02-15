@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BranchType } from '../../types/timeline';
 
@@ -14,11 +14,8 @@ interface ContextMenuProps {
   y: number;
   type: 'node' | 'edge' | 'pane';
   edgeBranchType?: BranchType;
-  edgeLabel?: string;
   onDelete: () => void;
   onChangeBranch?: (branchType: BranchType) => void;
-  onChangeLabel?: (label: string) => void;
-  onSplitEdge?: (label: string) => void;
   onAddEvent?: () => void;
   onClose: () => void;
 }
@@ -28,25 +25,13 @@ export function ContextMenu({
   y,
   type,
   edgeBranchType,
-  edgeLabel,
   onDelete,
   onChangeBranch,
-  onChangeLabel,
-  onSplitEdge,
   onAddEvent,
   onClose,
 }: ContextMenuProps) {
   const { t } = useTranslation();
-  const [editingLabel, setEditingLabel] = useState(false);
-  const [labelValue, setLabelValue] = useState(edgeLabel || '');
   const menuRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (editingLabel && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [editingLabel]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -57,11 +42,6 @@ export function ContextMenu({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onClose]);
-
-  const handleLabelSubmit = () => {
-    onChangeLabel?.(labelValue);
-    onClose();
-  };
 
   return (
     <div
@@ -92,9 +72,6 @@ export function ContextMenu({
         <>
           <hr className="my-1 border-[var(--color-surface-light)]" />
           <div className="px-4 py-2">
-            <p className="text-xs text-[var(--color-text-muted)] mb-2">
-              {t('contextMenu.changeBranch')}
-            </p>
             <div className="flex gap-2">
               {branchOptions.map(({ type: bt, color }) => (
                 <button
@@ -111,49 +88,6 @@ export function ContextMenu({
               ))}
             </div>
           </div>
-
-          <hr className="my-1 border-[var(--color-surface-light)]" />
-          {editingLabel ? (
-            <div className="px-4 py-2 flex gap-2">
-              <input
-                ref={inputRef}
-                value={labelValue}
-                onChange={(e) => setLabelValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleLabelSubmit();
-                  if (e.key === 'Escape') onClose();
-                }}
-                className="flex-1 bg-[var(--color-background)] border border-[var(--color-surface-light)] rounded px-2 py-1 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-gold)]"
-                placeholder="Label..."
-              />
-              <button
-                onClick={handleLabelSubmit}
-                className="px-2 py-1 text-xs bg-[var(--color-gold)] text-[var(--color-background)] rounded font-medium"
-              >
-                OK
-              </button>
-            </div>
-          ) : (
-            <>
-              <button
-                onClick={() => setEditingLabel(true)}
-                className="w-full px-4 py-2 text-left text-sm text-[var(--color-text)] hover:bg-[var(--color-surface-light)]"
-              >
-                {edgeLabel ? t('contextMenu.editLabel') : t('contextMenu.addLabel')}
-              </button>
-              {onSplitEdge && (
-                <button
-                  onClick={() => {
-                    onSplitEdge('Label');
-                    onClose();
-                  }}
-                  className="w-full px-4 py-2 text-left text-sm text-[var(--color-text)] hover:bg-[var(--color-surface-light)]"
-                >
-                  Add Label Node
-                </button>
-              )}
-            </>
-          )}
         </>
       )}
     </div>

@@ -149,19 +149,24 @@ test.describe('Toolbar', () => {
     await expect(canvasContainer).not.toHaveClass(/cursor-crosshair/);
   });
 
-  test('draw popover opens and shows pen colors + widths', async ({ page }) => {
+  test('draw button activates pen and shows sub-toolbar', async ({ page }) => {
     await switchToEditableTab(page);
 
     const drawButton = page.locator('[data-testid="toolbar-draw"]');
     await drawButton.click();
+    await page.waitForTimeout(200);
 
-    // Pen buttons should be visible inside the popover
-    const penButtons = page.locator('button[title="Pen"]');
+    // Sub-toolbar should appear with pen colors and widths
+    const subToolbar = page.locator('[data-subtoolbar]');
+    await expect(subToolbar).toBeVisible();
+
+    // Pen buttons should be visible inside the sub-toolbar
+    const penButtons = subToolbar.locator('button[title="Pen"]');
     await expect(penButtons.first()).toBeVisible();
 
     // Width buttons should be visible
-    await expect(page.locator('button[title="2px"]')).toBeVisible();
-    await expect(page.locator('button[title="4px"]')).toBeVisible();
+    await expect(subToolbar.locator('button[title="2px"]')).toBeVisible();
+    await expect(subToolbar.locator('button[title="4px"]')).toBeVisible();
   });
 
   test('eraser button is standalone', async ({ page }) => {
@@ -176,19 +181,6 @@ test.describe('Toolbar', () => {
 
     const laserButton = page.locator('[data-testid="toolbar-laser"]');
     await expect(laserButton).toBeVisible();
-  });
-
-  test('branch popover shows branch color options', async ({ page }) => {
-    await switchToEditableTab(page);
-
-    const branchButton = page.locator('[data-testid="toolbar-branch"]');
-    await branchButton.click();
-
-    // Branch options should appear
-    await expect(page.locator(`button[title="Main"]`)).toBeVisible();
-    await expect(page.locator(`button[title="Child Timeline"]`)).toBeVisible();
-    await expect(page.locator(`button[title="Adult Timeline"]`)).toBeVisible();
-    await expect(page.locator(`button[title="Fallen Hero Timeline"]`)).toBeVisible();
   });
 
   test('locked page shows toolbar with disabled buttons', async ({ page }) => {

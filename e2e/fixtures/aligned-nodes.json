@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "state": {
+    "nodes": [
+      {
+        "id": "game-ocarina-aligned",
+        "type": "game",
+        "position": { "x": 100, "y": 200 },
+        "data": { "gameId": "ocarina-of-time" }
+      },
+      {
+        "id": "game-majoras-aligned",
+        "type": "game",
+        "position": { "x": 500, "y": 200 },
+        "data": { "gameId": "majoras-mask" }
+      },
+      {
+        "id": "game-windwaker-misaligned",
+        "type": "game",
+        "position": { "x": 500, "y": 500 },
+        "data": { "gameId": "wind-waker" }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-aligned",
+        "source": "game-ocarina-aligned",
+        "target": "game-majoras-aligned",
+        "sourceHandle": "right",
+        "targetHandle": "left",
+        "type": "timeline",
+        "data": { "branchType": "main" }
+      },
+      {
+        "id": "e-misaligned",
+        "source": "game-ocarina-aligned",
+        "target": "game-windwaker-misaligned",
+        "sourceHandle": "bottom",
+        "targetHandle": "top",
+        "type": "timeline",
+        "data": { "branchType": "adult" }
+      }
+    ]
+  }
+}
