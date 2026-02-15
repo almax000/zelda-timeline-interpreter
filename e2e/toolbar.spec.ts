@@ -108,13 +108,13 @@ test.describe('Toolbar', () => {
     await expect(annotateButton).toBeVisible();
     await annotateButton.click();
 
-    // Canvas should have crosshair cursor
+    // Canvas should have diamond cursor for annotate mode
     const canvasContainer = page.locator('.flex-1.h-full.relative');
-    await expect(canvasContainer).toHaveClass(/cursor-crosshair/);
+    await expect(canvasContainer).toHaveClass(/cursor-diamond/);
 
     // Click select to deactivate
     await page.locator('[data-testid="toolbar-select"]').click();
-    await expect(canvasContainer).not.toHaveClass(/cursor-crosshair/);
+    await expect(canvasContainer).not.toHaveClass(/cursor-diamond/);
   });
 
   test('split button activates split placement mode', async ({ page }) => {

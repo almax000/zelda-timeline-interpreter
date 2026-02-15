@@ -2,6 +2,7 @@ import { useAnnotationStore } from '../../stores/annotationStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useTabStore } from '../../stores/tabStore';
 import { getCanvasStore } from '../../stores/canvasRegistry';
+import type { BranchType } from '../../types/timeline';
 
 const PEN_COLORS = ['#EF4444', '#F97316', '#EAB308', '#22C55E', '#3B82F6', '#A855F7', '#EC4899', '#F8FAFC'];
 const WIDTHS = [2, 4, 6, 8];
@@ -217,18 +218,51 @@ function TextSubToolbar() {
   );
 }
 
+const BRANCHES: { type: BranchType; color: string; label: string }[] = [
+  { type: 'main', color: 'var(--color-branch-main)', label: 'Main' },
+  { type: 'child', color: 'var(--color-branch-child)', label: 'Child' },
+  { type: 'adult', color: 'var(--color-branch-adult)', label: 'Adult' },
+  { type: 'fallen', color: 'var(--color-branch-fallen)', label: 'Fallen' },
+];
+
+function AnnotateSubToolbar() {
+  const activeTabId = useTabStore((s) => s.activeTabId);
+  const store = getCanvasStore(activeTabId);
+  const selectedBranchType = store((s) => s.selectedBranchType);
+  const setSelectedBranchType = store((s) => s.setSelectedBranchType);
+
+  return (
+    <div className="flex items-center gap-0.5" data-subtoolbar>
+      {BRANCHES.map(({ type, color, label }) => (
+        <button
+          key={type}
+          onClick={() => setSelectedBranchType(type)}
+          title={label}
+          className="w-5 h-5 rounded-full border transition-all"
+          style={{
+            backgroundColor: color,
+            borderColor: selectedBranchType === type ? 'var(--color-gold)' : 'transparent',
+            boxShadow: selectedBranchType === type ? '0 0 4px var(--color-gold)' : 'none',
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export function SubToolbar() {
   const activeTool = useUIStore((s) => s.activeTool);
   const editingTextNodeId = useUIStore((s) => s.editingTextNodeId);
 
   const showPen = activeTool === 'pen';
   const showText = editingTextNodeId !== null;
+  const showAnnotate = activeTool === 'annotate';
 
-  if (!showPen && !showText) return null;
+  if (!showPen && !showText && !showAnnotate) return null;
 
   return (
     <div className="pointer-events-auto flex items-center gap-0.5 px-2 py-1.5 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-xl shadow-xl border border-[var(--color-surface-light)]">
-      {showText ? <TextSubToolbar /> : <PenSubToolbar />}
+      {showText ? <TextSubToolbar /> : showAnnotate ? <AnnotateSubToolbar /> : <PenSubToolbar />}
     </div>
   );
 }

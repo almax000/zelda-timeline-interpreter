@@ -29,7 +29,7 @@ export interface CanvasStore {
   updateEdgeBranchType: (edgeId: string, branchType: BranchType) => void;
   updateEdgeLabel: (edgeId: string, label: string) => void;
   updateNodeData: (nodeId: string, data: Partial<Record<string, unknown>>) => void;
-  splitEdgeWithLabel: (edgeId: string, label: string, clickPosition?: { x: number; y: number }) => void;
+  splitEdgeWithLabel: (edgeId: string, label: string, clickPosition?: { x: number; y: number }, branchType?: BranchType) => void;
   insertAnnotation: (edgeId: string, clickPosition: { x: number; y: number }) => void;
 }
 
@@ -119,7 +119,7 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
             });
           },
 
-          splitEdgeWithLabel: (edgeId, label, clickPosition) => {
+          splitEdgeWithLabel: (edgeId, label, clickPosition, overrideBranchType) => {
             const EVENT_NODE_HALF_SIZE = 12;
             const { nodes, edges } = get();
             const edge = edges.find((e) => e.id === edgeId);
@@ -137,14 +137,13 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
               : (sourceNode.position.y + targetNode.position.y) / 2 - EVENT_NODE_HALF_SIZE;
 
             const labelNodeId = `event-${Date.now()}`;
+            const branchType = overrideBranchType ?? edge.data?.branchType ?? 'main';
             const labelNode = {
               id: labelNodeId,
               type: 'event' as const,
               position: { x: posX, y: posY },
-              data: { label },
+              data: { label, branchType },
             };
-
-            const branchType = edge.data?.branchType ?? 'main';
             const edge1: TimelineEdge = {
               id: `${edge.source}-${labelNodeId}`,
               source: edge.source,

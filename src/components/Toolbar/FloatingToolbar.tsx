@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useStore } from 'zustand';
 import { useTranslation } from 'react-i18next';
 import { getCanvasStore } from '../../stores/canvasRegistry';
 import { useTabStore } from '../../stores/tabStore';
@@ -38,8 +39,8 @@ function IconCursor() {
 function IconAnnotate() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0">
-      <path d="M8 1 L15 8 L8 15 L1 8 Z" fill="var(--color-surface)" stroke="var(--color-gold)" strokeWidth="1.2"/>
-      <path d="M8 4 L12 8 L8 12 L4 8 Z" fill="var(--color-gold)"/>
+      <path d="M8 1 L15 8 L8 15 L1 8 Z" fill="var(--color-surface)" stroke="currentColor" strokeWidth="1.2"/>
+      <path d="M8 4 L12 8 L8 12 L4 8 Z" fill="currentColor"/>
     </svg>
   );
 }
@@ -150,9 +151,10 @@ export function FloatingToolbar() {
 
   const { activeTool, setActiveTool, resetTool } = useUIStore();
 
-  const { undo, redo, pastStates, futureStates } = store.temporal.getState();
-  const canUndo = pastStates.length > 0;
-  const canRedo = futureStates.length > 0;
+  const undo = useStore(store.temporal, (s) => s.undo);
+  const redo = useStore(store.temporal, (s) => s.redo);
+  const canUndo = useStore(store.temporal, (s) => s.pastStates.length > 0);
+  const canRedo = useStore(store.temporal, (s) => s.futureStates.length > 0);
 
   const handleClear = () => {
     clearTimeline();

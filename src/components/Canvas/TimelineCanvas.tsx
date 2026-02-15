@@ -11,6 +11,7 @@ import {
   BackgroundVariant,
   type OnNodesChange,
   type OnEdgesChange,
+  type NodeChange,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -29,6 +30,7 @@ import { useAnnotationStore } from '../../stores/annotationStore';
 import { useTabStore } from '../../stores/tabStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useSpacePan } from '../../hooks/useSpacePan';
+import { isShiftHeld } from '../../hooks/useShiftKey';
 import type { TimelineNode } from '../../types/timeline';
 import type { BranchType } from '../../types/timeline';
 
@@ -70,6 +72,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const activeTool = useUIStore((s) => s.activeTool);
   const resetTool = useUIStore((s) => s.resetTool);
   const spaceHeld = useSpacePan();
+  const dragStartRef = useRef<Map<string, { x: number; y: number }>>(new Map());
 
   useEffect(() => {
     const el = containerRef.current;
@@ -196,6 +199,8 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
 
   const isPlacementTool = activeTool === 'split' || activeTool === 'text' || activeTool === 'annotate';
 
+  const selectedBranchType = store((s) => s.selectedBranchType);
+
   const placeEventPoint = useCallback(
     (event: React.MouseEvent) => {
       const position = screenToFlowPosition({
@@ -208,11 +213,11 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         id: `event-${Date.now()}`,
         type: 'event',
         position,
-        data: {},
+        data: { branchType: selectedBranchType },
       } as TimelineNode);
       resetTool();
     },
-    [addNode, screenToFlowPosition, resetTool]
+    [addNode, screenToFlowPosition, resetTool, selectedBranchType]
   );
 
   const onPaneClick = useCallback(
@@ -291,15 +296,46 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         x: event.clientX,
         y: event.clientY,
       });
-      splitEdgeWithLabel(edge.id, '', flowPosition);
+      splitEdgeWithLabel(edge.id, '', flowPosition, selectedBranchType);
       resetTool();
     },
-    [isLocked, activeTool, screenToFlowPosition, splitEdgeWithLabel, resetTool]
+    [isLocked, activeTool, screenToFlowPosition, splitEdgeWithLabel, resetTool, selectedBranchType]
   );
 
   const contextEdge = contextMenu?.type === 'edge'
     ? edges.find((e) => e.id === contextMenu.targetId)
     : null;
+
+  const handleNodesChange = useCallback((changes: NodeChange<TimelineNode>[]) => {
+    if (isShiftHeld()) {
+      const currentNodes = store.getState().nodes;
+      changes = changes.map(change => {
+        if (change.type === 'position' && change.dragging && change.position) {
+          if (!dragStartRef.current.has(change.id)) {
+            const node = currentNodes.find(n => n.id === change.id);
+            if (node) dragStartRef.current.set(change.id, { ...node.position });
+          }
+          const start = dragStartRef.current.get(change.id);
+          if (start) {
+            const dx = Math.abs(change.position.x - start.x);
+            const dy = Math.abs(change.position.y - start.y);
+            if (dx >= dy) {
+              return { ...change, position: { x: change.position.x, y: start.y } };
+            } else {
+              return { ...change, position: { x: start.x, y: change.position.y } };
+            }
+          }
+        }
+        return change;
+      });
+    }
+    for (const change of changes) {
+      if (change.type === 'position' && !change.dragging) {
+        dragStartRef.current.delete(change.id);
+      }
+    }
+    onNodesChange(changes);
+  }, [store, onNodesChange]);
 
   const defaultEdgeOptions = useMemo(() => ({
     type: 'timeline',
@@ -311,7 +347,9 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
 
   // Cursor style for placement tools, annotate mode, or space-pan
   const cursorClass = isPlacementTool && !isLocked
-    ? 'cursor-crosshair'
+    ? activeTool === 'annotate'
+      ? 'cursor-diamond'
+      : 'cursor-crosshair'
     : spaceHeld
       ? 'space-pan'
       : '';
@@ -321,7 +359,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodesChange={isLocked ? undefined : onNodesChange as OnNodesChange}
+        onNodesChange={isLocked ? undefined : handleNodesChange as OnNodesChange}
         onEdgesChange={isLocked ? undefined : onEdgesChange as OnEdgesChange}
         onConnect={onConnect}
         onDragOver={onDragOver}
@@ -385,7 +423,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
               id: `event-${Date.now()}`,
               type: 'event',
               position,
-              data: {},
+              data: { branchType: selectedBranchType },
             } as TimelineNode);
           }}
           onClose={() => setContextMenu(null)}

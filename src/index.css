@@ -64,6 +64,11 @@ html, body, #root {
 .space-pan .react-flow__pane { cursor: grab; }
 .space-pan .react-flow__pane:active { cursor: grabbing; }
 
+/* Diamond cursor for annotate tool */
+.cursor-diamond .react-flow__pane {
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'><path d='M12 2 L22 12 L12 22 L2 12 Z' fill='white' stroke='%23666' stroke-width='1'/></svg>") 12 12, crosshair;
+}
+
 /* Hide scrollbar for tab overflow */
 .scrollbar-none::-webkit-scrollbar { display: none; }
 .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }

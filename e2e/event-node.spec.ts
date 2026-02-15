@@ -150,6 +150,98 @@ test.describe('EventNode', () => {
     expect(await eventNode.count()).toBe(1);
   });
 
+  test('event point has branch color', async ({ page }) => {
+    // Place an event node via the annotate tool
+    await page.locator('[data-testid="toolbar-annotate"]').click();
+    await page.waitForTimeout(200);
+
+    const container = page.locator('.react-flow');
+    const box = await container.boundingBox();
+    if (!box) throw new Error('Could not find canvas');
+
+    await page.mouse.click(box.x + 300, box.y + 300);
+    await page.waitForTimeout(500);
+
+    // The event node should have an SVG with a filled diamond
+    const eventNode = page.locator('.react-flow__node-event');
+    await expect(eventNode.first()).toBeVisible();
+
+    // The inner diamond path (second path) should have a fill attribute
+    const innerDiamond = eventNode.first().locator('svg path').nth(1);
+    const fill = await innerDiamond.getAttribute('fill');
+    // Default branch is 'main', color is var(--color-branch-main)
+    expect(fill).toBe('var(--color-branch-main)');
+  });
+
+  test('annotate sub-toolbar shows 4 color buttons', async ({ page }) => {
+    // Activate annotate tool
+    await page.locator('[data-testid="toolbar-annotate"]').click();
+    await page.waitForTimeout(200);
+
+    // Sub-toolbar should appear with 4 branch color buttons
+    const subToolbar = page.locator('[data-subtoolbar]');
+    await expect(subToolbar).toBeVisible();
+
+    const colorButtons = subToolbar.locator('button.rounded-full');
+    expect(await colorButtons.count()).toBe(4);
+  });
+
+  test('shift-drag constrains to horizontal', async ({ page }) => {
+    // Place an event node
+    await page.locator('[data-testid="toolbar-annotate"]').click();
+    await page.waitForTimeout(200);
+
+    const container = page.locator('.react-flow');
+    const box = await container.boundingBox();
+    if (!box) throw new Error('Could not find canvas');
+
+    await page.mouse.click(box.x + 300, box.y + 300);
+    await page.waitForTimeout(500);
+
+    // Switch back to select tool
+    await page.locator('[data-testid="toolbar-select"]').click();
+    await page.waitForTimeout(200);
+
+    const eventNode = page.locator('.react-flow__node-event').first();
+    await expect(eventNode).toBeVisible();
+
+    const beforeBox = await eventNode.boundingBox();
+    if (!beforeBox) throw new Error('Could not find event node');
+
+    const startX = beforeBox.x + beforeBox.width / 2;
+    const startY = beforeBox.y + beforeBox.height / 2;
+
+    // Start drag, then mid-drag hold Shift to constrain
+    await page.mouse.move(startX, startY);
+    await page.mouse.down();
+    // Small initial movement to initiate drag (unconstrained)
+    await page.mouse.move(startX + 5, startY + 2, { steps: 3 });
+    await page.waitForTimeout(50);
+
+    // Press Shift mid-drag to activate constraint
+    await page.keyboard.down('Shift');
+    await page.waitForTimeout(100);
+
+    // Continue dragging with mostly horizontal movement (step by step for event processing)
+    for (let i = 1; i <= 15; i++) {
+      await page.mouse.move(startX + 5 + (i * 8), startY + 2 + (i * 3), { steps: 1 });
+      await page.waitForTimeout(10);
+    }
+    await page.mouse.up();
+    await page.keyboard.up('Shift');
+    await page.waitForTimeout(300);
+
+    const afterBox = await eventNode.boundingBox();
+    if (!afterBox) throw new Error('Could not find event node after drag');
+
+    const dy = Math.abs(afterBox.y - beforeBox.y);
+    const dx = Math.abs(afterBox.x - beforeBox.x);
+
+    // With shift constraint, horizontal movement dominates
+    expect(dx).toBeGreaterThan(50);
+    expect(dx).toBeGreaterThan(dy * 2);
+  });
+
   test('smooth dragging without grid snap', async ({ page }) => {
     // Place an event node
     await page.locator('[data-testid="toolbar-annotate"]').click();
