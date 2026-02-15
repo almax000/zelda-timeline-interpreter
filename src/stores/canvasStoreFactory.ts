@@ -29,7 +29,7 @@ export interface CanvasStore {
   updateEdgeBranchType: (edgeId: string, branchType: BranchType) => void;
   updateEdgeLabel: (edgeId: string, label: string) => void;
   updateNodeData: (nodeId: string, data: Partial<Record<string, unknown>>) => void;
-  splitEdgeWithLabel: (edgeId: string, label: string) => void;
+  splitEdgeWithLabel: (edgeId: string, label: string, clickPosition?: { x: number; y: number }) => void;
   insertAnnotation: (edgeId: string, clickPosition: { x: number; y: number }) => void;
 }
 
@@ -119,7 +119,8 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
             });
           },
 
-          splitEdgeWithLabel: (edgeId, label) => {
+          splitEdgeWithLabel: (edgeId, label, clickPosition) => {
+            const EVENT_NODE_HALF_SIZE = 12;
             const { nodes, edges } = get();
             const edge = edges.find((e) => e.id === edgeId);
             if (!edge) return;
@@ -128,14 +129,18 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
             const targetNode = nodes.find((n) => n.id === edge.target);
             if (!sourceNode || !targetNode) return;
 
-            const midX = (sourceNode.position.x + targetNode.position.x) / 2;
-            const midY = (sourceNode.position.y + targetNode.position.y) / 2;
+            const posX = clickPosition
+              ? clickPosition.x - EVENT_NODE_HALF_SIZE
+              : (sourceNode.position.x + targetNode.position.x) / 2 - EVENT_NODE_HALF_SIZE;
+            const posY = clickPosition
+              ? clickPosition.y - EVENT_NODE_HALF_SIZE
+              : (sourceNode.position.y + targetNode.position.y) / 2 - EVENT_NODE_HALF_SIZE;
 
             const labelNodeId = `event-${Date.now()}`;
             const labelNode = {
               id: labelNodeId,
               type: 'event' as const,
-              position: { x: midX, y: midY },
+              position: { x: posX, y: posY },
               data: { label },
             };
 
@@ -166,11 +171,12 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
           },
 
           insertAnnotation: (_edgeId, clickPosition) => {
+            const EVENT_NODE_HALF_SIZE = 12;
             const { nodes } = get();
             const eventNode: TimelineNode = {
               id: `event-${Date.now()}`,
               type: 'event',
-              position: { x: clickPosition.x, y: clickPosition.y },
+              position: { x: clickPosition.x - EVENT_NODE_HALF_SIZE, y: clickPosition.y - EVENT_NODE_HALF_SIZE },
               data: {},
             };
             set({ nodes: [...nodes, eventNode] });

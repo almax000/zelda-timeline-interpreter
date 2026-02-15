@@ -8,7 +8,7 @@ interface TimelineEdgeData extends Record<string, unknown> {
 
 type TimelineEdgeType = Edge<TimelineEdgeData>;
 
-const ALIGN_THRESHOLD = 20;
+const ALIGN_THRESHOLD = 8;
 
 const branchColors: Record<BranchType, string> = {
   main: 'var(--color-branch-main)',

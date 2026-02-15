@@ -126,7 +126,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   }, [isLocked, tabId, screenToFlowPosition, containerSize]);
 
   const store = getCanvasStore(tabId);
-  const { nodes, edges, onNodesChange, onEdgesChange, addNode, addEdge, removeNode, removeEdge, updateEdgeBranchType } = store();
+  const { nodes, edges, onNodesChange, onEdgesChange, addNode, addEdge, removeNode, removeEdge, updateEdgeBranchType, splitEdgeWithLabel } = store();
 
   const onConnect: OnConnect = useCallback(
     (connection: Connection) => {
@@ -285,11 +285,16 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   );
 
   const onEdgeClick = useCallback(
-    (event: React.MouseEvent, _edge: { id: string }) => {
+    (event: React.MouseEvent, edge: { id: string }) => {
       if (isLocked || activeTool !== 'annotate') return;
-      placeEventPoint(event);
+      const flowPosition = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+      splitEdgeWithLabel(edge.id, '', flowPosition);
+      resetTool();
     },
-    [isLocked, activeTool, placeEventPoint]
+    [isLocked, activeTool, screenToFlowPosition, splitEdgeWithLabel, resetTool]
   );
 
   const contextEdge = contextMenu?.type === 'edge'
@@ -330,8 +335,6 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         edgeTypes={edgeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
         connectionLineType={ConnectionLineType.SmoothStep}
-        snapToGrid
-        snapGrid={[20, 20]}
         fitView
         minZoom={0.1}
         maxZoom={2}

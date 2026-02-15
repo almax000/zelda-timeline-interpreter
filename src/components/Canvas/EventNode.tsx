@@ -16,22 +16,26 @@ function DoubleDiamondIcon() {
   );
 }
 
+const HIDDEN_HANDLE = '!w-0 !h-0 !opacity-0 !border-0 !bg-transparent !min-w-0 !min-h-0';
+
 function EventNodeComponent({ selected }: NodeProps<EventNodeType>) {
   return (
-    <div className="flex items-center group">
-      {/* 4-directional handles — all target only */}
-      <Handle type="target" position={Position.Top} id="top"
-        isConnectableStart={false}
-        className="!bg-[var(--color-gold)] !w-2 !h-2 !border-0 !opacity-0 group-hover:!opacity-100" />
-      <Handle type="target" position={Position.Bottom} id="bottom"
-        isConnectableStart={false}
-        className="!bg-[var(--color-gold)] !w-2 !h-2 !border-0 !opacity-0 group-hover:!opacity-100" />
-      <Handle type="target" position={Position.Left} id="left"
-        isConnectableStart={false}
-        className="!bg-[var(--color-gold)] !w-2 !h-2 !border-0 !opacity-0 group-hover:!opacity-100" />
-      <Handle type="target" position={Position.Right} id="right"
-        isConnectableStart={false}
-        className="!bg-[var(--color-gold)] !w-2 !h-2 !border-0 !opacity-0 group-hover:!opacity-100" />
+    <div className="flex items-center">
+      {/* Top handles */}
+      <Handle type="target" position={Position.Top} id="top" className={HIDDEN_HANDLE} />
+      <Handle type="source" position={Position.Top} id="top" className={HIDDEN_HANDLE} />
+
+      {/* Bottom handles */}
+      <Handle type="target" position={Position.Bottom} id="bottom" className={HIDDEN_HANDLE} />
+      <Handle type="source" position={Position.Bottom} id="bottom" className={HIDDEN_HANDLE} />
+
+      {/* Left handles */}
+      <Handle type="target" position={Position.Left} id="left" className={HIDDEN_HANDLE} />
+      <Handle type="source" position={Position.Left} id="left" className={HIDDEN_HANDLE} />
+
+      {/* Right handles */}
+      <Handle type="target" position={Position.Right} id="right" className={HIDDEN_HANDLE} />
+      <Handle type="source" position={Position.Right} id="right" className={HIDDEN_HANDLE} />
 
       <DoubleDiamondIcon />
 
