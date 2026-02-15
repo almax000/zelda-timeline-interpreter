@@ -52,14 +52,31 @@ const edgeTypes: EdgeTypes = {
 };
 
 // --- Smart Snap Guides ---
-const SNAP_THRESHOLD = 5;
+const SCREEN_SNAP_THRESHOLD = 5;
 
-interface SnapGuide {
-  vertical: number[];
-  horizontal: number[];
+interface SnapLine {
+  position: number;
+  orientation: 'H' | 'V';
+  from: number;
+  to: number;
 }
 
-const EMPTY_GUIDES: SnapGuide = { vertical: [], horizontal: [] };
+const EMPTY_GUIDES: SnapLine[] = [];
+
+function mergeGuides(guides: SnapLine[]): SnapLine[] {
+  const map = new Map<string, SnapLine>();
+  for (const g of guides) {
+    const key = `${g.orientation}:${g.position}`;
+    const existing = map.get(key);
+    if (existing) {
+      existing.from = Math.min(existing.from, g.from);
+      existing.to = Math.max(existing.to, g.to);
+    } else {
+      map.set(key, { ...g });
+    }
+  }
+  return Array.from(map.values());
+}
 
 function computeSnap(
   pos: { x: number; y: number },
@@ -67,56 +84,80 @@ function computeSnap(
   h: number,
   dragId: string,
   allNodes: TimelineNode[],
-): { position: { x: number; y: number }; guides: SnapGuide } {
+  threshold: number,
+): { position: { x: number; y: number }; guides: SnapLine[] } {
   const dragX = [pos.x, pos.x + w / 2, pos.x + w];
   const dragY = [pos.y, pos.y + h / 2, pos.y + h];
 
-  let bestX: { offset: number; guide: number } | null = null;
-  let bestY: { offset: number; guide: number } | null = null;
-  let minDx = SNAP_THRESHOLD + 1;
-  let minDy = SNAP_THRESHOLD + 1;
+  // Phase 1: find nearest snap offset per axis
+  let bestXOffset = 0, bestYOffset = 0;
+  let minDx = threshold + 1, minDy = threshold + 1;
 
   for (const n of allNodes) {
     if (n.id === dragId || n.selected) continue;
-    const nw = n.measured?.width ?? 0;
-    const nh = n.measured?.height ?? 0;
-    const otherX = [n.position.x, n.position.x + nw / 2, n.position.x + nw];
-    const otherY = [n.position.y, n.position.y + nh / 2, n.position.y + nh];
-
-    for (const dx of dragX) {
-      for (const ox of otherX) {
+    const nw = n.measured?.width ?? 0, nh = n.measured?.height ?? 0;
+    for (const dx of dragX)
+      for (const ox of [n.position.x, n.position.x + nw / 2, n.position.x + nw]) {
         const diff = Math.abs(dx - ox);
-        if (diff < minDx) { minDx = diff; bestX = { offset: ox - dx, guide: ox }; }
+        if (diff < minDx) { minDx = diff; bestXOffset = ox - dx; }
       }
-    }
-    for (const dy of dragY) {
-      for (const oy of otherY) {
+    for (const dy of dragY)
+      for (const oy of [n.position.y, n.position.y + nh / 2, n.position.y + nh]) {
         const diff = Math.abs(dy - oy);
-        if (diff < minDy) { minDy = diff; bestY = { offset: oy - dy, guide: oy }; }
+        if (diff < minDy) { minDy = diff; bestYOffset = oy - dy; }
       }
-    }
   }
 
-  const snapped = { ...pos };
-  const guides: SnapGuide = { vertical: [], horizontal: [] };
-  if (bestX && minDx <= SNAP_THRESHOLD) { snapped.x += bestX.offset; guides.vertical.push(bestX.guide); }
-  if (bestY && minDy <= SNAP_THRESHOLD) { snapped.y += bestY.offset; guides.horizontal.push(bestY.guide); }
-  return { position: snapped, guides };
+  const snapped = { x: pos.x, y: pos.y };
+  if (minDx <= threshold) snapped.x += bestXOffset;
+  if (minDy <= threshold) snapped.y += bestYOffset;
+
+  // Phase 2: collect bounded guide segments for all exact matches
+  const guides: SnapLine[] = [];
+  const EXT = 8;
+  const snappedXEdges = [snapped.x, snapped.x + w / 2, snapped.x + w];
+  const snappedYEdges = [snapped.y, snapped.y + h / 2, snapped.y + h];
+
+  for (const n of allNodes) {
+    if (n.id === dragId || n.selected) continue;
+    const nw = n.measured?.width ?? 0, nh = n.measured?.height ?? 0;
+
+    for (const sx of snappedXEdges)
+      for (const ox of [n.position.x, n.position.x + nw / 2, n.position.x + nw])
+        if (Math.abs(sx - ox) < 0.5) {
+          const top = Math.min(snapped.y, n.position.y) - EXT;
+          const bottom = Math.max(snapped.y + h, n.position.y + nh) + EXT;
+          guides.push({ position: ox, orientation: 'V', from: top, to: bottom });
+        }
+
+    for (const sy of snappedYEdges)
+      for (const oy of [n.position.y, n.position.y + nh / 2, n.position.y + nh])
+        if (Math.abs(sy - oy) < 0.5) {
+          const left = Math.min(snapped.x, n.position.x) - EXT;
+          const right = Math.max(snapped.x + w, n.position.x + nw) + EXT;
+          guides.push({ position: oy, orientation: 'H', from: left, to: right });
+        }
+  }
+
+  return { position: snapped, guides: mergeGuides(guides) };
 }
 
-function SnapGuidesOverlay({ guides }: { guides: SnapGuide }) {
+function SnapGuidesOverlay({ guides }: { guides: SnapLine[] }) {
   const { x: vx, y: vy, zoom } = useViewport();
-  if (guides.vertical.length === 0 && guides.horizontal.length === 0) return null;
+  if (guides.length === 0) return null;
+
+  const tx = (v: number) => v * zoom + vx;
+  const ty = (v: number) => v * zoom + vy;
+
   return (
-    <svg className="absolute inset-0 pointer-events-none z-50">
-      {guides.vertical.map((fx, i) => (
-        <line key={`v${i}`} x1={fx * zoom + vx} y1="0" x2={fx * zoom + vx} y2="100%"
-              stroke="#FF44CC" strokeWidth={0.5} />
-      ))}
-      {guides.horizontal.map((fy, i) => (
-        <line key={`h${i}`} x1="0" y1={fy * zoom + vy} x2="100%" y2={fy * zoom + vy}
-              stroke="#FF44CC" strokeWidth={0.5} />
-      ))}
+    <svg className="absolute inset-0 pointer-events-none z-50" overflow="visible">
+      {guides.map((g, i) =>
+        g.orientation === 'V'
+          ? <line key={i} x1={tx(g.position)} y1={ty(g.from)} x2={tx(g.position)} y2={ty(g.to)}
+                  stroke="#FF44CC" strokeWidth={1} />
+          : <line key={i} x1={tx(g.from)} y1={ty(g.position)} x2={tx(g.to)} y2={ty(g.position)}
+                  stroke="#FF44CC" strokeWidth={1} />
+      )}
     </svg>
   );
 }
@@ -147,7 +188,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const resetTool = useUIStore((s) => s.resetTool);
   const spaceHeld = useSpacePan();
   const dragStartRef = useRef<Map<string, { x: number; y: number }>>(new Map());
-  const [snapGuides, setSnapGuides] = useState<SnapGuide>(EMPTY_GUIDES);
+  const [snapGuides, setSnapGuides] = useState<SnapLine[]>(EMPTY_GUIDES);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -402,27 +443,37 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
 
   const onNodeDrag = useCallback((_event: React.MouseEvent, node: Node) => {
     const start = dragStartRef.current.get(node.id);
+    const zoom = rfStore.getState().transform[2];
+    const threshold = SCREEN_SNAP_THRESHOLD / zoom;
+    const w = node.measured?.width ?? 0;
+    const h = node.measured?.height ?? 0;
 
     if (isShiftHeld() && start) {
-      // Shift: axis-constrain
       const dx = Math.abs(node.position.x - start.x);
       const dy = Math.abs(node.position.y - start.y);
-      const pos = dx >= dy
-        ? { x: node.position.x, y: start.y }
-        : { x: start.x, y: node.position.y };
-      applyDragPosition(node.id, pos, true);
-      setSnapGuides(EMPTY_GUIDES);
+
+      if (dx >= dy) {
+        // Horizontal constraint: Y locked, X can still snap
+        const constrained = { x: node.position.x, y: start.y };
+        const { position, guides } = computeSnap(constrained, w, h, node.id, store.getState().nodes, threshold);
+        applyDragPosition(node.id, { x: position.x, y: start.y }, true);
+        setSnapGuides(guides.filter(g => g.orientation === 'V'));
+      } else {
+        // Vertical constraint: X locked, Y can still snap
+        const constrained = { x: start.x, y: node.position.y };
+        const { position, guides } = computeSnap(constrained, w, h, node.id, store.getState().nodes, threshold);
+        applyDragPosition(node.id, { x: start.x, y: position.y }, true);
+        setSnapGuides(guides.filter(g => g.orientation === 'H'));
+      }
     } else {
-      // Smart snap guides
-      const w = node.measured?.width ?? 0;
-      const h = node.measured?.height ?? 0;
-      const { position, guides } = computeSnap(node.position, w, h, node.id, store.getState().nodes);
-      if (guides.vertical.length > 0 || guides.horizontal.length > 0) {
+      // Free drag + smart snap
+      const { position, guides } = computeSnap(node.position, w, h, node.id, store.getState().nodes, threshold);
+      if (guides.length > 0) {
         applyDragPosition(node.id, position, true);
       }
       setSnapGuides(guides);
     }
-  }, [applyDragPosition, store]);
+  }, [applyDragPosition, store, rfStore]);
 
   const onNodeDragStop = useCallback((_event: React.MouseEvent, node: Node) => {
     const start = dragStartRef.current.get(node.id);

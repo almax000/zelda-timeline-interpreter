@@ -125,7 +125,7 @@ function PenSubToolbar() {
   );
 }
 
-function TextSubToolbar() {
+export function TextSubToolbar() {
   const editingId = useUIStore((s) => s.editingTextNodeId);
   const activeTabId = useTabStore((s) => s.activeTabId);
 
@@ -153,8 +153,12 @@ function TextSubToolbar() {
       {/* Font size */}
       <select
         value={fontSize}
-        onMouseDown={preventBlur}
-        onChange={(e) => update('fontSize', Number(e.target.value))}
+        onChange={(e) => {
+          update('fontSize', Number(e.target.value));
+          requestAnimationFrame(() => {
+            document.querySelector<HTMLTextAreaElement>('textarea.nodrag')?.focus();
+          });
+        }}
         className="bg-[var(--color-surface)] text-[var(--color-text)] text-xs rounded px-1 py-1 border border-[var(--color-surface-light)] outline-none cursor-pointer"
       >
         {FONT_SIZES.map((s) => (
@@ -252,17 +256,15 @@ function AnnotateSubToolbar() {
 
 export function SubToolbar() {
   const activeTool = useUIStore((s) => s.activeTool);
-  const editingTextNodeId = useUIStore((s) => s.editingTextNodeId);
 
   const showPen = activeTool === 'pen';
-  const showText = editingTextNodeId !== null;
   const showAnnotate = activeTool === 'annotate';
 
-  if (!showPen && !showText && !showAnnotate) return null;
+  if (!showPen && !showAnnotate) return null;
 
   return (
     <div className="pointer-events-auto flex items-center gap-0.5 px-2 py-1.5 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-xl shadow-xl border border-[var(--color-surface-light)]">
-      {showText ? <TextSubToolbar /> : showAnnotate ? <AnnotateSubToolbar /> : <PenSubToolbar />}
+      {showAnnotate ? <AnnotateSubToolbar /> : <PenSubToolbar />}
     </div>
   );
 }

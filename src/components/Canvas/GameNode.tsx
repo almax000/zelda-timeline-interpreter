@@ -42,14 +42,10 @@ function GameNodeComponent({ data, selected }: NodeProps<GameNodeType>) {
   return (
     <div
       className={`
-        relative bg-[var(--color-surface)] rounded-lg overflow-hidden
-        border-2 transition-all duration-200 cursor-grab
-        ${selected
-          ? 'border-[var(--color-gold)] shadow-[0_0_20px_var(--color-gold)]'
-          : 'border-[var(--color-surface-light)] hover:border-[var(--color-gold-dark)]'
-        }
+        relative flex flex-col items-center cursor-grab transition-all duration-200
+        ${selected ? 'drop-shadow-[0_0_12px_var(--color-gold)]' : ''}
       `}
-      style={{ width: 'auto', maxWidth: 160 }}
+      style={{ width: 140 }}
     >
       {/* Top handles */}
       <Handle type="target" position={Position.Top} id="top" className="!w-2 !h-2 !bg-[var(--color-gold)] !border-[var(--color-surface)]" />
@@ -61,36 +57,31 @@ function GameNodeComponent({ data, selected }: NodeProps<GameNodeType>) {
 
       {/* Game image: logo first, cover fallback */}
       {useLogo ? (
-        <div className="w-32 h-24 flex items-center justify-center p-2 bg-[var(--color-surface)]">
-          <img
-            src={`/logos/${game.logo}`}
-            alt={gameName}
-            className="max-w-full max-h-full object-contain"
-            onError={handleLogoError}
-          />
-        </div>
+        <img
+          src={`/logos/${game.logo}`}
+          alt={gameName}
+          className="w-full h-auto object-contain drop-shadow-lg"
+          onError={handleLogoError}
+        />
       ) : coverPath && !imageFailed ? (
         <img
           src={`/covers/${effectiveRegion}/${coverPath}`}
           alt={gameName}
-          className="w-full h-auto block"
-          style={{ minWidth: 100, maxWidth: 160 }}
+          className="w-full h-auto block rounded"
           onError={handleCoverError}
         />
       ) : (
-        <div className="w-32 h-24 bg-[var(--color-surface-light)] flex items-center justify-center">
+        <div className="w-full h-16 flex items-center justify-center">
           <span className="text-center p-2 text-xs text-[var(--color-text-muted)]">
             {gameName}
           </span>
         </div>
       )}
 
-      {/* Game title overlay at bottom */}
-      <div className="bg-[var(--color-surface)] px-2 py-1.5 border-t border-[var(--color-surface-light)]">
-        <p className="text-xs font-medium text-[var(--color-text)] text-center line-clamp-2 leading-tight">
-          {gameName}
-        </p>
-      </div>
+      {/* Game title below image */}
+      <p className="mt-1 text-xs font-medium text-[var(--color-text)] text-center line-clamp-2 leading-tight w-full">
+        {gameName}
+      </p>
 
       {/* Right handles */}
       <Handle type="source" position={Position.Right} id="right" className="!w-2 !h-2 !bg-[var(--color-gold)] !border-[var(--color-surface)]" />

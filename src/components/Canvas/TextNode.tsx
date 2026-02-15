@@ -1,8 +1,9 @@
 import { memo, useState, useRef, useEffect, useCallback } from 'react';
-import { type NodeProps, type Node, NodeResizeControl } from '@xyflow/react';
+import { type NodeProps, type Node, NodeResizeControl, useViewport } from '@xyflow/react';
 import { getCanvasStore } from '../../stores/canvasRegistry';
 import { useTabStore } from '../../stores/tabStore';
 import { useUIStore } from '../../stores/uiStore';
+import { TextSubToolbar } from '../Toolbar/SubToolbar';
 import type { TextNodeData } from '../../types/timeline';
 
 type TextNodeType = Node<TextNodeData, 'textLabel'>;
@@ -39,7 +40,6 @@ function TextNodeComponent({ id, data, selected }: NodeProps<TextNodeType>) {
   }, [data.text, id, setEditingTextNodeId]);
 
   const exitEdit = useCallback(() => {
-    // Flush any pending text
     if (flushTimerRef.current) {
       clearTimeout(flushTimerRef.current);
       flushTimerRef.current = null;
@@ -48,6 +48,21 @@ function TextNodeComponent({ id, data, selected }: NodeProps<TextNodeType>) {
     setIsEditing(false);
     setEditingTextNodeId(null);
   }, [localText, flushToStore, setEditingTextNodeId]);
+
+  const handleBlur = useCallback((e: React.FocusEvent) => {
+    const related = e.relatedTarget as HTMLElement | null;
+    if (related?.closest('[data-subtoolbar]')) return;
+    exitEdit();
+  }, [exitEdit]);
+
+  // Show subtoolbar on select, hide on deselect
+  useEffect(() => {
+    if (selected) {
+      setEditingTextNodeId(id);
+    } else if (useUIStore.getState().editingTextNodeId === id) {
+      setEditingTextNodeId(null);
+    }
+  }, [selected, id, setEditingTextNodeId]);
 
   // Sync localText when data.text changes externally (e.g. undo)
   useEffect(() => {
@@ -98,12 +113,31 @@ function TextNodeComponent({ id, data, selected }: NodeProps<TextNodeType>) {
     store.getState().updateNodeData(id, { width: params.width });
   }, [id, activeTabId]);
 
+  const { zoom } = useViewport();
+
   return (
     <div
       style={{ width: data.width, minHeight: 24 }}
       onDoubleClick={enterEdit}
       className="relative group"
     >
+      {/* Floating text toolbar above node */}
+      {selected && (
+        <div
+          className="absolute left-1/2 nodrag nowheel"
+          style={{
+            bottom: '100%',
+            transform: `translateX(-50%) scale(${1 / zoom})`,
+            transformOrigin: 'bottom center',
+            marginBottom: 8 / zoom,
+          }}
+        >
+          <div className="flex items-center gap-0.5 px-2 py-1.5 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-xl shadow-xl border border-[var(--color-surface-light)]">
+            <TextSubToolbar />
+          </div>
+        </div>
+      )}
+
       {/* Horizontal resize controls */}
       <NodeResizeControl
         position="right"
@@ -127,7 +161,7 @@ function TextNodeComponent({ id, data, selected }: NodeProps<TextNodeType>) {
           ref={textareaRef}
           value={localText}
           onChange={handleTextChange}
-          onBlur={exitEdit}
+          onBlur={handleBlur}
           onKeyDown={handleKeyDown}
           className="nodrag nowheel w-full bg-transparent outline-none resize-none border border-[var(--color-gold)]/40 rounded px-1"
           style={textStyles}

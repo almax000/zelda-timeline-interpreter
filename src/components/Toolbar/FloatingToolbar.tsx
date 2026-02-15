@@ -6,6 +6,7 @@ import { useTabStore } from '../../stores/tabStore';
 import { useAnnotationStore } from '../../stores/annotationStore';
 import { useUIStore } from '../../stores/uiStore';
 import { ConfirmDialog } from '../UI/ConfirmDialog';
+import { Tooltip } from '../UI/Tooltip';
 
 // --- Icons ---
 
@@ -130,6 +131,9 @@ function Divider() {
   return <div className="w-px h-5 bg-[var(--color-surface-light)] mx-0.5" />;
 }
 
+const isMac = navigator.platform.toUpperCase().includes('MAC');
+const mod = isMac ? '\u2318' : 'Ctrl+';
+
 // --- Main component ---
 
 export function FloatingToolbar() {
@@ -226,57 +230,62 @@ export function FloatingToolbar() {
     <>
       <div className="pointer-events-auto flex items-center gap-0.5 px-2 py-1.5 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-xl shadow-xl border border-[var(--color-surface-light)]">
         {/* Lock toggle — always clickable */}
-        <button
-          onClick={() => toggleLock(activeTabId)}
-          className={isLocked
-            ? `${btn} text-[var(--color-gold)] bg-[var(--color-gold)]/15`
-            : btnMuted
-          }
-          title={isLocked ? t('tabs.contextMenu.unlock') : t('tabs.contextMenu.lock')}
-          data-testid="toolbar-lock"
-        >
-          {isLocked ? <IconLock /> : <IconUnlock />}
-        </button>
+        <Tooltip label={isLocked ? t('tabs.contextMenu.unlock') : t('tabs.contextMenu.lock')}>
+          <button
+            onClick={() => toggleLock(activeTabId)}
+            className={isLocked
+              ? `${btn} text-[var(--color-gold)] bg-[var(--color-gold)]/15`
+              : btnMuted
+            }
+            data-testid="toolbar-lock"
+          >
+            {isLocked ? <IconLock /> : <IconUnlock />}
+          </button>
+        </Tooltip>
 
         <Divider />
 
         {/* === Mode + Placement tools (Select, Annotate, Split, Text) === */}
         <div className={`flex items-center gap-0.5 ${disabledClass}`}>
-          <button
-            onClick={handleSelectTool}
-            className={activeTool === 'select' && !isAnnotationMode ? btnActive : btnMuted}
-            title={t('toolbar.select')}
-            data-testid="toolbar-select"
-          >
-            <IconCursor />
-          </button>
+          <Tooltip label={t('toolbar.select')} shortcut="V">
+            <button
+              onClick={handleSelectTool}
+              className={activeTool === 'select' && !isAnnotationMode ? btnActive : btnMuted}
+              data-testid="toolbar-select"
+            >
+              <IconCursor />
+            </button>
+          </Tooltip>
 
-          <button
-            onClick={handleAnnotateTool}
-            className={activeTool === 'annotate' ? btnActive : btnMuted}
-            title={t('toolbar.annotate')}
-            data-testid="toolbar-annotate"
-          >
-            <IconAnnotate />
-          </button>
+          <Tooltip label={t('toolbar.annotate')} shortcut="D">
+            <button
+              onClick={handleAnnotateTool}
+              className={activeTool === 'annotate' ? btnActive : btnMuted}
+              data-testid="toolbar-annotate"
+            >
+              <IconAnnotate />
+            </button>
+          </Tooltip>
 
-          <button
-            onClick={handleSplitTool}
-            className={activeTool === 'split' ? btnActive : btnMuted}
-            title={t('toolbar.split')}
-            data-testid="toolbar-split"
-          >
-            <IconSplit />
-          </button>
+          <Tooltip label={t('toolbar.split')} shortcut="B">
+            <button
+              onClick={handleSplitTool}
+              className={activeTool === 'split' ? btnActive : btnMuted}
+              data-testid="toolbar-split"
+            >
+              <IconSplit />
+            </button>
+          </Tooltip>
 
-          <button
-            onClick={handleTextTool}
-            className={activeTool === 'text' ? btnActive : btnMuted}
-            title={t('toolbar.text')}
-            data-testid="toolbar-text"
-          >
-            <IconText />
-          </button>
+          <Tooltip label={t('toolbar.text')} shortcut="T">
+            <button
+              onClick={handleTextTool}
+              className={activeTool === 'text' ? btnActive : btnMuted}
+              data-testid="toolbar-text"
+            >
+              <IconText />
+            </button>
+          </Tooltip>
         </div>
 
         <Divider />
@@ -284,59 +293,67 @@ export function FloatingToolbar() {
         {/* === Draw/Eraser/Laser group === */}
         <div className={`flex items-center gap-0.5 ${disabledClass}`}>
           {/* Pen toggle */}
-          <button
-            onClick={handlePenToggle}
-            className={`${activeTool === 'pen' ? btnActive : btnMuted} relative`}
-            title={t('toolbar.draw')}
-            data-testid="toolbar-draw"
-          >
-            <PenIcon color={isAnnotationMode && tool === 'pen' ? color : 'currentColor'} />
-            {isAnnotationMode && tool === 'pen' && (
-              <span className="absolute bottom-0.5 left-1.5 right-1.5 h-0.5 rounded-full" style={{ backgroundColor: color }} />
-            )}
-          </button>
+          <Tooltip label={t('toolbar.draw')} shortcut="P">
+            <button
+              onClick={handlePenToggle}
+              className={`${activeTool === 'pen' ? btnActive : btnMuted} relative`}
+              data-testid="toolbar-draw"
+            >
+              <PenIcon color={isAnnotationMode && tool === 'pen' ? color : 'currentColor'} />
+              {isAnnotationMode && tool === 'pen' && (
+                <span className="absolute bottom-0.5 left-1.5 right-1.5 h-0.5 rounded-full" style={{ backgroundColor: color }} />
+              )}
+            </button>
+          </Tooltip>
 
           {/* Eraser */}
-          <button
-            onClick={handleEraserClick}
-            className={activeTool === 'eraser' ? btnActive : btnMuted}
-            title={t('toolbar.eraser')}
-            data-testid="toolbar-eraser"
-          >
-            <IconEraser />
-          </button>
+          <Tooltip label={t('toolbar.eraser')} shortcut="E">
+            <button
+              onClick={handleEraserClick}
+              className={activeTool === 'eraser' ? btnActive : btnMuted}
+              data-testid="toolbar-eraser"
+            >
+              <IconEraser />
+            </button>
+          </Tooltip>
 
           {/* Laser */}
-          <button
-            onClick={handleLaserClick}
-            className={`${activeTool === 'laser' ? btnActive : btnMuted} relative`}
-            title={t('toolbar.laser')}
-            data-testid="toolbar-laser"
-          >
-            <IconLaser />
-            {activeTool === 'laser' && (
-              <span className="absolute bottom-0.5 left-1.5 right-1.5 h-0.5 rounded-full" style={{ backgroundColor: '#ADFF2F' }} />
-            )}
-          </button>
+          <Tooltip label={t('toolbar.laser')} shortcut="L">
+            <button
+              onClick={handleLaserClick}
+              className={`${activeTool === 'laser' ? btnActive : btnMuted} relative`}
+              data-testid="toolbar-laser"
+            >
+              <IconLaser />
+              {activeTool === 'laser' && (
+                <span className="absolute bottom-0.5 left-1.5 right-1.5 h-0.5 rounded-full" style={{ backgroundColor: '#ADFF2F' }} />
+              )}
+            </button>
+          </Tooltip>
         </div>
 
         <Divider />
 
         {/* === Actions === */}
         <div className={`flex items-center gap-0.5 ${disabledClass}`}>
-          <button onClick={() => undo()} disabled={!canUndo} className={canUndo ? btnMuted : btnDisabled} title={t('toolbar.undo')}>
-            <IconUndo />
-          </button>
-          <button onClick={() => redo()} disabled={!canRedo} className={canRedo ? btnMuted : btnDisabled} title={t('toolbar.redo')}>
-            <IconRedo />
-          </button>
-          <button
-            onClick={() => setShowClearDialog(true)}
-            className={`${btn} text-[var(--color-text-muted)] hover:text-red-400 hover:bg-[var(--color-surface-light)]`}
-            title={t('toolbar.clear')}
-          >
-            <IconTrash />
-          </button>
+          <Tooltip label={t('toolbar.undo')} shortcut={`${mod}Z`}>
+            <button onClick={() => undo()} disabled={!canUndo} className={canUndo ? btnMuted : btnDisabled}>
+              <IconUndo />
+            </button>
+          </Tooltip>
+          <Tooltip label={t('toolbar.redo')} shortcut={`${mod}\u21e7Z`}>
+            <button onClick={() => redo()} disabled={!canRedo} className={canRedo ? btnMuted : btnDisabled}>
+              <IconRedo />
+            </button>
+          </Tooltip>
+          <Tooltip label={t('toolbar.clear')}>
+            <button
+              onClick={() => setShowClearDialog(true)}
+              className={`${btn} text-[var(--color-text-muted)] hover:text-red-400 hover:bg-[var(--color-surface-light)]`}
+            >
+              <IconTrash />
+            </button>
+          </Tooltip>
         </div>
       </div>
 
