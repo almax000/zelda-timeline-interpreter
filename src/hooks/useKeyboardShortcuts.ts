@@ -42,6 +42,14 @@ export function useKeyboardShortcuts() {
           redo();
           return;
         }
+        if (e.key === 'd') {
+          e.preventDefault();
+          const tab = useTabStore.getState().tabs.find((t) => t.id === activeTabId);
+          if (tab?.isLocked) return;
+          const store = getCanvasStore(activeTabId);
+          store.getState().duplicateSelected();
+          return;
+        }
         return;
       }
 

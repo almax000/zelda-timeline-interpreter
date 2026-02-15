@@ -4,6 +4,7 @@ import {
   Background,
   useReactFlow,
   useStoreApi,
+  useViewport,
   ConnectionLineType,
   type Connection,
   type NodeTypes,
@@ -50,6 +51,76 @@ const edgeTypes: EdgeTypes = {
   timeline: TimelineEdge as EdgeTypes['timeline'],
 };
 
+// --- Smart Snap Guides ---
+const SNAP_THRESHOLD = 5;
+
+interface SnapGuide {
+  vertical: number[];
+  horizontal: number[];
+}
+
+const EMPTY_GUIDES: SnapGuide = { vertical: [], horizontal: [] };
+
+function computeSnap(
+  pos: { x: number; y: number },
+  w: number,
+  h: number,
+  dragId: string,
+  allNodes: TimelineNode[],
+): { position: { x: number; y: number }; guides: SnapGuide } {
+  const dragX = [pos.x, pos.x + w / 2, pos.x + w];
+  const dragY = [pos.y, pos.y + h / 2, pos.y + h];
+
+  let bestX: { offset: number; guide: number } | null = null;
+  let bestY: { offset: number; guide: number } | null = null;
+  let minDx = SNAP_THRESHOLD + 1;
+  let minDy = SNAP_THRESHOLD + 1;
+
+  for (const n of allNodes) {
+    if (n.id === dragId || n.selected) continue;
+    const nw = n.measured?.width ?? 0;
+    const nh = n.measured?.height ?? 0;
+    const otherX = [n.position.x, n.position.x + nw / 2, n.position.x + nw];
+    const otherY = [n.position.y, n.position.y + nh / 2, n.position.y + nh];
+
+    for (const dx of dragX) {
+      for (const ox of otherX) {
+        const diff = Math.abs(dx - ox);
+        if (diff < minDx) { minDx = diff; bestX = { offset: ox - dx, guide: ox }; }
+      }
+    }
+    for (const dy of dragY) {
+      for (const oy of otherY) {
+        const diff = Math.abs(dy - oy);
+        if (diff < minDy) { minDy = diff; bestY = { offset: oy - dy, guide: oy }; }
+      }
+    }
+  }
+
+  const snapped = { ...pos };
+  const guides: SnapGuide = { vertical: [], horizontal: [] };
+  if (bestX && minDx <= SNAP_THRESHOLD) { snapped.x += bestX.offset; guides.vertical.push(bestX.guide); }
+  if (bestY && minDy <= SNAP_THRESHOLD) { snapped.y += bestY.offset; guides.horizontal.push(bestY.guide); }
+  return { position: snapped, guides };
+}
+
+function SnapGuidesOverlay({ guides }: { guides: SnapGuide }) {
+  const { x: vx, y: vy, zoom } = useViewport();
+  if (guides.vertical.length === 0 && guides.horizontal.length === 0) return null;
+  return (
+    <svg className="absolute inset-0 pointer-events-none z-50">
+      {guides.vertical.map((fx, i) => (
+        <line key={`v${i}`} x1={fx * zoom + vx} y1="0" x2={fx * zoom + vx} y2="100%"
+              stroke="#FF44CC" strokeWidth={0.5} />
+      ))}
+      {guides.horizontal.map((fy, i) => (
+        <line key={`h${i}`} x1="0" y1={fy * zoom + vy} x2="100%" y2={fy * zoom + vy}
+              stroke="#FF44CC" strokeWidth={0.5} />
+      ))}
+    </svg>
+  );
+}
+
 interface ContextMenuState {
   x: number;
   y: number;
@@ -76,6 +147,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const resetTool = useUIStore((s) => s.resetTool);
   const spaceHeld = useSpacePan();
   const dragStartRef = useRef<Map<string, { x: number; y: number }>>(new Map());
+  const [snapGuides, setSnapGuides] = useState<SnapGuide>(EMPTY_GUIDES);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -218,9 +290,8 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         position,
         data: { branchType: selectedBranchType },
       } as TimelineNode);
-      resetTool();
     },
-    [addNode, screenToFlowPosition, resetTool, selectedBranchType]
+    [addNode, screenToFlowPosition, selectedBranchType]
   );
 
   const onPaneClick = useCallback(
@@ -300,9 +371,8 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         y: event.clientY,
       });
       splitEdgeWithLabel(edge.id, '', flowPosition, selectedBranchType);
-      resetTool();
     },
-    [isLocked, activeTool, screenToFlowPosition, splitEdgeWithLabel, resetTool, selectedBranchType]
+    [isLocked, activeTool, screenToFlowPosition, splitEdgeWithLabel, selectedBranchType]
   );
 
   const contextEdge = contextMenu?.type === 'edge'
@@ -318,56 +388,55 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
     dragStartRef.current.set(node.id, { x: node.position.x, y: node.position.y });
   }, []);
 
-  // Shift-constrained drag: constrain position on each frame by directly
-  // mutating ReactFlow's internal nodeLookup (the only way to override
-  // XYDrag's position calculation in @xyflow/react v12)
-  const onNodeDrag = useCallback((_event: React.MouseEvent, node: Node) => {
-    if (!isShiftHeld()) return;
-    const start = dragStartRef.current.get(node.id);
-    if (!start) return;
-
-    const dx = Math.abs(node.position.x - start.x);
-    const dy = Math.abs(node.position.y - start.y);
-    const constrained = dx >= dy
-      ? { x: node.position.x, y: start.y }
-      : { x: start.x, y: node.position.y };
-
-    // Directly mutate the internal nodeLookup to override XYDrag's position
+  // Drag handler: Shift = axis-constrain, otherwise = smart snap guides.
+  // Directly mutates ReactFlow's internal nodeLookup to override XYDrag.
+  const applyDragPosition = useCallback((nodeId: string, pos: { x: number; y: number }, dragging: boolean) => {
     const { nodeLookup } = rfStore.getState();
-    const internalNode = nodeLookup.get(node.id);
+    const internalNode = nodeLookup.get(nodeId);
     if (internalNode) {
-      internalNode.position = constrained;
-      internalNode.internals.positionAbsolute = constrained;
+      internalNode.position = pos;
+      internalNode.internals.positionAbsolute = pos;
     }
-
-    // Also update our Zustand store for consistency
-    const canvasState = store.getState();
-    canvasState.onNodesChange([{
-      type: 'position' as const,
-      id: node.id,
-      position: constrained,
-      dragging: true,
-    }]);
+    store.getState().onNodesChange([{ type: 'position' as const, id: nodeId, position: pos, dragging }]);
   }, [rfStore, store]);
 
-  // Shift-constrained drag: final snap on drag end
+  const onNodeDrag = useCallback((_event: React.MouseEvent, node: Node) => {
+    const start = dragStartRef.current.get(node.id);
+
+    if (isShiftHeld() && start) {
+      // Shift: axis-constrain
+      const dx = Math.abs(node.position.x - start.x);
+      const dy = Math.abs(node.position.y - start.y);
+      const pos = dx >= dy
+        ? { x: node.position.x, y: start.y }
+        : { x: start.x, y: node.position.y };
+      applyDragPosition(node.id, pos, true);
+      setSnapGuides(EMPTY_GUIDES);
+    } else {
+      // Smart snap guides
+      const w = node.measured?.width ?? 0;
+      const h = node.measured?.height ?? 0;
+      const { position, guides } = computeSnap(node.position, w, h, node.id, store.getState().nodes);
+      if (guides.vertical.length > 0 || guides.horizontal.length > 0) {
+        applyDragPosition(node.id, position, true);
+      }
+      setSnapGuides(guides);
+    }
+  }, [applyDragPosition, store]);
+
   const onNodeDragStop = useCallback((_event: React.MouseEvent, node: Node) => {
     const start = dragStartRef.current.get(node.id);
     if (start && isShiftHeld()) {
       const dx = Math.abs(node.position.x - start.x);
       const dy = Math.abs(node.position.y - start.y);
-      const constrained = dx >= dy
+      const pos = dx >= dy
         ? { x: node.position.x, y: start.y }
         : { x: start.x, y: node.position.y };
-
-      store.getState().onNodesChange([{
-        type: 'position' as const,
-        id: node.id,
-        position: constrained,
-      }]);
+      applyDragPosition(node.id, pos, false);
     }
     dragStartRef.current.delete(node.id);
-  }, [store]);
+    setSnapGuides(EMPTY_GUIDES);
+  }, [applyDragPosition]);
 
   const defaultEdgeOptions = useMemo(() => ({
     type: 'timeline',
@@ -429,6 +498,8 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
           color="var(--color-surface-light)"
         />
       </ReactFlow>
+
+      <SnapGuidesOverlay guides={snapGuides} />
 
       {!isLocked && (
         <AnnotationOverlay tabId={tabId} width={containerSize.width} height={containerSize.height} />

@@ -64,9 +64,9 @@ html, body, #root {
 .space-pan .react-flow__pane { cursor: grab; }
 .space-pan .react-flow__pane:active { cursor: grabbing; }
 
-/* Diamond cursor for annotate tool */
+/* Diamond cursor for annotate tool — miniature white double-diamond */
 .cursor-diamond .react-flow__pane {
-  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'><path d='M12 2 L22 12 L12 22 L2 12 Z' fill='white' stroke='%23666' stroke-width='1'/></svg>") 12 12, crosshair;
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'><path d='M12 0 L24 12 L12 24 L0 12 Z' fill='%230F172A' stroke='white' stroke-width='2'/><path d='M12 5 L19 12 L12 19 L5 12 Z' fill='white'/></svg>") 6 6, crosshair;
 }
 
 /* Figma-style selection box */
@@ -74,6 +74,15 @@ html, body, #root {
   background: rgba(59, 130, 246, 0.15) !important;
   border: 1.5px solid rgba(59, 130, 246, 0.8) !important;
   border-radius: 0 !important;
+}
+
+/* Node handles: hidden by default, visible on hover */
+.react-flow__node .react-flow__handle {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.react-flow__node:hover .react-flow__handle {
+  opacity: 1;
 }
 
 /* Hide scrollbar for tab overflow */

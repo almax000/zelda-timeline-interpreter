@@ -23,8 +23,8 @@ test.describe('EventNode', () => {
     await switchToEditableTab(page);
   });
 
-  test('event point handles are invisible', async ({ page }) => {
-    // Place an event node via the annotate tool on the pane
+  test('event point handles appear on hover', async ({ page }) => {
+    // Place an event node via the annotate tool
     await page.locator('[data-testid="toolbar-annotate"]').click();
     await page.waitForTimeout(200);
 
@@ -32,34 +32,26 @@ test.describe('EventNode', () => {
     const box = await container.boundingBox();
     if (!box) throw new Error('Could not find canvas');
 
-    // Click on the pane to place an event point
     await page.mouse.click(box.x + 300, box.y + 300);
     await page.waitForTimeout(500);
 
-    // Verify event node was created
-    const eventNode = page.locator('.react-flow__node-event');
-    await expect(eventNode.first()).toBeVisible();
+    const eventNode = page.locator('.react-flow__node-event').first();
+    await expect(eventNode).toBeVisible();
 
-    // Hover over the event node
-    const nodeBBox = await eventNode.first().boundingBox();
-    if (!nodeBBox) throw new Error('Could not find event node');
+    // Handles should be hidden by default (opacity: 0)
+    const handles = eventNode.locator('.react-flow__handle');
+    expect(await handles.count()).toBe(8);
+    const opacityBefore = await handles.first().evaluate((el) => getComputedStyle(el).opacity);
+    expect(opacityBefore).toBe('0');
+
+    // Hover over the node — handles should become visible
+    const nodeBBox = await eventNode.boundingBox();
+    if (!nodeBBox) throw new Error('No bbox');
     await page.mouse.move(nodeBBox.x + nodeBBox.width / 2, nodeBBox.y + nodeBBox.height / 2);
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(200);
 
-    // All handles should have zero dimensions (invisible)
-    const handles = eventNode.first().locator('.react-flow__handle');
-    const handleCount = await handles.count();
-    expect(handleCount).toBe(8); // 4 target + 4 source
-
-    for (let i = 0; i < handleCount; i++) {
-      const handle = handles.nth(i);
-      const bbox = await handle.boundingBox();
-      // Handles with !w-0 !h-0 should have ~0 size
-      if (bbox) {
-        expect(bbox.width).toBeLessThanOrEqual(1);
-        expect(bbox.height).toBeLessThanOrEqual(1);
-      }
-    }
+    const opacityAfter = await handles.first().evaluate((el) => getComputedStyle(el).opacity);
+    expect(opacityAfter).toBe('1');
   });
 
   test('edge click splits edge into two', async ({ page }) => {

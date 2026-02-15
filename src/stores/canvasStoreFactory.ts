@@ -31,6 +31,7 @@ export interface CanvasStore {
   updateNodeData: (nodeId: string, data: Partial<Record<string, unknown>>) => void;
   splitEdgeWithLabel: (edgeId: string, label: string, clickPosition?: { x: number; y: number }, branchType?: BranchType) => void;
   insertAnnotation: (edgeId: string, clickPosition: { x: number; y: number }) => void;
+  duplicateSelected: () => void;
 }
 
 export type CanvasStoreWithTemporal = UseBoundStore<StoreApi<CanvasStore>> & {
@@ -169,6 +170,53 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
             set({
               nodes: [...nodes, labelNode as TimelineNode],
               edges: [...edges.filter((e) => e.id !== edgeId), edge1, edge2],
+            });
+          },
+
+          duplicateSelected: () => {
+            const { nodes, edges } = get();
+            const selectedNodes = nodes.filter((n) => n.selected);
+            if (selectedNodes.length === 0) return;
+
+            const OFFSET = 30;
+            const ts = Date.now();
+            const idMap = new Map<string, string>();
+
+            // Clone nodes with new IDs and offset
+            const newNodes = selectedNodes.map((n, i) => {
+              const newId = `${n.type}-dup-${ts}-${i}`;
+              idMap.set(n.id, newId);
+              return {
+                ...n,
+                id: newId,
+                position: { x: n.position.x + OFFSET, y: n.position.y + OFFSET },
+                selected: true,
+              };
+            });
+
+            // Clone edges where both endpoints are in the selected set
+            const selectedIds = new Set(selectedNodes.map((n) => n.id));
+            const newEdges = edges
+              .filter((e) => selectedIds.has(e.source) && selectedIds.has(e.target))
+              .map((e) => ({
+                ...e,
+                id: `${idMap.get(e.source)}-${idMap.get(e.target)}`,
+                source: idMap.get(e.source)!,
+                target: idMap.get(e.target)!,
+                selected: true,
+              }));
+
+            // Deselect originals
+            const updatedNodes = nodes.map((n) =>
+              n.selected ? { ...n, selected: false } : n
+            );
+            const updatedEdges = edges.map((e) =>
+              e.selected ? { ...e, selected: false } : e
+            );
+
+            set({
+              nodes: [...updatedNodes, ...newNodes] as TimelineNode[],
+              edges: [...updatedEdges, ...newEdges] as TimelineEdge[],
             });
           },
 
