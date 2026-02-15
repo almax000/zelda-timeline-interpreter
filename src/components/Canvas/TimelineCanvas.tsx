@@ -3,6 +3,7 @@ import {
   ReactFlow,
   Background,
   useReactFlow,
+  useStoreApi,
   ConnectionLineType,
   type Connection,
   type NodeTypes,
@@ -12,6 +13,7 @@ import {
   type OnNodesChange,
   type OnEdgesChange,
   type NodeChange,
+  type Node,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -61,6 +63,7 @@ interface TimelineCanvasProps {
 
 export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const { screenToFlowPosition } = useReactFlow();
+  const rfStore = useStoreApi();
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
@@ -307,35 +310,64 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
     : null;
 
   const handleNodesChange = useCallback((changes: NodeChange<TimelineNode>[]) => {
-    if (isShiftHeld()) {
-      const currentNodes = store.getState().nodes;
-      changes = changes.map(change => {
-        if (change.type === 'position' && change.dragging && change.position) {
-          if (!dragStartRef.current.has(change.id)) {
-            const node = currentNodes.find(n => n.id === change.id);
-            if (node) dragStartRef.current.set(change.id, { ...node.position });
-          }
-          const start = dragStartRef.current.get(change.id);
-          if (start) {
-            const dx = Math.abs(change.position.x - start.x);
-            const dy = Math.abs(change.position.y - start.y);
-            if (dx >= dy) {
-              return { ...change, position: { x: change.position.x, y: start.y } };
-            } else {
-              return { ...change, position: { x: start.x, y: change.position.y } };
-            }
-          }
-        }
-        return change;
-      });
-    }
-    for (const change of changes) {
-      if (change.type === 'position' && !change.dragging) {
-        dragStartRef.current.delete(change.id);
-      }
-    }
     onNodesChange(changes);
-  }, [store, onNodesChange]);
+  }, [onNodesChange]);
+
+  // Shift-constrained drag: capture start position
+  const onNodeDragStart = useCallback((_event: React.MouseEvent, node: Node) => {
+    dragStartRef.current.set(node.id, { x: node.position.x, y: node.position.y });
+  }, []);
+
+  // Shift-constrained drag: constrain position on each frame by directly
+  // mutating ReactFlow's internal nodeLookup (the only way to override
+  // XYDrag's position calculation in @xyflow/react v12)
+  const onNodeDrag = useCallback((_event: React.MouseEvent, node: Node) => {
+    if (!isShiftHeld()) return;
+    const start = dragStartRef.current.get(node.id);
+    if (!start) return;
+
+    const dx = Math.abs(node.position.x - start.x);
+    const dy = Math.abs(node.position.y - start.y);
+    const constrained = dx >= dy
+      ? { x: node.position.x, y: start.y }
+      : { x: start.x, y: node.position.y };
+
+    // Directly mutate the internal nodeLookup to override XYDrag's position
+    const { nodeLookup } = rfStore.getState();
+    const internalNode = nodeLookup.get(node.id);
+    if (internalNode) {
+      internalNode.position = constrained;
+      internalNode.internals.positionAbsolute = constrained;
+    }
+
+    // Also update our Zustand store for consistency
+    const canvasState = store.getState();
+    canvasState.onNodesChange([{
+      type: 'position' as const,
+      id: node.id,
+      position: constrained,
+      dragging: true,
+    }]);
+  }, [rfStore, store]);
+
+  // Shift-constrained drag: final snap on drag end
+  const onNodeDragStop = useCallback((_event: React.MouseEvent, node: Node) => {
+    const start = dragStartRef.current.get(node.id);
+    if (start && isShiftHeld()) {
+      const dx = Math.abs(node.position.x - start.x);
+      const dy = Math.abs(node.position.y - start.y);
+      const constrained = dx >= dy
+        ? { x: node.position.x, y: start.y }
+        : { x: start.x, y: node.position.y };
+
+      store.getState().onNodesChange([{
+        type: 'position' as const,
+        id: node.id,
+        position: constrained,
+      }]);
+    }
+    dragStartRef.current.delete(node.id);
+  }, [store]);
 
   const defaultEdgeOptions = useMemo(() => ({
     type: 'timeline',
@@ -344,6 +376,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   }), []);
 
   const interactionDisabled = isLocked || isAnnotationMode;
+  const selectedCount = nodes.filter((n) => n.selected).length + edges.filter((e) => e.selected).length;
 
   // Cursor style for placement tools, annotate mode, or space-pan
   const cursorClass = isPlacementTool && !isLocked
@@ -364,6 +397,9 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         onConnect={onConnect}
         onDragOver={onDragOver}
         onDrop={onDrop}
+        onNodeDragStart={onNodeDragStart}
+        onNodeDrag={onNodeDrag}
+        onNodeDragStop={onNodeDragStop}
         onNodeContextMenu={onNodeContextMenu}
         onEdgeContextMenu={onEdgeContextMenu}
         onEdgeClick={onEdgeClick}
@@ -379,6 +415,8 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         nodesDraggable={!interactionDisabled}
         nodesConnectable={!interactionDisabled}
         elementsSelectable={!interactionDisabled}
+        selectionOnDrag={activeTool === 'select' && !spaceHeld && !isLocked}
+        selectionKeyCode={null}
         panOnDrag={spaceHeld && !isAnnotationMode && !isPlacementTool}
         zoomOnScroll={!isAnnotationMode}
         deleteKeyCode={interactionDisabled ? [] : ['Backspace', 'Delete']}
@@ -394,6 +432,12 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
 
       {!isLocked && (
         <AnnotationOverlay tabId={tabId} width={containerSize.width} height={containerSize.height} />
+      )}
+
+      {selectedCount > 1 && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-[var(--color-surface)] border border-[var(--color-gold)] text-[var(--color-gold)] text-xs font-medium px-3 py-1.5 rounded-full shadow-lg pointer-events-none">
+          {selectedCount} selected
+        </div>
       )}
 
       {contextMenu && !isLocked && (

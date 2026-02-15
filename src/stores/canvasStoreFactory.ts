@@ -129,12 +129,15 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
             const targetNode = nodes.find((n) => n.id === edge.target);
             if (!sourceNode || !targetNode) return;
 
+            // Use click X but snap Y to edge line (handle center Y of source/target)
+            const sourceHandleY = sourceNode.position.y + (sourceNode.measured?.height ?? 0) / 2;
+            const targetHandleY = targetNode.position.y + (targetNode.measured?.height ?? 0) / 2;
+            const edgeLineY = (sourceHandleY + targetHandleY) / 2;
+
             const posX = clickPosition
               ? clickPosition.x - EVENT_NODE_HALF_SIZE
               : (sourceNode.position.x + targetNode.position.x) / 2 - EVENT_NODE_HALF_SIZE;
-            const posY = clickPosition
-              ? clickPosition.y - EVENT_NODE_HALF_SIZE
-              : (sourceNode.position.y + targetNode.position.y) / 2 - EVENT_NODE_HALF_SIZE;
+            const posY = edgeLineY - EVENT_NODE_HALF_SIZE;
 
             const labelNodeId = `event-${Date.now()}`;
             const branchType = overrideBranchType ?? edge.data?.branchType ?? 'main';

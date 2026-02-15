@@ -237,9 +237,9 @@ test.describe('EventNode', () => {
     const dy = Math.abs(afterBox.y - beforeBox.y);
     const dx = Math.abs(afterBox.x - beforeBox.x);
 
-    // With shift constraint, horizontal movement dominates
+    // With shift constraint, Y should barely move (< 5px)
     expect(dx).toBeGreaterThan(50);
-    expect(dx).toBeGreaterThan(dy * 2);
+    expect(dy).toBeLessThan(5);
   });
 
   test('smooth dragging without grid snap', async ({ page }) => {

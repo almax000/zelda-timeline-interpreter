@@ -8,7 +8,7 @@ interface TimelineEdgeData extends Record<string, unknown> {
 
 type TimelineEdgeType = Edge<TimelineEdgeData>;
 
-const ALIGN_THRESHOLD = 8;
+const STRAIGHT_THRESHOLD = 8;
 
 const branchColors: Record<BranchType, string> = {
   main: 'var(--color-branch-main)',
@@ -28,14 +28,16 @@ function TimelineEdgeComponent({
   data,
   selected,
 }: EdgeProps<TimelineEdgeType>) {
-  const isHorizontallyAligned = Math.abs(sourceY - targetY) < ALIGN_THRESHOLD;
-  const isVerticallyAligned = Math.abs(sourceX - targetX) < ALIGN_THRESHOLD;
+  const isStraightH = Math.abs(sourceY - targetY) < STRAIGHT_THRESHOLD;
+  const isStraightV = Math.abs(sourceX - targetX) < STRAIGHT_THRESHOLD;
 
   let edgePath: string;
 
-  if (isHorizontallyAligned || isVerticallyAligned) {
+  if (isStraightH || isStraightV) {
+    // Truly aligned — clean straight line
     [edgePath] = getStraightPath({ sourceX, sourceY, targetX, targetY });
   } else {
+    // Always orthogonal with smooth corners — never diagonal
     [edgePath] = getSmoothStepPath({
       sourceX,
       sourceY,
@@ -43,7 +45,7 @@ function TimelineEdgeComponent({
       targetY,
       sourcePosition,
       targetPosition,
-      borderRadius: 0,
+      borderRadius: 16,
     });
   }
 
