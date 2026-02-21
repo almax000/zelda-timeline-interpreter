@@ -1,0 +1,59 @@
+name: Publish to Public Repo
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout private repo
+        uses: actions/checkout@v4
+        with:
+          path: private
+
+      - name: Checkout public repo
+        uses: actions/checkout@v4
+        with:
+          repository: almax000/zelda-timeline-interpreter
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          path: public
+
+      - name: Clean public repo (preserve .git)
+        run: |
+          cd public
+          find . -maxdepth 1 -not -name '.git' -not -name '.' -exec rm -rf {} +
+
+      - name: Mirror with exclusions
+        run: |
+          rsync -a --exclude='.git' \
+                   --exclude='.github/workflows/publish.yml' \
+                   --exclude='.claude/' \
+                   --exclude='publish/' \
+                   --exclude='CLAUDE.md' \
+                   private/ public/
+
+          cp private/publish/README.md public/README.md
+          cp private/publish/CONTRIBUTING.md public/CONTRIBUTING.md
+
+      - name: Get commit message
+        id: commit_msg
+        run: |
+          cd private
+          MSG=$(git log -1 --pretty=%B)
+          echo "msg=$MSG" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push
+        run: |
+          cd public
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to publish"
+          else
+            git commit -m "sync: ${{ steps.commit_msg.outputs.msg }}"
+            git push
+          fi

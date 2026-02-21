@@ -29,3 +29,4 @@ blob-report/
 *.sw?
 .vercel
 .env
+.claude/

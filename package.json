@@ -1,7 +1,15 @@
 {
   "name": "zelda-timeline-interpreter",
-  "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "license": "MIT",
+  "homepage": "https://zelda-timeline-interpreter.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/almax000/zelda-timeline-interpreter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/almax000/zelda-timeline-interpreter/issues"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
