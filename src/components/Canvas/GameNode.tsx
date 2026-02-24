@@ -42,7 +42,7 @@ function GameNodeComponent({ data, selected }: NodeProps<GameNodeType>) {
   return (
     <div
       className={`
-        relative flex flex-col items-center cursor-grab transition-all duration-200
+        relative flex flex-col items-center cursor-grab transition-all duration-200 overflow-visible
         ${selected ? 'drop-shadow-[0_0_12px_var(--color-gold)]' : ''}
       `}
       style={{ width: 140 }}
@@ -78,8 +78,8 @@ function GameNodeComponent({ data, selected }: NodeProps<GameNodeType>) {
         </div>
       )}
 
-      {/* Game title below image */}
-      <p className="mt-1 text-xs font-medium text-[var(--color-text)] text-center line-clamp-2 leading-tight w-full">
+      {/* Game title — absolute so it doesn't affect node height (handles stay at image center) */}
+      <p className="absolute top-full mt-1 text-xs font-medium text-[var(--color-text)] text-center line-clamp-2 leading-tight w-full">
         {gameName}
       </p>
 
