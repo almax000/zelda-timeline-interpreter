@@ -27,6 +27,5 @@ blob-report/
 *.njsproj
 *.sln
 *.sw?
-.vercel
 .env
 .claude/
