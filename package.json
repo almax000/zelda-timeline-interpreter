@@ -2,7 +2,7 @@
   "name": "zelda-timeline-interpreter",
   "version": "0.1.0",
   "license": "MIT",
-  "homepage": "https://zelda-timeline-interpreter.pages.dev",
+  "homepage": "https://zelda-timeline-interpreter.vercel.app",
   "repository": {
     "type": "git",
     "url": "https://github.com/almax000/zelda-timeline-interpreter.git"

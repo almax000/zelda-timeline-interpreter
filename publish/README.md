@@ -1,11 +1,11 @@
 # Zelda Timeline Interpreter
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Deploy](https://img.shields.io/badge/demo-live-brightgreen)](https://zelda-timeline-interpreter.pages.dev)
+[![Deploy](https://img.shields.io/badge/demo-live-brightgreen)](https://zelda-timeline-interpreter.vercel.app)
 
 An interactive web tool for creating, visualizing, and sharing your own Zelda timeline theories.
 
-**[Live Demo](https://zelda-timeline-interpreter.pages.dev)**
+**[Live Demo](https://zelda-timeline-interpreter.vercel.app)**
 
 ## Features
 

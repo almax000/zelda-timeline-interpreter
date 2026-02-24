@@ -66,7 +66,7 @@ public/
 
 ## Deployment
 
-Deployed on Cloudflare Pages. The project uses Vite, which CF Pages auto-detects for zero-config deployment.
+Deployed on Vercel. The project uses Vite, which Vercel auto-detects for zero-config deployment.
 
 ```bash
 # Preview production build locally
