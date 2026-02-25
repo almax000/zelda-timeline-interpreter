@@ -43,6 +43,7 @@ export interface SplitNodeData extends Record<string, unknown> {
 
 export interface TextNodeData extends Record<string, unknown> {
   text: string;
+  labelKey?: string;
   width: number;
   fontSize: number;
   fontWeight: 'normal' | 'bold';

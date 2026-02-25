@@ -11,7 +11,7 @@ import { decodeTimeline } from './utils/sharing';
 
 // Bump this when official timeline data changes to invalidate page-0 cache.
 // Runs at module level (before any Zustand store hydrates from localStorage).
-const DATA_VERSION = 2;
+const DATA_VERSION = 3;
 (() => {
   const stored = Number(localStorage.getItem('zelda-data-version') ?? 0);
   if (stored < DATA_VERSION) {

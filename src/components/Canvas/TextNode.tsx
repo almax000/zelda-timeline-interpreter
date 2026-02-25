@@ -1,5 +1,6 @@
 import { memo, useState, useRef, useEffect, useCallback } from 'react';
 import { type NodeProps, type Node, NodeResizeControl, useViewport } from '@xyflow/react';
+import { useTranslation } from 'react-i18next';
 import { getCanvasStore } from '../../stores/canvasRegistry';
 import { useTabStore } from '../../stores/tabStore';
 import { useUIStore } from '../../stores/uiStore';
@@ -9,8 +10,10 @@ import type { TextNodeData } from '../../types/timeline';
 type TextNodeType = Node<TextNodeData, 'textLabel'>;
 
 function TextNodeComponent({ id, data, selected }: NodeProps<TextNodeType>) {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [localText, setLocalText] = useState(data.text);
+  const displayText = data.labelKey ? t(data.labelKey) : data.text;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const flushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -34,10 +37,11 @@ function TextNodeComponent({ id, data, selected }: NodeProps<TextNodeType>) {
   };
 
   const enterEdit = useCallback(() => {
+    if (data.labelKey) return;
     setLocalText(data.text);
     setIsEditing(true);
     setEditingTextNodeId(id);
-  }, [data.text, id, setEditingTextNodeId]);
+  }, [data.text, data.labelKey, id, setEditingTextNodeId]);
 
   const exitEdit = useCallback(() => {
     if (flushTimerRef.current) {
@@ -174,7 +178,7 @@ function TextNodeComponent({ id, data, selected }: NodeProps<TextNodeType>) {
             selected ? 'ring-1 ring-[var(--color-gold)]/50' : ''
           }`}
         >
-          {data.text || (
+          {displayText || (
             <span className="text-[var(--color-text-muted)] opacity-50">Text</span>
           )}
         </div>

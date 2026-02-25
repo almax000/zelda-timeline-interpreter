@@ -86,9 +86,18 @@
     "newHyrule": "新海拉爾王國"
   },
   "officialTimeline": {
-    "childSplit": "幼年林克回到過去",
-    "adultSplit": "成年林克封印加農",
-    "fallenSplit": "林克戰敗"
+    "creation": "天地創造",
+    "sacredRealmSealed": "聖地封印",
+    "hyruleFounded": "海拉爾王國建國",
+    "civilWar": "海拉爾統一戰爭",
+    "imprisoningWar": "封印戰爭",
+    "heroDefeated": "勇者戰敗",
+    "heroTriumphant": "勇者勝利",
+    "childEra": "少年時代",
+    "adultEra": "成人時代",
+    "decline": "海拉爾王國衰退",
+    "hyruleFlooded": "海拉爾水沒",
+    "newHyrule": "新生海拉爾王國建國"
   },
   "about": {
     "title": "關於",

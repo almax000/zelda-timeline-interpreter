@@ -86,9 +86,18 @@
     "newHyrule": "A New Hyrule Kingdom"
   },
   "officialTimeline": {
-    "childSplit": "Young Link returns to the past",
-    "adultSplit": "Adult Link seals Ganon",
-    "fallenSplit": "Link falls in battle"
+    "creation": "The Creation of the Land and Sky",
+    "sacredRealmSealed": "The Sacred Realm is sealed",
+    "hyruleFounded": "Kingdom of Hyrule is founded",
+    "civilWar": "Hyrulean Civil War",
+    "imprisoningWar": "The Imprisoning War",
+    "heroDefeated": "The Hero is defeated",
+    "heroTriumphant": "The Hero is Triumphant",
+    "childEra": "Child Era",
+    "adultEra": "Adult Era",
+    "decline": "Decline of Hyrule Kingdom",
+    "hyruleFlooded": "Hyrule is flooded",
+    "newHyrule": "A new Hyrule Kingdom is Established"
   },
   "about": {
     "title": "About",

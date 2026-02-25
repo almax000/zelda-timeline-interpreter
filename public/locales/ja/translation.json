@@ -86,9 +86,18 @@
     "newHyrule": "新ハイラル王国"
   },
   "officialTimeline": {
-    "childSplit": "子供リンクが過去に戻る",
-    "adultSplit": "大人リンクがガノンを封印",
-    "fallenSplit": "リンクが敗北"
+    "creation": "天地創造",
+    "sacredRealmSealed": "聖地封印",
+    "hyruleFounded": "ハイラル王国建国",
+    "civilWar": "ハイラル統一戦争",
+    "imprisoningWar": "封印戦争",
+    "heroDefeated": "勇者が敗北",
+    "heroTriumphant": "勇者が勝利",
+    "childEra": "子供時代",
+    "adultEra": "大人時代",
+    "decline": "ハイラル王国衰退",
+    "hyruleFlooded": "ハイラル水没",
+    "newHyrule": "新生ハイラル王国建国"
   },
   "about": {
     "title": "このアプリについて",
