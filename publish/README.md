@@ -3,25 +3,30 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Deploy](https://img.shields.io/badge/demo-live-brightgreen)](https://zelda-timeline-interpreter.vercel.app)
 
-An interactive web tool for creating, visualizing, and sharing your own Zelda timeline theories.
+> *For the theorists who've spent years debating where Breath of the Wild fits, whether the Downfall Timeline makes sense, and what Echoes of Wisdom means for the whole picture.*
 
-**[Live Demo](https://zelda-timeline-interpreter.vercel.app)**
+An open-source, visual timeline builder made for the Zelda theory community. Drag games onto an infinite canvas, connect them with branching paths, annotate your reasoning, and share your theory with a single link.
 
-## Features
+**[Try it now](https://zelda-timeline-interpreter.vercel.app)** -- no sign-up, no backend, runs entirely in your browser.
 
-- **Drag & Drop Timeline Builder** - Drag games from the sidebar onto the canvas
-- **4 Branch Types** - Main (gold), Child (green), Adult (blue), Fallen Hero (purple)
-- **Event Nodes** - Add custom text events between games
-- **Smart Snap Guides** - Alignment guides for precise node positioning
-- **Official Timeline Preset** - Load the official Zelda timeline as a starting point
-- **Multi-Language** - English, Japanese, Simplified Chinese, Traditional Chinese
-- **Cover Art by Region** - Automatic cover art selection based on language
-- **Undo/Redo** - Full history with keyboard shortcuts (Cmd+Z / Cmd+Shift+Z)
-- **Canvas Annotations** - Draw directly on the canvas with pen tool
-- **Context Menu** - Right-click to delete, change branch types, or add labels
-- **Export/Import** - Save as PNG, PDF, or JSON; import and share via URL
-- **Multi-Tab** - Work on multiple timelines simultaneously
-- **28 Games** - Complete library including mainline and spin-off titles
+## Why This Exists
+
+The Zelda timeline is one of the most debated topics in gaming. Every new release reshuffles the puzzle. But most discussions happen in text -- long forum posts, Reddit threads, YouTube scripts -- with no easy way to *show* what you mean.
+
+This tool gives theorists a canvas to build their vision of the timeline, visually. Start from the official timeline or a blank canvas, rearrange to match your theory, draw annotations to highlight connections, and export a shareable image or link.
+
+## What You Can Do
+
+- **Build your theory** -- Drag all 28 games (21 mainline + 7 spin-offs) onto the canvas
+- **Branch the timeline** -- 4 color-coded branch types: Main (gold), Child (green), Adult (blue), Fallen Hero (purple)
+- **Mark key events** -- Add event nodes between games to explain splits and connections
+- **Annotate freely** -- Draw directly on the canvas with the pen tool to circle, underline, or connect ideas
+- **Start from the official timeline** -- Load the Hyrule Historia / Nintendo official layout as a base, then modify
+- **Compare theories side by side** -- Multi-tab support lets you work on multiple timelines at once
+- **Share with one click** -- Export as PNG, PDF, or JSON; share via URL so others can view and remix
+- **Snap to grid** -- Smart alignment guides keep your layout clean
+- **Undo everything** -- Full undo/redo history (Cmd+Z / Cmd+Shift+Z)
+- **Play in your language** -- English, Japanese, Simplified Chinese, Traditional Chinese
 
 ## Tech Stack
 
@@ -38,17 +43,10 @@ An interactive web tool for creating, visualizing, and sharing your own Zelda ti
 ## Quick Start
 
 ```bash
-# Install dependencies
 npm install
-
-# Start dev server (port 2104)
-npm run dev
-
-# Build for production
-npm run build
-
-# Run E2E tests
-npm run test:e2e
+npm run dev        # Dev server at localhost:2104
+npm run build      # Production build
+npm run test:e2e   # Playwright E2E tests
 ```
 
 ## Project Structure
@@ -74,7 +72,7 @@ public/
 
 ## Contributing
 
-Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Whether you want to add a missing game, improve translations, fix bugs, or propose new features -- contributions from fellow Zelda fans are very welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
