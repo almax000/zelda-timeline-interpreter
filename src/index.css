@@ -69,6 +69,11 @@ html, body, #root {
   cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'><path d='M12 0 L24 12 L12 24 L0 12 Z' fill='%230F172A' stroke='white' stroke-width='2'/><path d='M12 5 L19 12 L12 19 L5 12 Z' fill='white'/></svg>") 6 6, crosshair;
 }
 
+/* Board cursor for split/event-board tool — miniature rectangle with corner marks */
+.cursor-split .react-flow__pane {
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='12' viewBox='0 0 28 24'><rect x='2' y='2' width='24' height='20' rx='1' fill='%230F172A' stroke='white' stroke-width='2'/><path d='M2 2L7 2L2 7Z' fill='white'/><path d='M26 2L21 2L26 7Z' fill='white'/><path d='M2 22L7 22L2 17Z' fill='white'/><path d='M26 22L21 22L26 17Z' fill='white'/></svg>") 7 6, crosshair;
+}
+
 /* Figma-style selection box */
 .react-flow__selection {
   background: rgba(59, 130, 246, 0.15) !important;

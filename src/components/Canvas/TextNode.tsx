@@ -167,6 +167,7 @@ function TextNodeComponent({ id, data, selected }: NodeProps<TextNodeType>) {
           onChange={handleTextChange}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
+          onPointerDownCapture={(e) => e.stopPropagation()}
           className="nodrag nowheel w-full bg-transparent outline-none resize-none border border-[var(--color-gold)]/40 rounded px-1"
           style={textStyles}
           rows={1}

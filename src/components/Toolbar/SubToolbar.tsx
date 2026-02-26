@@ -258,7 +258,7 @@ export function SubToolbar() {
   const activeTool = useUIStore((s) => s.activeTool);
 
   const showPen = activeTool === 'pen';
-  const showAnnotate = activeTool === 'annotate';
+  const showAnnotate = activeTool === 'annotate' || activeTool === 'split';
 
   if (!showPen && !showAnnotate) return null;
 

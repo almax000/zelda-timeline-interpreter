@@ -357,7 +357,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
           id: `split-${Date.now()}`,
           type: 'split',
           position,
-          data: { label: 'Event' },
+          data: { label: 'Event', branchType: selectedBranchType },
         } as TimelineNode);
         resetTool();
         return;
@@ -502,7 +502,9 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const cursorClass = isPlacementTool && !isLocked
     ? activeTool === 'annotate'
       ? 'cursor-diamond'
-      : 'cursor-crosshair'
+      : activeTool === 'split'
+        ? 'cursor-split'
+        : 'cursor-crosshair'
     : spaceHeld
       ? 'space-pan'
       : '';

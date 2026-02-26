@@ -39,6 +39,7 @@ export interface LabelPointNodeData extends Record<string, unknown> {
 export interface SplitNodeData extends Record<string, unknown> {
   label?: string;
   labelKey?: string;
+  branchType?: BranchType;
 }
 
 export interface TextNodeData extends Record<string, unknown> {

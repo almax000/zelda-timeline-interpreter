@@ -76,10 +76,10 @@ test.describe('Placement Tools', () => {
     expect(count).toBe(initialCount + 1);
   });
 
-  test('split tool activates crosshair cursor', async ({ page }) => {
+  test('split tool activates split cursor', async ({ page }) => {
     await page.locator('[data-testid="toolbar-split"]').click();
 
-    const container = page.locator('.cursor-crosshair');
+    const container = page.locator('.cursor-split');
     await expect(container).toBeVisible();
   });
 

@@ -22,8 +22,11 @@ export function useKeyboardShortcuts() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Modifier shortcuts (Cmd+Z etc.) — always active
+      // Modifier shortcuts (Cmd+Z etc.)
       if (e.metaKey || e.ctrlKey) {
+        // Let native Cmd+Z/C/V/X work in text inputs — only keep Cmd+D (duplicate)
+        if (e.key !== 'd' && isInputFocused()) return;
+
         if (e.key === 'z') {
           e.preventDefault();
           const store = getCanvasStore(activeTabId);

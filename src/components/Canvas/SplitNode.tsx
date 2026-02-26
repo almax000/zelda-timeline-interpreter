@@ -3,15 +3,18 @@ import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
 import { useTranslation } from 'react-i18next';
 import { getCanvasStore } from '../../stores/canvasRegistry';
 import { useTabStore } from '../../stores/tabStore';
-
-interface SplitNodeData extends Record<string, unknown> {
-  label?: string;
-  labelKey?: string;
-}
+import type { BranchType, SplitNodeData } from '../../types/timeline';
 
 type SplitNodeType = Node<SplitNodeData, 'split'>;
 
-function CornerTriangle({ position }: { position: 'tl' | 'tr' | 'bl' | 'br' }) {
+const branchColors: Record<BranchType, string> = {
+  main: 'var(--color-branch-main)',
+  child: 'var(--color-branch-child)',
+  adult: 'var(--color-branch-adult)',
+  fallen: 'var(--color-branch-fallen)',
+};
+
+function CornerTriangle({ position, color }: { position: 'tl' | 'tr' | 'bl' | 'br'; color?: string }) {
   const size = 8;
   const paths: Record<string, string> = {
     tl: `M0 0 L${size} 0 L0 ${size} Z`,
@@ -31,7 +34,7 @@ function CornerTriangle({ position }: { position: 'tl' | 'tr' | 'bl' | 'br' }) {
       height={size}
       className={`absolute ${posClass[position]}`}
     >
-      <path d={paths[position]} fill="var(--color-gold)" opacity="0.6" />
+      <path d={paths[position]} fill={color ?? 'var(--color-gold)'} opacity="0.6" />
     </svg>
   );
 }
@@ -43,6 +46,8 @@ function SplitNodeComponent({ id, data, selected }: NodeProps<SplitNodeType>) {
   const inputRef = useRef<HTMLInputElement>(null);
   const activeTabId = useTabStore((s) => s.activeTabId);
 
+  const bt = (data.branchType ?? 'main') as BranchType;
+  const color = branchColors[bt];
   const displayLabel = data.labelKey ? t(data.labelKey) : data.label;
 
   useEffect(() => {
@@ -74,16 +79,19 @@ function SplitNodeComponent({ id, data, selected }: NodeProps<SplitNodeType>) {
       onDoubleClick={handleDoubleClick}
       className={`
         relative px-5 py-3 min-w-[140px] group
-        bg-[var(--color-surface)] border-2 border-[var(--color-gold)]
+        bg-[var(--color-surface)] border-2
         transition-all duration-200
-        ${selected ? 'shadow-[0_0_15px_var(--color-gold)]' : ''}
       `}
+      style={{
+        borderColor: color,
+        boxShadow: selected ? `0 0 15px ${color}` : undefined,
+      }}
     >
       {/* Corner triangles */}
-      <CornerTriangle position="tl" />
-      <CornerTriangle position="tr" />
-      <CornerTriangle position="bl" />
-      <CornerTriangle position="br" />
+      <CornerTriangle position="tl" color={color} />
+      <CornerTriangle position="tr" color={color} />
+      <CornerTriangle position="bl" color={color} />
+      <CornerTriangle position="br" color={color} />
 
       {/* 4-directional bidirectional handles — same as GameNode */}
       <Handle type="target" position={Position.Top} id="top" className={handleClass} />
@@ -102,11 +110,15 @@ function SplitNodeComponent({ id, data, selected }: NodeProps<SplitNodeType>) {
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
           onBlur={handleSubmit}
+          onPointerDownCapture={(e) => e.stopPropagation()}
           onKeyDown={(e) => {
             if (e.key === 'Enter') handleSubmit();
-            if (e.key === 'Escape') setIsEditing(false);
+            if (e.key === 'Escape') { setIsEditing(false); return; }
+            if ((e.metaKey || e.ctrlKey) && (e.key === 'z' || e.key === 'y' || e.key === 'c' || e.key === 'v' || e.key === 'x' || e.key === 'a')) return;
+            e.stopPropagation();
           }}
-          className="bg-transparent outline-none text-sm text-center w-full text-[var(--color-text)] border-b border-[var(--color-gold)]"
+          className="nodrag nowheel bg-transparent outline-none text-sm text-center w-full text-[var(--color-text)]"
+          style={{ borderBottom: `1px solid ${color}` }}
         />
       ) : (
         <p className="text-sm font-medium text-center whitespace-nowrap text-[var(--color-text)]">

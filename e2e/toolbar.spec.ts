@@ -124,13 +124,13 @@ test.describe('Toolbar', () => {
     await expect(splitButton).toBeVisible();
     await splitButton.click();
 
-    // Canvas should have crosshair cursor
+    // Canvas should have split cursor
     const canvasContainer = page.locator('.flex-1.h-full.relative');
-    await expect(canvasContainer).toHaveClass(/cursor-crosshair/);
+    await expect(canvasContainer).toHaveClass(/cursor-split/);
 
     // Click select to deactivate
     await page.locator('[data-testid="toolbar-select"]').click();
-    await expect(canvasContainer).not.toHaveClass(/cursor-crosshair/);
+    await expect(canvasContainer).not.toHaveClass(/cursor-split/);
   });
 
   test('text button activates text placement mode', async ({ page }) => {
