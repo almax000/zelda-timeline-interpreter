@@ -87,9 +87,9 @@ test.describe('Placement Tools', () => {
     await switchToPage0(page);
     await page.waitForTimeout(300);
 
-    // Select button should be inside disabled container (opacity-40)
+    // Button → Tooltip wrapper (relative) → disabled container (opacity-40)
     const selectButton = page.locator('[data-testid="toolbar-select"]');
-    const parentDiv = selectButton.locator('..');
-    await expect(parentDiv).toHaveClass(/opacity-40/);
+    const disabledContainer = selectButton.locator('../..');
+    await expect(disabledContainer).toHaveClass(/opacity-40/);
   });
 });

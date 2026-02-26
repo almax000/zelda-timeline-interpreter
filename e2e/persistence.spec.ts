@@ -28,15 +28,15 @@ test.describe('Persistence', () => {
     expect(edgesAfter).toBe(edgesBefore);
   });
 
-  test('page-0 starts empty with cleared official timeline', async ({ page }) => {
+  test('page-0 loads official timeline after clearing storage', async ({ page }) => {
     await page.goto('/');
     await clearLocalStorage(page);
     await page.reload();
     await page.waitForSelector('.react-flow');
 
-    // Official timeline is now empty — page-0 should have 0 nodes
+    // Official timeline auto-loads on first visit (no localStorage)
     const nodeCount = await getNodeCount(page);
-    expect(nodeCount).toBe(0);
+    expect(nodeCount).toBeGreaterThan(0);
   });
 
   test('canvas-1 starts empty on first visit', async ({ page }) => {

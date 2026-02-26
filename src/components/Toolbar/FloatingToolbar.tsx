@@ -350,6 +350,7 @@ export function FloatingToolbar() {
             <button
               onClick={() => setShowClearDialog(true)}
               className={`${btn} text-[var(--color-text-muted)] hover:text-red-400 hover:bg-[var(--color-surface-light)]`}
+              data-testid="toolbar-clear"
             >
               <IconTrash />
             </button>

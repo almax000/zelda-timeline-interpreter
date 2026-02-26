@@ -42,7 +42,7 @@ test.describe('Toolbar', () => {
   test('clear button shows confirmation dialog', async ({ page }) => {
     await switchToEditableTab(page);
 
-    const clearButton = page.locator('button[title="Clear"]');
+    const clearButton = page.locator('[data-testid="toolbar-clear"]');
     await clearButton.click();
     await expect(page.locator('text=Clear Timeline?')).toBeVisible();
 
@@ -56,7 +56,7 @@ test.describe('Toolbar', () => {
     await importFixtureViaUI(page);
     await page.waitForSelector('.react-flow__node');
 
-    const clearButton = page.locator('button[title="Clear"]');
+    const clearButton = page.locator('[data-testid="toolbar-clear"]');
     await clearButton.click();
 
     const confirmButton = page.locator('.fixed.z-50 button', { hasText: 'Clear' });
@@ -88,17 +88,17 @@ test.describe('Toolbar', () => {
     await lockButton.click();
     await page.waitForTimeout(200);
 
-    // Other buttons should be visually disabled (opacity-40)
+    // Button → Tooltip wrapper (relative) → disabled container (opacity-40)
     const selectButton = page.locator('[data-testid="toolbar-select"]');
-    const parentDiv = selectButton.locator('..');
-    await expect(parentDiv).toHaveClass(/opacity-40/);
+    const disabledContainer = selectButton.locator('../..');
+    await expect(disabledContainer).toHaveClass(/opacity-40/);
 
     // Unlock the tab
     await lockButton.click();
     await page.waitForTimeout(200);
 
     // Buttons should be enabled again
-    await expect(parentDiv).not.toHaveClass(/opacity-40/);
+    await expect(disabledContainer).not.toHaveClass(/opacity-40/);
   });
 
   test('annotate button activates annotate mode', async ({ page }) => {
@@ -188,9 +188,9 @@ test.describe('Toolbar', () => {
     const lockButton = page.locator('[data-testid="toolbar-lock"]');
     await expect(lockButton).toBeVisible();
 
-    // Other buttons should exist but be disabled (opacity-40)
+    // Button → Tooltip wrapper (relative) → disabled container (opacity-40)
     const selectButton = page.locator('[data-testid="toolbar-select"]');
-    const parentDiv = selectButton.locator('..');
-    await expect(parentDiv).toHaveClass(/opacity-40/);
+    const disabledContainer = selectButton.locator('../..');
+    await expect(disabledContainer).toHaveClass(/opacity-40/);
   });
 });

@@ -14,10 +14,10 @@ test.describe('Canvas - Timeline', () => {
     await expect(canvas).toBeVisible();
   });
 
-  test('page-0 starts empty (official timeline cleared)', async ({ page }) => {
-    // Official timeline data is now empty — page-0 should have 0 nodes
+  test('page-0 loads the official timeline preset', async ({ page }) => {
+    // Official timeline auto-loads on first visit (no localStorage)
     const nodeCount = await getNodeCount(page);
-    expect(nodeCount).toBe(0);
+    expect(nodeCount).toBeGreaterThan(0);
   });
 
   test('shows background dots', async ({ page }) => {
@@ -68,8 +68,9 @@ test.describe('Canvas - Timeline', () => {
     await expect(lockButton).toBeVisible();
 
     // Select button should exist but be in disabled container
+    // Button → Tooltip wrapper (relative) → disabled container (opacity-40)
     const selectButton = page.locator('[data-testid="toolbar-select"]');
-    const parentDiv = selectButton.locator('..');
-    await expect(parentDiv).toHaveClass(/opacity-40/);
+    const disabledContainer = selectButton.locator('../..');
+    await expect(disabledContainer).toHaveClass(/opacity-40/);
   });
 });
