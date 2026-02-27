@@ -1,6 +1,6 @@
 import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
-import { getNodesBounds, getViewportForBounds } from '@xyflow/react';
+import { getViewportForBounds } from '@xyflow/react';
 import type { TimelineNode, TimelineEdge, SavedTimeline } from '../types/timeline';
 import { EXPORT_VERSION } from '../constants';
 const EXPORT_PADDING = 48;
@@ -22,6 +22,43 @@ function getExportFilter() {
   };
 }
 
+/**
+ * Compute content bounds from actual DOM elements.
+ * React Flow nodes rendered in the DOM have their positions set via CSS transform
+ * and their actual dimensions measurable via offsetWidth/offsetHeight.
+ * This avoids relying on node.measured which may be absent when the export
+ * is triggered from outside the ReactFlowProvider context.
+ */
+function getContentBoundsFromDOM(): { x: number; y: number; width: number; height: number } {
+  const nodeElements = document.querySelectorAll('.react-flow__node');
+  if (nodeElements.length === 0) throw new Error('No nodes in DOM');
+
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  nodeElements.forEach((el) => {
+    const htmlEl = el as HTMLElement;
+    const transform = htmlEl.style.transform;
+    // React Flow sets: translate(Xpx, Ypx)
+    const match = transform.match(/translate\(([^,]+)px,\s*([^)]+)px\)/);
+    if (!match) return;
+
+    const x = parseFloat(match[1]);
+    const y = parseFloat(match[2]);
+    const w = htmlEl.offsetWidth;
+    const h = htmlEl.offsetHeight;
+
+    minX = Math.min(minX, x);
+    minY = Math.min(minY, y);
+    maxX = Math.max(maxX, x + w);
+    maxY = Math.max(maxY, y + h);
+  });
+
+  return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+}
+
 async function renderContentToPng(
   nodes: TimelineNode[],
   pixelRatio = 2,
@@ -30,13 +67,21 @@ async function renderContentToPng(
   if (!viewport) throw new Error('Canvas not found');
   if (nodes.length === 0) throw new Error('No content to export');
 
-  const bounds = getNodesBounds(nodes);
+  const raw = getContentBoundsFromDOM();
 
-  // Content dimensions with padding
-  const imgWidth = bounds.width + EXPORT_PADDING * 2;
-  const imgHeight = bounds.height + EXPORT_PADDING * 2;
+  // Expand bounds by padding so getViewportForBounds centers content
+  // with uniform margins on all sides
+  const paddedBounds = {
+    x: raw.x - EXPORT_PADDING,
+    y: raw.y - EXPORT_PADDING,
+    width: raw.width + EXPORT_PADDING * 2,
+    height: raw.height + EXPORT_PADDING * 2,
+  };
 
-  const vp = getViewportForBounds(bounds, imgWidth, imgHeight, MIN_ZOOM, MAX_ZOOM, 0);
+  const imgWidth = paddedBounds.width;
+  const imgHeight = paddedBounds.height;
+
+  const vp = getViewportForBounds(paddedBounds, imgWidth, imgHeight, MIN_ZOOM, MAX_ZOOM, 0);
 
   const dataUrl = await toPng(viewport, {
     backgroundColor: EXPORT_BG,
@@ -46,7 +91,7 @@ async function renderContentToPng(
     style: {
       width: `${imgWidth}px`,
       height: `${imgHeight}px`,
-      transform: `translate(${vp.x + EXPORT_PADDING}px, ${vp.y + EXPORT_PADDING}px) scale(${vp.zoom})`,
+      transform: `translate(${vp.x}px, ${vp.y}px) scale(${vp.zoom})`,
     },
     filter: getExportFilter(),
   });
