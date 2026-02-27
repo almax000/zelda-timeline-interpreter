@@ -105,11 +105,18 @@
     "subtitle": "从侧边栏拖拽游戏，创建你自己的塞尔达时间线解读",
     "loadOfficial": "加载官方时间线",
     "startBlank": "从空白开始",
-    "hintSidebar": "游戏库",
-    "hintCanvas": "拖放到这里",
-    "hintToolbar": "工具"
+    "quickStart": "快速入门",
+    "step1Title": "拖拽",
+    "step1Desc": "从侧边栏将游戏拖拽到画布上",
+    "step2Title": "连接",
+    "step2Desc": "拖动连接点将游戏节点相连",
+    "step3Title": "自定义",
+    "step3Desc": "右键点击设置分支类型和标签",
+    "step4Title": "分享",
+    "step4Desc": "导出为 PNG、PDF 或分享链接"
   },
   "hints": {
+    "dragGames": "从左侧游戏库拖拽游戏，开始构建你的时间线",
     "rightClick": "右键点击节点或连线查看更多选项",
     "branchColors": "使用工具栏的颜色按钮切换分支类型",
     "dismiss": "知道了"

@@ -105,11 +105,18 @@
     "subtitle": "サイドバーからゲームをドラッグして、独自のゼルダタイムライン解釈を作成",
     "loadOfficial": "公式タイムラインを読み込む",
     "startBlank": "白紙から始める",
-    "hintSidebar": "ゲームライブラリ",
-    "hintCanvas": "ここにドロップ",
-    "hintToolbar": "ツール"
+    "quickStart": "クイックスタート",
+    "step1Title": "ドラッグ",
+    "step1Desc": "サイドバーからゲームをキャンバスにドラッグ",
+    "step2Title": "接続",
+    "step2Desc": "ハンドルをドラッグしてゲームを繋げる",
+    "step3Title": "カスタマイズ",
+    "step3Desc": "右クリックで分岐タイプやラベルを設定",
+    "step4Title": "共有",
+    "step4Desc": "PNG、PDFでエクスポートまたはリンクで共有"
   },
   "hints": {
+    "dragGames": "左のサイドバーからゲームをドラッグしてタイムラインを作成",
     "rightClick": "ノードやエッジを右クリックでオプション表示",
     "branchColors": "ツールバーのカラーボタンで分岐タイプを変更",
     "dismiss": "了解"

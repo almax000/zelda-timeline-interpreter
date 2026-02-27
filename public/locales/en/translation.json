@@ -105,11 +105,18 @@
     "subtitle": "Drag games from the sidebar to create your own Zelda timeline interpretation",
     "loadOfficial": "Load Official Timeline",
     "startBlank": "Start Blank",
-    "hintSidebar": "Game Library",
-    "hintCanvas": "Drop here",
-    "hintToolbar": "Tools"
+    "quickStart": "Quick Start",
+    "step1Title": "Drag",
+    "step1Desc": "Drag games from the sidebar onto the canvas",
+    "step2Title": "Connect",
+    "step2Desc": "Link games by dragging between handles",
+    "step3Title": "Customize",
+    "step3Desc": "Right-click to set branch types & labels",
+    "step4Title": "Share",
+    "step4Desc": "Export as PNG, PDF, or share a link"
   },
   "hints": {
+    "dragGames": "Drag games from the left sidebar to start building your timeline",
     "rightClick": "Right-click nodes or edges for more options",
     "branchColors": "Change branch types with the color buttons in the toolbar",
     "dismiss": "Got it"

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { STORAGE_KEYS } from '../../constants';
 
-type HintId = 'rightClick' | 'branchColors';
+type HintId = 'rightClick' | 'branchColors' | 'dragGames';
 
 function getSeenHints(): Set<HintId> {
   try {

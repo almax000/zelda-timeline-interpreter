@@ -504,6 +504,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         />
       )}
 
+      <ContextualHint hintId="dragGames" visible={nodes.length === 0 && welcomeDismissed} />
       <ContextualHint hintId="rightClick" visible={nodes.length >= 1} />
       <ContextualHint hintId="branchColors" visible={edges.length >= 1} />
     </div>

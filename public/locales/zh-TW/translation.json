@@ -105,11 +105,18 @@
     "subtitle": "從側邊欄拖曳遊戲，建立你自己的薩爾達時間線解讀",
     "loadOfficial": "載入官方時間線",
     "startBlank": "從空白開始",
-    "hintSidebar": "遊戲庫",
-    "hintCanvas": "拖放到這裡",
-    "hintToolbar": "工具"
+    "quickStart": "快速入門",
+    "step1Title": "拖曳",
+    "step1Desc": "從側邊欄將遊戲拖曳到畫布上",
+    "step2Title": "連接",
+    "step2Desc": "拖動連接點將遊戲節點相連",
+    "step3Title": "自訂",
+    "step3Desc": "右鍵點擊設定分支類型和標籤",
+    "step4Title": "分享",
+    "step4Desc": "匯出為 PNG、PDF 或分享連結"
   },
   "hints": {
+    "dragGames": "從左側遊戲庫拖曳遊戲，開始建構你的時間線",
     "rightClick": "右鍵點擊節點或連線查看更多選項",
     "branchColors": "使用工具列的顏色按鈕切換分支類型",
     "dismiss": "了解"
