@@ -49,7 +49,8 @@
       "delete": "刪除標籤",
       "lock": "鎖定標籤",
       "unlock": "解鎖標籤",
-      "rename": "重新命名標籤"
+      "rename": "重新命名標籤",
+      "duplicateToEdit": "複製並編輯"
     },
     "locked": "此標籤已鎖定"
   },
@@ -98,6 +99,20 @@
     "decline": "海拉爾王國衰退",
     "hyruleFlooded": "海拉爾水沒",
     "newHyrule": "新生海拉爾王國建國"
+  },
+  "welcome": {
+    "title": "建構你的時間線理論",
+    "subtitle": "從側邊欄拖曳遊戲，建立你自己的薩爾達時間線解讀",
+    "loadOfficial": "載入官方時間線",
+    "startBlank": "從空白開始",
+    "hintSidebar": "遊戲庫",
+    "hintCanvas": "拖放到這裡",
+    "hintToolbar": "工具"
+  },
+  "hints": {
+    "rightClick": "右鍵點擊節點或連線查看更多選項",
+    "branchColors": "使用工具列的顏色按鈕切換分支類型",
+    "dismiss": "了解"
   },
   "about": {
     "title": "關於",

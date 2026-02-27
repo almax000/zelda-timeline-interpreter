@@ -11,7 +11,7 @@ interface TabContextMenuProps {
 
 export function TabContextMenu({ x, y, tab, onClose }: TabContextMenuProps) {
   const { t } = useTranslation();
-  const { tabs, removeTab, renameTab, toggleLock } = useTabStore();
+  const { tabs, removeTab, renameTab, toggleLock, duplicateTab } = useTabStore();
   const menuRef = useRef<HTMLDivElement>(null);
   const [renaming, setRenaming] = useState(false);
   const [nameInput, setNameInput] = useState(tab.name);
@@ -71,12 +71,21 @@ export function TabContextMenu({ x, y, tab, onClose }: TabContextMenuProps) {
         </div>
       ) : (
         <>
-          <button
-            onClick={() => { toggleLock(tab.id); onClose(); }}
-            className={enabledClass}
-          >
-            {tab.isLocked ? t('tabs.contextMenu.unlock') : t('tabs.contextMenu.lock')}
-          </button>
+          {isPage0 ? (
+            <button
+              onClick={() => { duplicateTab(tab.id); onClose(); }}
+              className={enabledClass}
+            >
+              {t('tabs.contextMenu.duplicateToEdit')}
+            </button>
+          ) : (
+            <button
+              onClick={() => { toggleLock(tab.id); onClose(); }}
+              className={enabledClass}
+            >
+              {tab.isLocked ? t('tabs.contextMenu.unlock') : t('tabs.contextMenu.lock')}
+            </button>
+          )}
           <button
             onClick={() => { if (!isPage0) setRenaming(true); }}
             className={isPage0 ? disabledClass : enabledClass}

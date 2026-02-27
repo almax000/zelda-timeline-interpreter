@@ -49,7 +49,8 @@
       "delete": "タブを削除",
       "lock": "タブをロック",
       "unlock": "タブのロックを解除",
-      "rename": "タブの名前を変更"
+      "rename": "タブの名前を変更",
+      "duplicateToEdit": "複製して編集"
     },
     "locked": "このタブはロックされています"
   },
@@ -98,6 +99,20 @@
     "decline": "ハイラル王国衰退",
     "hyruleFlooded": "ハイラル水没",
     "newHyrule": "新生ハイラル王国建国"
+  },
+  "welcome": {
+    "title": "あなたのタイムライン理論を作ろう",
+    "subtitle": "サイドバーからゲームをドラッグして、独自のゼルダタイムライン解釈を作成",
+    "loadOfficial": "公式タイムラインを読み込む",
+    "startBlank": "白紙から始める",
+    "hintSidebar": "ゲームライブラリ",
+    "hintCanvas": "ここにドロップ",
+    "hintToolbar": "ツール"
+  },
+  "hints": {
+    "rightClick": "ノードやエッジを右クリックでオプション表示",
+    "branchColors": "ツールバーのカラーボタンで分岐タイプを変更",
+    "dismiss": "了解"
   },
   "about": {
     "title": "このアプリについて",

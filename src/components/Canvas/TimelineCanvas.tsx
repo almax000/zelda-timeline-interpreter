@@ -28,6 +28,8 @@ import { TextNode } from './TextNode';
 import { TimelineEdge } from './TimelineEdge';
 import { ContextMenu } from './ContextMenu';
 import { AnnotationOverlay } from '../Annotation/AnnotationOverlay';
+import { WelcomeScreen } from '../UI/WelcomeScreen';
+import { ContextualHint } from '../UI/ContextualHint';
 import { getCanvasStore } from '../../stores/canvasRegistry';
 import { useAnnotationStore } from '../../stores/annotationStore';
 import { useTabStore } from '../../stores/tabStore';
@@ -180,9 +182,11 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const isAnnotationMode = useAnnotationStore((s) => s.isAnnotationMode);
+  const [welcomeDismissed, setWelcomeDismissed] = useState(false);
 
   const tab = useTabStore((s) => s.tabs.find((t) => t.id === tabId));
   const isLocked = tab?.isLocked ?? false;
+  const isPage0 = tabId === 'page-0';
 
   const activeTool = useUIStore((s) => s.activeTool);
   const resetTool = useUIStore((s) => s.resetTool);
@@ -263,6 +267,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
+      setWelcomeDismissed(true);
       if (isLocked) return;
 
       const gameId = event.dataTransfer.getData('application/zelda-game');
@@ -338,6 +343,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
       setContextMenu(null);
+      setWelcomeDismissed(true);
 
       if (isLocked) return;
 
@@ -597,6 +603,35 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
           onClose={() => setContextMenu(null)}
         />
       )}
+
+      {!isPage0 && nodes.length === 0 && !welcomeDismissed && (
+        <WelcomeScreen
+          onLoadOfficial={() => {
+            const sourceStore = getCanvasStore('page-0');
+            const { nodes: srcNodes, edges: srcEdges } = sourceStore.getState();
+            const ts = Date.now();
+            const idMap = new Map<string, string>();
+            const cloned = srcNodes.map((n, i) => {
+              const newId = `${n.type}-dup-${ts}-${i}`;
+              idMap.set(n.id, newId);
+              return { ...n, id: newId, selected: false };
+            });
+            const clonedEdges = srcEdges.map((e) => ({
+              ...e,
+              id: `${idMap.get(e.source) ?? e.source}-${idMap.get(e.target) ?? e.target}`,
+              source: idMap.get(e.source) ?? e.source,
+              target: idMap.get(e.target) ?? e.target,
+              selected: false,
+            }));
+            store.getState().loadTimeline(cloned, clonedEdges);
+            setWelcomeDismissed(true);
+          }}
+          onStartBlank={() => setWelcomeDismissed(true)}
+        />
+      )}
+
+      <ContextualHint hintId="rightClick" visible={!isPage0 && nodes.length >= 1} />
+      <ContextualHint hintId="branchColors" visible={!isPage0 && edges.length >= 1} />
     </div>
   );
 }

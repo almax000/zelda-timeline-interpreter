@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { getCanvasStore } from './canvasRegistry';
 
 export interface Tab {
   id: string;
@@ -16,6 +17,7 @@ interface TabStore {
   setActiveTab: (id: string) => void;
   renameTab: (id: string, name: string) => void;
   toggleLock: (id: string) => void;
+  duplicateTab: (sourceId: string) => void;
 }
 
 let tabCounter = 1;
@@ -68,12 +70,48 @@ export const useTabStore = create<TabStore>()(
       },
 
       toggleLock: (id) => {
+        if (id === 'page-0') return;
         const { tabs } = get();
         set({
           tabs: tabs.map((t) =>
             t.id === id ? { ...t, isLocked: !t.isLocked } : t
           ),
         });
+      },
+
+      duplicateTab: (sourceId) => {
+        const { tabs } = get();
+        const editableTabs = tabs.filter((t) => t.id !== 'page-0');
+        if (editableTabs.length >= 10) return;
+
+        const sourceStore = getCanvasStore(sourceId);
+        const { nodes, edges } = sourceStore.getState();
+
+        tabCounter = Math.max(tabCounter, editableTabs.length);
+        tabCounter++;
+        const newTab: Tab = {
+          id: `tab-${Date.now()}`,
+          name: `Canvas ${tabCounter}`,
+        };
+        set({ tabs: [...tabs, newTab], activeTabId: newTab.id });
+
+        // Copy nodes and edges into the new tab's store
+        const targetStore = getCanvasStore(newTab.id);
+        const ts = Date.now();
+        const idMap = new Map<string, string>();
+        const clonedNodes = nodes.map((n, i) => {
+          const newId = `${n.type}-dup-${ts}-${i}`;
+          idMap.set(n.id, newId);
+          return { ...n, id: newId, selected: false };
+        });
+        const clonedEdges = edges.map((e) => ({
+          ...e,
+          id: `${idMap.get(e.source) ?? e.source}-${idMap.get(e.target) ?? e.target}`,
+          source: idMap.get(e.source) ?? e.source,
+          target: idMap.get(e.target) ?? e.target,
+          selected: false,
+        }));
+        targetStore.getState().loadTimeline(clonedNodes, clonedEdges);
       },
     }),
     {

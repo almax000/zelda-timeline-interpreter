@@ -49,7 +49,8 @@
       "delete": "删除标签",
       "lock": "锁定标签",
       "unlock": "解锁标签",
-      "rename": "重命名标签"
+      "rename": "重命名标签",
+      "duplicateToEdit": "复制并编辑"
     },
     "locked": "此标签已锁定"
   },
@@ -98,6 +99,20 @@
     "decline": "海拉尔王国衰退",
     "hyruleFlooded": "海拉尔水没",
     "newHyrule": "新生海拉尔王国建国"
+  },
+  "welcome": {
+    "title": "构建你的时间线理论",
+    "subtitle": "从侧边栏拖拽游戏，创建你自己的塞尔达时间线解读",
+    "loadOfficial": "加载官方时间线",
+    "startBlank": "从空白开始",
+    "hintSidebar": "游戏库",
+    "hintCanvas": "拖放到这里",
+    "hintToolbar": "工具"
+  },
+  "hints": {
+    "rightClick": "右键点击节点或连线查看更多选项",
+    "branchColors": "使用工具栏的颜色按钮切换分支类型",
+    "dismiss": "知道了"
   },
   "about": {
     "title": "关于",
