@@ -8,26 +8,27 @@ import { useTabStore } from './stores/tabStore';
 import { getCanvasStore } from './stores/canvasRegistry';
 import { officialTimelineNodes, officialTimelineEdges } from './data/officialTimeline';
 import { decodeTimeline } from './utils/sharing';
+import { STORAGE_KEYS } from './constants';
 
 // Bump this when official timeline data changes to invalidate page-0 cache.
 // Runs at module level (before any Zustand store hydrates from localStorage).
 const DATA_VERSION = 3;
 (() => {
-  const stored = Number(localStorage.getItem('zelda-data-version') ?? 0);
+  const stored = Number(localStorage.getItem(STORAGE_KEYS.DATA_VERSION) ?? 0);
   if (stored < DATA_VERSION) {
-    localStorage.removeItem('zelda-tab-page-0');
-    localStorage.setItem('zelda-data-version', String(DATA_VERSION));
+    localStorage.removeItem(STORAGE_KEYS.tabCanvas('page-0'));
+    localStorage.setItem(STORAGE_KEYS.DATA_VERSION, String(DATA_VERSION));
   }
   // Legacy single-store migration
   const oldData = localStorage.getItem('zelda-timeline-storage');
-  const tabData = localStorage.getItem('zelda-tab-canvas-1');
+  const tabData = localStorage.getItem(STORAGE_KEYS.tabCanvas('canvas-1'));
   if (oldData && !tabData) {
-    localStorage.setItem('zelda-tab-canvas-1', oldData);
+    localStorage.setItem(STORAGE_KEYS.tabCanvas('canvas-1'), oldData);
     localStorage.removeItem('zelda-timeline-storage');
   }
   const oldOfficial = localStorage.getItem('zelda-tab-official');
   if (oldOfficial && !tabData) {
-    localStorage.setItem('zelda-tab-canvas-1', oldOfficial);
+    localStorage.setItem(STORAGE_KEYS.tabCanvas('canvas-1'), oldOfficial);
     localStorage.removeItem('zelda-tab-official');
   }
 })();

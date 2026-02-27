@@ -35,7 +35,7 @@ jobs:
                    --exclude='CLAUDE.md' \
                    private/ public/
 
-          cp private/publish/README.md public/README.md
+          cp private/publish/README*.md public/
           cp private/publish/CONTRIBUTING.md public/CONTRIBUTING.md
 
       - name: Get commit message
@@ -54,6 +54,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to publish"
           else
-            git commit -m "sync: ${{ steps.commit_msg.outputs.msg }}"
+            git commit -m "${{ steps.commit_msg.outputs.msg }}"
             git push
           fi

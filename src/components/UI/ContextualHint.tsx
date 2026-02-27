@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-
-const STORAGE_KEY = 'zelda-hints-seen';
+import { STORAGE_KEYS } from '../../constants';
 
 type HintId = 'rightClick' | 'branchColors';
 
 function getSeenHints(): Set<HintId> {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEYS.HINTS_SEEN);
     return raw ? new Set(JSON.parse(raw)) : new Set();
   } catch {
     return new Set();
@@ -17,7 +16,7 @@ function getSeenHints(): Set<HintId> {
 function markSeen(id: HintId) {
   const seen = getSeenHints();
   seen.add(id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([...seen]));
+  localStorage.setItem(STORAGE_KEYS.HINTS_SEEN, JSON.stringify([...seen]));
 }
 
 interface ContextualHintProps {

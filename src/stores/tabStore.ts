@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { getCanvasStore } from './canvasRegistry';
+import { getCanvasStore, removeCanvasStore } from './canvasRegistry';
+import { STORAGE_KEYS } from '../constants';
 
 export interface Tab {
   id: string;
@@ -53,7 +54,8 @@ export const useTabStore = create<TabStore>()(
         const newActive = activeTabId === id
           ? filtered[Math.max(0, tabs.findIndex((t) => t.id === id) - 1)].id
           : activeTabId;
-        localStorage.removeItem(`zelda-tab-${id}`);
+        localStorage.removeItem(STORAGE_KEYS.tabCanvas(id));
+        removeCanvasStore(id);
         set({ tabs: filtered, activeTabId: newActive });
       },
 
@@ -115,7 +117,7 @@ export const useTabStore = create<TabStore>()(
       },
     }),
     {
-      name: 'zelda-tab-store',
+      name: STORAGE_KEYS.TAB_STORE,
       version: 2,
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as { tabs?: Tab[]; activeTabId?: string };

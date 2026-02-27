@@ -1,7 +1,6 @@
 import LZString from 'lz-string';
 import type { TimelineNode, TimelineEdge } from '../types/timeline';
-
-const MAX_URL_LENGTH = 2000;
+import { MAX_URL_LENGTH } from '../constants';
 
 interface SharedTimeline {
   v: string;

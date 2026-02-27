@@ -1,7 +1,7 @@
 import { Shape } from 'react-konva';
 import type { Stroke } from '../../stores/annotationStore';
+import { LASER_DECAY_MS } from '../../constants';
 
-const DECAY_TIME = 1000;
 const LASER_COLOR_R = 173;
 const LASER_COLOR_G = 255;
 const LASER_COLOR_B = 47;
@@ -33,9 +33,9 @@ export function LaserStrokeShape({ stroke, now }: LaserStrokeShapeProps) {
 
           const ts = timestamps[i];
           const age = now - ts;
-          if (age > DECAY_TIME) continue;
+          if (age > LASER_DECAY_MS) continue;
 
-          const decay = easeOutQuad(1 - age / DECAY_TIME);
+          const decay = easeOutQuad(1 - age / LASER_DECAY_MS);
           const taper = 0.3 + 0.7 * (i / (numPoints - 1));
           const w = strokeWidth * taper;
 

@@ -6,12 +6,13 @@ import jaTranslation from '../../public/locales/ja/translation.json';
 import zhCNTranslation from '../../public/locales/zh-CN/translation.json';
 import zhTWTranslation from '../../public/locales/zh-TW/translation.json';
 import { useSettingsStore } from '../stores/settingsStore';
+import { STORAGE_KEYS } from '../constants';
 
 const SUPPORTED_LANGUAGES = ['en', 'ja', 'zh-CN', 'zh-TW'];
 
 function hasPersistedLanguage(): boolean {
   try {
-    const raw = localStorage.getItem('zelda-timeline-settings');
+    const raw = localStorage.getItem(STORAGE_KEYS.SETTINGS);
     if (raw) {
       const lang = JSON.parse(raw)?.state?.language;
       if (SUPPORTED_LANGUAGES.includes(lang)) return true;
@@ -22,7 +23,7 @@ function hasPersistedLanguage(): boolean {
 
 function getPersistedLanguage(): string {
   try {
-    const raw = localStorage.getItem('zelda-timeline-settings');
+    const raw = localStorage.getItem(STORAGE_KEYS.SETTINGS);
     if (raw) {
       const lang = JSON.parse(raw)?.state?.language;
       if (SUPPORTED_LANGUAGES.includes(lang)) return lang;

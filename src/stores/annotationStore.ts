@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { LASER_DECAY_MS } from '../constants';
 
 export interface Point {
   x: number;
@@ -143,11 +144,10 @@ export const useAnnotationStore = create<AnnotationStore>((set, get) => ({
     const { laserStrokes } = get();
     const tabLaserStrokes = laserStrokes.get(tabId) || [];
     const now = Date.now();
-    const DECAY_TIME = 1000;
     const alive = tabLaserStrokes.filter((stroke) => {
       if (!stroke.timestamps || stroke.timestamps.length === 0) return false;
       const newestTs = stroke.timestamps[stroke.timestamps.length - 1];
-      return now - newestTs < DECAY_TIME;
+      return now - newestTs < LASER_DECAY_MS;
     });
     if (alive.length !== tabLaserStrokes.length) {
       const updated = new Map(laserStrokes);

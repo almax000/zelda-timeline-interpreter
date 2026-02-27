@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { CoverRegion } from '../types/game';
+import { STORAGE_KEYS } from '../constants';
 
 type Language = 'en' | 'ja' | 'zh-CN' | 'zh-TW';
 
@@ -37,7 +38,7 @@ export const useSettingsStore = create<SettingsStore>()(
       setSnapToGrid: (snap) => set({ snapToGrid: snap }),
     }),
     {
-      name: 'zelda-timeline-settings',
+      name: STORAGE_KEYS.SETTINGS,
     }
   )
 );

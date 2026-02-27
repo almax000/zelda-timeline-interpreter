@@ -42,12 +42,12 @@ export function ExportButton() {
 
   const handleExportPng = async () => {
     setIsOpen(false);
-    await exportToPng();
+    await exportToPng(nodes);
   };
 
   const handleExportPdf = async () => {
     setIsOpen(false);
-    await exportToPdf();
+    await exportToPdf(nodes);
   };
 
   const handleExportJson = () => {

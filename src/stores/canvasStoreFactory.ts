@@ -9,6 +9,7 @@ import {
   type EdgeChange,
 } from '@xyflow/react';
 import type { TimelineNode, TimelineEdge, BranchType } from '../types/timeline';
+import { STORAGE_KEYS } from '../constants';
 
 export interface CanvasStore {
   nodes: TimelineNode[];
@@ -233,7 +234,7 @@ export function createCanvasStore(tabId: string): CanvasStoreWithTemporal {
           },
         }),
         {
-          name: `zelda-tab-${tabId}`,
+          name: STORAGE_KEYS.tabCanvas(tabId),
           partialize: (state: CanvasStore) => ({
             nodes: state.nodes,
             edges: state.edges,

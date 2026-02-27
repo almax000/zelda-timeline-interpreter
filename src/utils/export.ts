@@ -1,30 +1,61 @@
 import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
+import { getNodesBounds, getViewportForBounds } from '@xyflow/react';
 import type { TimelineNode, TimelineEdge, SavedTimeline } from '../types/timeline';
+import { EXPORT_VERSION } from '../constants';
+const EXPORT_PADDING = 48;
+const EXPORT_BG = '#030712';
+const MIN_ZOOM = 0.1;
+const MAX_ZOOM = 2;
 
-const EXPORT_VERSION = '1.0.0';
+function getExportFilter() {
+  return (node: HTMLElement) => {
+    if (node instanceof HTMLElement) {
+      const cls = node.className;
+      if (typeof cls === 'string') {
+        if (cls.includes('react-flow__controls')) return false;
+        if (cls.includes('react-flow__minimap')) return false;
+        if (cls.includes('react-flow__panel')) return false;
+      }
+    }
+    return true;
+  };
+}
 
-export async function exportToPng(): Promise<void> {
+async function renderContentToPng(
+  nodes: TimelineNode[],
+  pixelRatio = 2,
+): Promise<{ dataUrl: string; width: number; height: number }> {
   const viewport = document.querySelector('.react-flow__viewport') as HTMLElement;
-  if (!viewport) {
-    throw new Error('Canvas not found');
-  }
+  if (!viewport) throw new Error('Canvas not found');
+  if (nodes.length === 0) throw new Error('No content to export');
+
+  const bounds = getNodesBounds(nodes);
+
+  // Content dimensions with padding
+  const imgWidth = bounds.width + EXPORT_PADDING * 2;
+  const imgHeight = bounds.height + EXPORT_PADDING * 2;
+
+  const vp = getViewportForBounds(bounds, imgWidth, imgHeight, MIN_ZOOM, MAX_ZOOM, 0);
 
   const dataUrl = await toPng(viewport, {
-    backgroundColor: '#030712',
-    pixelRatio: 2,
-    filter: (node) => {
-      // Filter out controls and minimap
-      if (node instanceof HTMLElement) {
-        const className = node.className;
-        if (typeof className === 'string') {
-          if (className.includes('react-flow__controls')) return false;
-          if (className.includes('react-flow__minimap')) return false;
-        }
-      }
-      return true;
+    backgroundColor: EXPORT_BG,
+    width: imgWidth,
+    height: imgHeight,
+    pixelRatio,
+    style: {
+      width: `${imgWidth}px`,
+      height: `${imgHeight}px`,
+      transform: `translate(${vp.x + EXPORT_PADDING}px, ${vp.y + EXPORT_PADDING}px) scale(${vp.zoom})`,
     },
+    filter: getExportFilter(),
   });
+
+  return { dataUrl, width: imgWidth * pixelRatio, height: imgHeight * pixelRatio };
+}
+
+export async function exportToPng(nodes: TimelineNode[]): Promise<void> {
+  const { dataUrl } = await renderContentToPng(nodes);
 
   const link = document.createElement('a');
   link.download = `zelda-timeline-${Date.now()}.png`;
@@ -32,41 +63,19 @@ export async function exportToPng(): Promise<void> {
   link.click();
 }
 
-export async function exportToPdf(): Promise<void> {
-  const viewport = document.querySelector('.react-flow__viewport') as HTMLElement;
-  if (!viewport) {
-    throw new Error('Canvas not found');
-  }
+export async function exportToPdf(nodes: TimelineNode[]): Promise<void> {
+  const { dataUrl, width, height } = await renderContentToPng(nodes);
 
-  const dataUrl = await toPng(viewport, {
-    backgroundColor: '#030712',
-    pixelRatio: 2,
-    filter: (node) => {
-      if (node instanceof HTMLElement) {
-        const className = node.className;
-        if (typeof className === 'string') {
-          if (className.includes('react-flow__controls')) return false;
-          if (className.includes('react-flow__minimap')) return false;
-        }
-      }
-      return true;
-    },
-  });
-
-  const img = new Image();
-  img.src = dataUrl;
-
-  await new Promise((resolve) => {
-    img.onload = resolve;
-  });
+  const pdfWidth = width / 2;
+  const pdfHeight = height / 2;
 
   const pdf = new jsPDF({
-    orientation: img.width > img.height ? 'landscape' : 'portrait',
+    orientation: pdfWidth > pdfHeight ? 'landscape' : 'portrait',
     unit: 'px',
-    format: [img.width / 2, img.height / 2],
+    format: [pdfWidth, pdfHeight],
   });
 
-  pdf.addImage(dataUrl, 'PNG', 0, 0, img.width / 2, img.height / 2);
+  pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
   pdf.save(`zelda-timeline-${Date.now()}.pdf`);
 }
 
