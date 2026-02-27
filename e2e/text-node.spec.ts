@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { switchToEditableTab, getNodeCount } from './helpers/canvas';
+import { switchToEditableTab, getNodeCount, dismissWelcomeScreen } from './helpers/canvas';
 
 test.describe('TextNode', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('.react-flow');
     await switchToEditableTab(page);
+    await dismissWelcomeScreen(page);
   });
 
   test('text tool + click creates textLabel node', async ({ page }) => {

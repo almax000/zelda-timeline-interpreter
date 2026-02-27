@@ -7,7 +7,6 @@ import {
   getNodeCount,
   dragGameToCanvas,
   dismissWelcomeScreen,
-  switchToPage0,
 } from './helpers/canvas';
 
 test.describe('Node Dragging', () => {
@@ -142,25 +141,4 @@ test.describe('Node Dragging', () => {
     expect(Math.abs(secondBoxAfter.y - firstBox.y)).toBeLessThan(50);
   });
 
-  test('dragging on locked tab is prevented', async ({ page }) => {
-    // Switch to page-0 (locked)
-    await switchToPage0(page);
-    await page.waitForTimeout(300);
-
-    const node = page.locator('.react-flow__node').first();
-    if (await node.count() === 0) return; // page-0 might not have visible nodes in viewport
-
-    const boxBefore = await node.boundingBox();
-    if (!boxBefore) return;
-
-    await dragNodeOnCanvas(page, node, 100, 100);
-    await page.waitForTimeout(300);
-
-    const boxAfter = await node.boundingBox();
-    if (!boxAfter) return;
-
-    // Position should not change on locked tab
-    expect(Math.abs(boxAfter.x - boxBefore.x)).toBeLessThan(5);
-    expect(Math.abs(boxAfter.y - boxBefore.y)).toBeLessThan(5);
-  });
 });

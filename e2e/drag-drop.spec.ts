@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, clearLocalStorage, switchToEditableTab, switchToPage0 } from './helpers/canvas';
+import { getNodeCount, clearLocalStorage, switchToEditableTab } from './helpers/canvas';
 
 test.describe('Drag & Drop', () => {
   test.beforeEach(async ({ page }) => {
@@ -49,27 +49,6 @@ test.describe('Drag & Drop', () => {
     const gameNodes = page.locator('.react-flow__node-game');
     const count = await gameNodes.count();
     expect(count).toBeGreaterThanOrEqual(1);
-  });
-
-  test('drag is blocked on locked page-0', async ({ page }) => {
-    // Stay on page-0 (locked)
-    const initialCount = await getNodeCount(page);
-
-    const firstCard = page.locator('[draggable="true"]').first();
-    const canvas = page.locator('.react-flow');
-
-    const cardBox = await firstCard.boundingBox();
-    const canvasBox = await canvas.boundingBox();
-    if (!cardBox || !canvasBox) throw new Error('Could not find card or canvas');
-
-    await page.mouse.move(cardBox.x + cardBox.width / 2, cardBox.y + cardBox.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(canvasBox.x + 300, canvasBox.y + 200, { steps: 10 });
-    await page.mouse.up();
-
-    await page.waitForTimeout(500);
-    const newCount = await getNodeCount(page);
-    expect(newCount).toBe(initialCount);
   });
 
   test('can drag multiple different games to canvas', async ({ page }) => {

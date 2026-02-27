@@ -27,16 +27,14 @@ export const useTabStore = create<TabStore>()(
   persist(
     (set, get) => ({
       tabs: [
-        { id: 'page-0', name: '▲', isLocked: true },
         { id: 'canvas-1', name: 'Canvas 1' },
       ],
-      activeTabId: 'page-0',
+      activeTabId: 'canvas-1',
 
       addTab: () => {
         const { tabs } = get();
-        const editableTabs = tabs.filter((t) => t.id !== 'page-0');
-        if (editableTabs.length >= 10) return;
-        tabCounter = Math.max(tabCounter, editableTabs.length);
+        if (tabs.length >= 10) return;
+        tabCounter = Math.max(tabCounter, tabs.length);
         tabCounter++;
         const newTab: Tab = {
           id: `tab-${Date.now()}`,
@@ -47,9 +45,7 @@ export const useTabStore = create<TabStore>()(
 
       removeTab: (id) => {
         const { tabs, activeTabId } = get();
-        if (id === 'page-0') return;
-        const editableTabs = tabs.filter((t) => t.id !== 'page-0');
-        if (editableTabs.length <= 1) return;
+        if (tabs.length <= 1) return;
         const filtered = tabs.filter((t) => t.id !== id);
         const newActive = activeTabId === id
           ? filtered[Math.max(0, tabs.findIndex((t) => t.id === id) - 1)].id
@@ -62,7 +58,6 @@ export const useTabStore = create<TabStore>()(
       setActiveTab: (id) => set({ activeTabId: id }),
 
       renameTab: (id, name) => {
-        if (id === 'page-0') return;
         const { tabs } = get();
         set({
           tabs: tabs.map((t) =>
@@ -72,7 +67,6 @@ export const useTabStore = create<TabStore>()(
       },
 
       toggleLock: (id) => {
-        if (id === 'page-0') return;
         const { tabs } = get();
         set({
           tabs: tabs.map((t) =>
@@ -83,13 +77,12 @@ export const useTabStore = create<TabStore>()(
 
       duplicateTab: (sourceId) => {
         const { tabs } = get();
-        const editableTabs = tabs.filter((t) => t.id !== 'page-0');
-        if (editableTabs.length >= 10) return;
+        if (tabs.length >= 10) return;
 
         const sourceStore = getCanvasStore(sourceId);
         const { nodes, edges } = sourceStore.getState();
 
-        tabCounter = Math.max(tabCounter, editableTabs.length);
+        tabCounter = Math.max(tabCounter, tabs.length);
         tabCounter++;
         const newTab: Tab = {
           id: `tab-${Date.now()}`,
@@ -118,37 +111,24 @@ export const useTabStore = create<TabStore>()(
     }),
     {
       name: STORAGE_KEYS.TAB_STORE,
-      version: 2,
-      migrate: (persisted: unknown, version: number) => {
+      version: 3,
+      migrate: (persisted: unknown) => {
         const state = persisted as { tabs?: Tab[]; activeTabId?: string };
-
-        if (version < 2 && state?.tabs) {
-          // v1 → v2: isReadOnly → isLocked, ensure page-0 exists
-          const hasPage0 = state.tabs.some((t) => t.id === 'page-0');
-          const migrated = state.tabs.map((t) => {
-            const { isReadOnly, ...rest } = t as Tab & { isReadOnly?: boolean };
-            if (t.id === 'page-0') {
-              return { ...rest, isLocked: true };
-            }
-            return { ...rest, isLocked: isReadOnly ? true : undefined };
-          });
-
-          if (!hasPage0) {
-            migrated.unshift({ id: 'page-0', name: '▲', isLocked: true });
+        if (state?.tabs) {
+          // Remove page-0 from old data
+          const filtered = state.tabs
+            .filter((t) => t.id !== 'page-0')
+            .map((t) => {
+              const { isReadOnly, ...rest } = t as Tab & { isReadOnly?: boolean };
+              return { ...rest, isLocked: rest.isLocked ?? (isReadOnly ? true : undefined) };
+            });
+          if (filtered.length === 0) {
+            filtered.push({ id: 'canvas-1', name: 'Canvas 1', isLocked: undefined });
           }
-
-          return { ...state, tabs: migrated };
-        }
-
-        // v0 → v2: ensure page-0 exists
-        if (state?.tabs && !state.tabs.find((t) => t.id === 'page-0')) {
-          return {
-            ...state,
-            tabs: [
-              { id: 'page-0', name: '▲', isLocked: true },
-              ...state.tabs,
-            ],
-          };
+          const activeTabId = state.activeTabId === 'page-0'
+            ? filtered[0].id
+            : (state.activeTabId ?? filtered[0].id);
+          return { ...state, tabs: filtered, activeTabId };
         }
         return state;
       },

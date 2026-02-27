@@ -97,6 +97,12 @@ html, body, #root {
 }
 .animate-fade-in { animation: fade-in 0.3s ease-out; }
 
+/* Welcome screen entrance */
+@keyframes welcome-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 /* Hide scrollbar for tab overflow */
 .scrollbar-none::-webkit-scrollbar { display: none; }
 .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }

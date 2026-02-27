@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 import {
   clearLocalStorage,
   switchToEditableTab,
-  switchToPage0,
   getNodeCount,
   getEdgeCount,
   waitForWelcomeScreen,
@@ -53,12 +52,6 @@ test.describe('Welcome Screen', () => {
     expect(nodeCount).toBeGreaterThan(0);
     const edgeCount = await getEdgeCount(page);
     expect(edgeCount).toBeGreaterThan(0);
-  });
-
-  test('welcome screen does not appear on page-0', async ({ page }) => {
-    await switchToPage0(page);
-    await page.waitForTimeout(500);
-    await expect(page.getByText('Build Your Timeline Theory')).not.toBeVisible();
   });
 
   test('welcome screen disappears on pane click', async ({ page }) => {

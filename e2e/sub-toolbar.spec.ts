@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { switchToEditableTab } from './helpers/canvas';
+import { switchToEditableTab, dismissWelcomeScreen } from './helpers/canvas';
 
 test.describe('SubToolbar', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('.react-flow');
     await switchToEditableTab(page);
+    await dismissWelcomeScreen(page);
   });
 
   test('pen sub-toolbar appears when pen tool active', async ({ page }) => {

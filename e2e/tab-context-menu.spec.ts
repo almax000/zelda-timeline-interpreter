@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { clearLocalStorage, switchToEditableTab, switchToPage0, getNodeCount, importFixtureViaUI } from './helpers/canvas';
+import { clearLocalStorage, switchToEditableTab, getNodeCount, importFixtureViaUI } from './helpers/canvas';
 
 test.describe('Tab Context Menu', () => {
   test.beforeEach(async ({ page }) => {
@@ -68,22 +68,6 @@ test.describe('Tab Context Menu', () => {
     await expect(page.locator('button[title="My Timeline"]')).toBeVisible();
   });
 
-  test('rename is disabled for page-0', async ({ page }) => {
-    const page0Button = page.locator('button:has(svg polygon)').first();
-    await page0Button.click({ button: 'right' });
-
-    const renameButton = page.locator('.fixed.z-\\[100\\] button', { hasText: 'Rename Tab' });
-    await expect(renameButton).toBeDisabled();
-  });
-
-  test('delete is disabled for page-0', async ({ page }) => {
-    const page0Button = page.locator('button:has(svg polygon)').first();
-    await page0Button.click({ button: 'right' });
-
-    const deleteButton = page.locator('.fixed.z-\\[100\\] button', { hasText: 'Delete Tab' });
-    await expect(deleteButton).toBeDisabled();
-  });
-
   test('can delete a tab when more than one editable tab exists', async ({ page }) => {
     // Create a second tab
     await page.getByTitle('New canvas').click();
@@ -98,13 +82,10 @@ test.describe('Tab Context Menu', () => {
     await expect(deleteButton).toBeEnabled();
     await deleteButton.click();
 
-    // Tab 1 should be gone
+    // Tab 1 should be gone; verify remaining tab is still visible
     await page.waitForTimeout(300);
-    const tab1After = page.locator('button', { hasText: '1' });
-    // After deletion the remaining tab becomes "2" (or re-indexed)
-    // Just verify we still have at least page-0 and one editable tab
-    const page0 = page.locator('button:has(svg polygon)').first();
-    await expect(page0).toBeVisible();
+    const remainingTab = page.locator('.flex.items-center.gap-1 button').first();
+    await expect(remainingTab).toBeVisible();
   });
 
   test('delete is disabled when only one editable tab remains', async ({ page }) => {

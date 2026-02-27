@@ -16,9 +16,7 @@ export function TabContextMenu({ x, y, tab, onClose }: TabContextMenuProps) {
   const [renaming, setRenaming] = useState(false);
   const [nameInput, setNameInput] = useState(tab.name);
 
-  const isPage0 = tab.id === 'page-0';
-  const editableTabs = tabs.filter((tt) => tt.id !== 'page-0');
-  const canDelete = !isPage0 && editableTabs.length > 1;
+  const canDelete = tabs.length > 1;
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -71,25 +69,21 @@ export function TabContextMenu({ x, y, tab, onClose }: TabContextMenuProps) {
         </div>
       ) : (
         <>
-          {isPage0 ? (
-            <button
-              onClick={() => { duplicateTab(tab.id); onClose(); }}
-              className={enabledClass}
-            >
-              {t('tabs.contextMenu.duplicateToEdit')}
-            </button>
-          ) : (
-            <button
-              onClick={() => { toggleLock(tab.id); onClose(); }}
-              className={enabledClass}
-            >
-              {tab.isLocked ? t('tabs.contextMenu.unlock') : t('tabs.contextMenu.lock')}
-            </button>
-          )}
           <button
-            onClick={() => { if (!isPage0) setRenaming(true); }}
-            className={isPage0 ? disabledClass : enabledClass}
-            disabled={isPage0}
+            onClick={() => { toggleLock(tab.id); onClose(); }}
+            className={enabledClass}
+          >
+            {tab.isLocked ? t('tabs.contextMenu.unlock') : t('tabs.contextMenu.lock')}
+          </button>
+          <button
+            onClick={() => { duplicateTab(tab.id); onClose(); }}
+            className={enabledClass}
+          >
+            {t('tabs.contextMenu.duplicateToEdit')}
+          </button>
+          <button
+            onClick={() => setRenaming(true)}
+            className={enabledClass}
           >
             {t('tabs.contextMenu.rename')}
           </button>

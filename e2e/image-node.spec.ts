@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 import {
   clearLocalStorage,
   switchToEditableTab,
-  switchToPage0,
   getNodeCount,
   dismissWelcomeScreen,
 } from './helpers/canvas';
@@ -91,7 +90,9 @@ test.describe('Image Node', () => {
   });
 
   test('pasting image on locked tab does nothing', async ({ page }) => {
-    await switchToPage0(page);
+    // Lock the current tab via toolbar lock button
+    const lockButton = page.locator('[data-testid="toolbar-lock"]');
+    await lockButton.click();
     await page.waitForTimeout(300);
 
     const initialCount = await getNodeCount(page);

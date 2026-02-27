@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, clearLocalStorage, switchToEditableTab, switchToPage0, importFixtureViaUI } from './helpers/canvas';
+import { getNodeCount, clearLocalStorage, switchToEditableTab, importFixtureViaUI } from './helpers/canvas';
 
 test.describe('Context Menu', () => {
   test.beforeEach(async ({ page }) => {
@@ -62,17 +62,4 @@ test.describe('Context Menu', () => {
     await expect(contextMenu).not.toBeVisible();
   });
 
-  test('context menu does not appear on locked page-0', async ({ page }) => {
-    // Switch to page-0 (empty but locked)
-    await switchToPage0(page);
-    await page.waitForTimeout(300);
-
-    // Right-click on the canvas pane itself
-    const pane = page.locator('.react-flow__pane');
-    await pane.click({ button: 'right' });
-
-    // Context menu should NOT appear on locked page
-    const contextMenu = page.locator('[data-testid="context-menu"]');
-    await expect(contextMenu).not.toBeVisible();
-  });
 });

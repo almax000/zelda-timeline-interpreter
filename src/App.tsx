@@ -6,20 +6,11 @@ import { CanvasOverlay } from './components/Canvas/CanvasOverlay';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useTabStore } from './stores/tabStore';
 import { getCanvasStore } from './stores/canvasRegistry';
-import { officialTimelineNodes, officialTimelineEdges } from './data/officialTimeline';
 import { decodeTimeline } from './utils/sharing';
 import { STORAGE_KEYS } from './constants';
 
-// Bump this when official timeline data changes to invalidate page-0 cache.
-// Runs at module level (before any Zustand store hydrates from localStorage).
-const DATA_VERSION = 3;
+// Legacy single-store migration (runs before stores hydrate)
 (() => {
-  const stored = Number(localStorage.getItem(STORAGE_KEYS.DATA_VERSION) ?? 0);
-  if (stored < DATA_VERSION) {
-    localStorage.removeItem(STORAGE_KEYS.tabCanvas('page-0'));
-    localStorage.setItem(STORAGE_KEYS.DATA_VERSION, String(DATA_VERSION));
-  }
-  // Legacy single-store migration
   const oldData = localStorage.getItem('zelda-timeline-storage');
   const tabData = localStorage.getItem(STORAGE_KEYS.tabCanvas('canvas-1'));
   if (oldData && !tabData) {
@@ -31,6 +22,9 @@ const DATA_VERSION = 3;
     localStorage.setItem(STORAGE_KEYS.tabCanvas('canvas-1'), oldOfficial);
     localStorage.removeItem('zelda-tab-official');
   }
+  // Clean up obsolete page-0 data
+  localStorage.removeItem(STORAGE_KEYS.tabCanvas('page-0'));
+  localStorage.removeItem(STORAGE_KEYS.DATA_VERSION);
 })();
 
 function AppContent() {
@@ -38,12 +32,6 @@ function AppContent() {
   const activeTabId = useTabStore((s) => s.activeTabId);
 
   useEffect(() => {
-    // Page 0: load official timeline if no persisted data
-    const page0Store = getCanvasStore('page-0');
-    if (page0Store.getState().nodes.length === 0) {
-      page0Store.getState().loadTimeline(officialTimelineNodes, officialTimelineEdges);
-    }
-
     // Check URL hash for shared timeline
     if (window.location.hash.startsWith('#share=')) {
       try {
@@ -54,7 +42,6 @@ function AppContent() {
           const { activeTabId } = useTabStore.getState();
           const sharedStore = getCanvasStore(activeTabId);
           sharedStore.getState().loadTimeline(shared.nodes, shared.edges);
-          // Clear hash after loading
           history.replaceState(null, '', window.location.pathname);
         }
       } catch {
