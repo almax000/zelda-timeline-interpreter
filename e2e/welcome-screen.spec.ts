@@ -70,8 +70,8 @@ test.describe('Welcome Screen', () => {
     await switchToEditableTab(page);
     await waitForWelcomeScreen(page);
 
-    // Drag a game card onto the canvas
-    await dragGameToCanvas(page, '[draggable="true"]', 400, 300);
+    // Drag a game card onto the canvas (use edge coordinates to avoid the centered welcome overlay)
+    await dragGameToCanvas(page, '[draggable="true"]', 100, 50);
     await page.waitForTimeout(500);
 
     await expect(page.getByText('Build Your Timeline Theory')).not.toBeVisible();

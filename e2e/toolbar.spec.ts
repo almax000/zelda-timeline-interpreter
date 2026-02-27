@@ -70,9 +70,9 @@ test.describe('Toolbar', () => {
     const exportButton = page.locator('button', { hasText: /Export/ });
     await exportButton.click();
 
-    await expect(page.locator('text=Export as PNG')).toBeVisible();
-    await expect(page.locator('text=Export as PDF')).toBeVisible();
-    await expect(page.locator('text=Export as JSON')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Export as PNG' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Export as PDF' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Export as JSON' })).toBeVisible();
 
     // Press Escape to close
     await page.keyboard.press('Escape');
