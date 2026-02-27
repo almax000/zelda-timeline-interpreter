@@ -74,8 +74,8 @@ test.describe('Toolbar', () => {
     await expect(page.locator('text=Export as PDF')).toBeVisible();
     await expect(page.locator('text=Export as JSON')).toBeVisible();
 
-    // Click outside to close
-    await page.locator('.react-flow').click();
+    // Press Escape to close
+    await page.keyboard.press('Escape');
   });
 
   test('lock button toggles lock state', async ({ page }) => {
@@ -183,14 +183,20 @@ test.describe('Toolbar', () => {
     await expect(laserButton).toBeVisible();
   });
 
-  test('locked page shows toolbar with disabled buttons', async ({ page }) => {
-    // On page-0 by default - lock button should be visible
+  test('locked tab shows toolbar with disabled buttons', async ({ page }) => {
+    await switchToEditableTab(page);
+
+    // Lock the tab
     const lockButton = page.locator('[data-testid="toolbar-lock"]');
-    await expect(lockButton).toBeVisible();
+    await lockButton.click();
+    await page.waitForTimeout(200);
 
     // Button → Tooltip wrapper (relative) → disabled container (opacity-40)
     const selectButton = page.locator('[data-testid="toolbar-select"]');
     const disabledContainer = selectButton.locator('../..');
     await expect(disabledContainer).toHaveClass(/opacity-40/);
+
+    // Unlock for cleanup
+    await lockButton.click();
   });
 });

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, getEdgeCount, clearLocalStorage, switchToEditableTab, importFixtureViaUI } from './helpers/canvas';
+import { getNodeCount, getEdgeCount, clearLocalStorage, switchToEditableTab, importFixtureViaUI, waitForWelcomeScreen } from './helpers/canvas';
 
 test.describe('Persistence', () => {
   test('state persists after page reload on editable tab', async ({ page }) => {
@@ -17,7 +17,7 @@ test.describe('Persistence', () => {
     // Reload page
     await page.reload();
     await page.waitForSelector('.react-flow');
-    // After reload, need to switch to editable tab again since default is page-0
+    // Switch to editable tab after reload
     await switchToEditableTab(page);
     await page.waitForSelector('.react-flow__node');
 
@@ -28,15 +28,16 @@ test.describe('Persistence', () => {
     expect(edgesAfter).toBe(edgesBefore);
   });
 
-  test('page-0 loads official timeline after clearing storage', async ({ page }) => {
+  test('welcome screen appears after clearing storage', async ({ page }) => {
     await page.goto('/');
     await clearLocalStorage(page);
     await page.reload();
     await page.waitForSelector('.react-flow');
 
-    // Official timeline auto-loads on first visit (no localStorage)
+    // Fresh start shows welcome screen on empty canvas
+    await waitForWelcomeScreen(page);
     const nodeCount = await getNodeCount(page);
-    expect(nodeCount).toBeGreaterThan(0);
+    expect(nodeCount).toBe(0);
   });
 
   test('canvas-1 starts empty on first visit', async ({ page }) => {

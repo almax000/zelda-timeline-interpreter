@@ -47,23 +47,12 @@ export async function clearLocalStorage(page: Page) {
 }
 
 /**
- * Switch to an editable canvas tab by clicking the numbered page button.
- * Page-0 is the Triforce icon button, page 1 = "1", etc.
- * `pageIndex` is the 1-based index of the editable tab in the PageTabs.
+ * Switch to the first tab (or Nth tab) by clicking the numbered page button.
+ * `pageIndex` is the 1-based index of the tab in the PageTabs.
  */
 export async function switchToEditableTab(page: Page, pageIndex = 1) {
   const pageButton = page.locator(`button:has-text("${pageIndex}")`).first();
   await pageButton.click();
-  await page.waitForTimeout(300);
-}
-
-/**
- * Switch to page-0 by clicking the Triforce icon button (first button in PageTabs).
- */
-export async function switchToPage0(page: Page) {
-  // Page-0 uses TriforceIcon SVG, it's the first button with an SVG containing polygons
-  const page0Button = page.locator('button:has(svg polygon)').first();
-  await page0Button.click();
   await page.waitForTimeout(300);
 }
 

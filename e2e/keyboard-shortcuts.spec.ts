@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { switchToEditableTab, importFixtureViaUI, getNodeCount, activateToolByKey } from './helpers/canvas';
+import { switchToEditableTab, importFixtureViaUI, getNodeCount, activateToolByKey, dismissWelcomeScreen } from './helpers/canvas';
 
 test.describe('Keyboard Shortcuts', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('.react-flow');
     await switchToEditableTab(page);
+    await dismissWelcomeScreen(page);
   });
 
   test('V key activates select tool', async ({ page }) => {

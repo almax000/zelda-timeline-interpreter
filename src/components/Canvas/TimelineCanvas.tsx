@@ -37,6 +37,7 @@ import { useSpacePan } from '../../hooks/useSpacePan';
 import { isShiftHeld } from '../../hooks/useShiftKey';
 import type { TimelineNode } from '../../types/timeline';
 import type { BranchType } from '../../types/timeline';
+import { officialTimelineNodes, officialTimelineEdges } from '../../data/officialTimeline';
 import { SCREEN_SNAP_THRESHOLD, EMPTY_GUIDES, computeSnap, SnapGuidesOverlay } from '../../utils/snapGuides';
 import type { SnapLine } from '../../utils/snapGuides';
 
@@ -76,7 +77,6 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
 
   const tab = useTabStore((s) => s.tabs.find((t) => t.id === tabId));
   const isLocked = tab?.isLocked ?? false;
-  const isPage0 = tabId === 'page-0';
 
   const activeTool = useUIStore((s) => s.activeTool);
   const resetTool = useUIStore((s) => s.resetTool);
@@ -494,34 +494,18 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         />
       )}
 
-      {!isPage0 && nodes.length === 0 && !welcomeDismissed && (
+      {nodes.length === 0 && !welcomeDismissed && (
         <WelcomeScreen
           onLoadOfficial={() => {
-            const sourceStore = getCanvasStore('page-0');
-            const { nodes: srcNodes, edges: srcEdges } = sourceStore.getState();
-            const ts = Date.now();
-            const idMap = new Map<string, string>();
-            const cloned = srcNodes.map((n, i) => {
-              const newId = `${n.type}-dup-${ts}-${i}`;
-              idMap.set(n.id, newId);
-              return { ...n, id: newId, selected: false };
-            });
-            const clonedEdges = srcEdges.map((e) => ({
-              ...e,
-              id: `${idMap.get(e.source) ?? e.source}-${idMap.get(e.target) ?? e.target}`,
-              source: idMap.get(e.source) ?? e.source,
-              target: idMap.get(e.target) ?? e.target,
-              selected: false,
-            }));
-            store.getState().loadTimeline(cloned, clonedEdges);
+            store.getState().loadTimeline(officialTimelineNodes, officialTimelineEdges);
             setWelcomeDismissed(true);
           }}
           onStartBlank={() => setWelcomeDismissed(true)}
         />
       )}
 
-      <ContextualHint hintId="rightClick" visible={!isPage0 && nodes.length >= 1} />
-      <ContextualHint hintId="branchColors" visible={!isPage0 && edges.length >= 1} />
+      <ContextualHint hintId="rightClick" visible={nodes.length >= 1} />
+      <ContextualHint hintId="branchColors" visible={edges.length >= 1} />
     </div>
   );
 }

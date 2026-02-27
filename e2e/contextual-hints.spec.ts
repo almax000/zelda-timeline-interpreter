@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 import {
   clearLocalStorage,
   switchToEditableTab,
-  switchToPage0,
   importFixtureViaUI,
   dragGameToCanvas,
   dismissWelcomeScreen,
@@ -93,13 +92,4 @@ test.describe('Contextual Hints', () => {
     await expect(page.getByText('Right-click nodes or edges')).not.toBeVisible();
   });
 
-  test('hints do not appear on page-0', async ({ page }) => {
-    // Stay on page-0 which has nodes from official timeline
-    await switchToPage0(page);
-    await page.waitForTimeout(500);
-
-    // No contextual hints should appear on the locked page-0
-    await expect(page.getByText('Right-click nodes or edges')).not.toBeVisible();
-    await expect(page.getByText('Change branch types')).not.toBeVisible();
-  });
 });

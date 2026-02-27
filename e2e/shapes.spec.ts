@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, clearLocalStorage, switchToEditableTab, switchToPage0 } from './helpers/canvas';
+import { getNodeCount, clearLocalStorage, switchToEditableTab } from './helpers/canvas';
 
 test.describe('Placement Tools', () => {
   test.beforeEach(async ({ page }) => {
@@ -83,13 +83,4 @@ test.describe('Placement Tools', () => {
     await expect(container).toBeVisible();
   });
 
-  test('placement tools are disabled on locked page-0', async ({ page }) => {
-    await switchToPage0(page);
-    await page.waitForTimeout(300);
-
-    // Button → Tooltip wrapper (relative) → disabled container (opacity-40)
-    const selectButton = page.locator('[data-testid="toolbar-select"]');
-    const disabledContainer = selectButton.locator('../..');
-    await expect(disabledContainer).toHaveClass(/opacity-40/);
-  });
 });
