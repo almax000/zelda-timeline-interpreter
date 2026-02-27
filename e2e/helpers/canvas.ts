@@ -1,4 +1,4 @@
-import { type Page } from '@playwright/test';
+import { type Page, type Locator } from '@playwright/test';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
@@ -98,4 +98,75 @@ export async function importFixtureViaUI(page: Page) {
   await fileInput.setInputFiles(testFile);
 
   await page.waitForTimeout(500);
+}
+
+/**
+ * Dismiss the WelcomeScreen by clicking "Start Blank" if it's visible.
+ */
+export async function dismissWelcomeScreen(page: Page) {
+  const startBlank = page.getByText('Start Blank');
+  if (await startBlank.isVisible({ timeout: 1000 }).catch(() => false)) {
+    await startBlank.click();
+    await page.waitForTimeout(300);
+  }
+}
+
+/**
+ * Wait for the WelcomeScreen to appear (looks for the title text).
+ */
+export async function waitForWelcomeScreen(page: Page) {
+  await page.getByText('Build Your Timeline Theory').waitFor({ state: 'visible', timeout: 5000 });
+}
+
+/**
+ * Get a React Flow node locator by its node type and optional index.
+ */
+export function getNodeByType(page: Page, type: string, index = 0): Locator {
+  return page.locator(`.react-flow__node-${type}`).nth(index);
+}
+
+/**
+ * Read a localStorage item via page.evaluate.
+ */
+export async function getLocalStorageItem(page: Page, key: string): Promise<string | null> {
+  return page.evaluate((k) => localStorage.getItem(k), key);
+}
+
+/**
+ * Wait for a snap guide line to appear (magenta stroke used by snap guides overlay).
+ */
+export async function waitForSnapGuide(page: Page) {
+  await page.locator('line[stroke="#FF44CC"]').first().waitFor({ state: 'visible', timeout: 3000 });
+}
+
+/**
+ * Drag a node on the canvas by a specified delta.
+ * Supports optional shift key for axis-constrained dragging.
+ */
+export async function dragNodeOnCanvas(
+  page: Page,
+  locator: Locator,
+  dx: number,
+  dy: number,
+  options?: { shiftKey?: boolean }
+) {
+  const box = await locator.boundingBox();
+  if (!box) throw new Error('Node not found for dragging');
+
+  const startX = box.x + box.width / 2;
+  const startY = box.y + box.height / 2;
+
+  await page.mouse.move(startX, startY);
+  await page.mouse.down();
+
+  if (options?.shiftKey) {
+    await page.keyboard.down('Shift');
+  }
+
+  await page.mouse.move(startX + dx, startY + dy, { steps: 15 });
+  await page.mouse.up();
+
+  if (options?.shiftKey) {
+    await page.keyboard.up('Shift');
+  }
 }
