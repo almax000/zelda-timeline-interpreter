@@ -44,6 +44,7 @@ export function ShareButton() {
 
   return (
     <button
+      data-onboarding="share"
       onClick={handleShare}
       className="pointer-events-auto px-2.5 py-1 text-sm rounded-lg font-medium flex items-center gap-1.5 bg-[var(--color-surface)]/90 backdrop-blur-sm border border-[var(--color-surface-light)] text-[var(--color-text)] hover:bg-[var(--color-surface-light)] transition-colors shadow-lg"
     >

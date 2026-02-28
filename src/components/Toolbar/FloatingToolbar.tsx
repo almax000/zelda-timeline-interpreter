@@ -109,7 +109,7 @@ export function FloatingToolbar() {
 
   return (
     <>
-      <div className="pointer-events-auto flex items-center gap-0.5 px-2 py-1.5 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-xl shadow-xl border border-[var(--color-surface-light)]">
+      <div data-onboarding="toolbar" className="pointer-events-auto flex items-center gap-0.5 px-2 py-1.5 bg-[var(--color-surface)]/90 backdrop-blur-sm rounded-xl shadow-xl border border-[var(--color-surface-light)]">
         {/* Lock toggle — always clickable */}
         <Tooltip label={isLocked ? t('tabs.contextMenu.unlock') : t('tabs.contextMenu.lock')}>
           <button

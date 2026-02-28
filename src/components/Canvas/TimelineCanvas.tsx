@@ -29,6 +29,7 @@ import { ContextMenu } from './ContextMenu';
 import { AnnotationOverlay } from '../Annotation/AnnotationOverlay';
 import { WelcomeScreen } from '../UI/WelcomeScreen';
 import { ContextualHint } from '../UI/ContextualHint';
+import { OnboardingOverlay } from '../Onboarding/OnboardingOverlay';
 import { useTips } from '../../hooks/useTips';
 import { incrementCounter } from '../../tips/interactionCounters';
 import { getCanvasStore } from '../../stores/canvasRegistry';
@@ -410,7 +411,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
       : '';
 
   return (
-    <div ref={containerRef} className={`flex-1 h-full relative ${cursorClass}`}>
+    <div ref={containerRef} data-onboarding="canvas" className={`flex-1 h-full relative ${cursorClass}`}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -508,6 +509,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         />
       )}
 
+      {welcomeDismissed && <OnboardingOverlay />}
       <ContextualHint tipConfig={currentTip} />
     </div>
   );

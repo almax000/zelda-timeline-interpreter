@@ -5,6 +5,7 @@ export const STORAGE_KEYS = {
   SETTINGS: 'zelda-timeline-settings',
   HINTS_SEEN: 'zelda-hints-seen',
   TIP_COUNTERS: 'zelda-tip-counters',
+  ONBOARDING_COMPLETE: 'zelda-onboarding-complete',
   tabCanvas: (tabId: string) => `zelda-tab-${tabId}`,
 } as const;
 

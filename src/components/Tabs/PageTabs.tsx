@@ -19,7 +19,7 @@ export function PageTabs() {
 
   return (
     <>
-      <div className="flex items-center gap-1">
+      <div data-onboarding="tabs" className="flex items-center gap-1">
         {tabs.map((tab, index) => {
           const isActive = activeTabId === tab.id;
 

@@ -113,7 +113,14 @@
     "step3Title": "Customize",
     "step3Desc": "Right-click to set branch types & labels",
     "step4Title": "Share",
-    "step4Desc": "Export as PNG, PDF, or share a link"
+    "step4Desc": "Export as PNG/PDF or share your timeline via link"
+  },
+  "onboarding": {
+    "sidebar": "Drag any game from here onto the canvas to start building",
+    "toolbar": "Switch tools: select, place events, draw, and more",
+    "tabs": "Create multiple canvases to compare different theories",
+    "share": "Share your timeline with others via a unique link",
+    "canvas": "Drop games here, connect them, and build your theory"
   },
   "hints": {
     "dragGames": "Drag games from the left sidebar to start building your timeline",

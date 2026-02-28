@@ -45,6 +45,13 @@ function StepIcon4() {
 
 const stepIcons = [StepIcon1, StepIcon2, StepIcon3, StepIcon4];
 
+const stepColors = [
+  'var(--color-gold)',
+  'var(--color-branch-child)',
+  'var(--color-branch-adult)',
+  'var(--color-branch-fallen)',
+];
+
 export function WelcomeScreen({ onLoadOfficial, onStartBlank }: WelcomeScreenProps) {
   const { t } = useTranslation();
 
@@ -85,13 +92,13 @@ export function WelcomeScreen({ onLoadOfficial, onStartBlank }: WelcomeScreenPro
 
           <button
             onClick={onStartBlank}
-            className="group flex flex-col items-center gap-3 p-5 rounded-xl border border-dashed border-[var(--color-surface-light)] hover:border-[var(--color-text-muted)] transition-all w-44"
+            className="group flex flex-col items-center gap-3 p-5 rounded-xl border border-[var(--color-branch-adult)]/40 bg-[var(--color-branch-adult)]/8 hover:bg-[var(--color-branch-adult)]/15 hover:border-[var(--color-branch-adult)]/60 transition-all w-44"
           >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-[var(--color-text-muted)] opacity-50 group-hover:opacity-80 transition-opacity">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-[var(--color-branch-adult)] group-hover:opacity-100 transition-opacity">
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-            <span className="text-sm font-medium text-[var(--color-text-muted)] group-hover:text-[var(--color-text)] transition-colors">
+            <span className="text-sm font-semibold text-[var(--color-branch-adult)] group-hover:brightness-110 transition-colors">
               {t('welcome.startBlank')}
             </span>
           </button>
@@ -99,21 +106,25 @@ export function WelcomeScreen({ onLoadOfficial, onStartBlank }: WelcomeScreenPro
 
         {/* Quick Start Guide */}
         <div className="w-full pt-4 border-t border-[var(--color-surface-light)]">
-          <p className="text-[11px] uppercase tracking-widest text-[var(--color-text-muted)]/50 mb-3">
+          <p className="text-[11px] uppercase tracking-widest text-[var(--color-gold)] mb-3">
             {t('welcome.quickStart')}
           </p>
           <div className="grid grid-cols-4 gap-3">
             {steps.map((step, i) => {
               const Icon = stepIcons[i];
+              const color = stepColors[i];
               return (
                 <div key={i} className="flex flex-col items-center gap-1.5">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[var(--color-gold)]/10 text-[var(--color-gold)]">
+                  <div
+                    className="flex items-center justify-center w-8 h-8 rounded-full"
+                    style={{ backgroundColor: `color-mix(in srgb, ${color} 15%, transparent)`, color }}
+                  >
                     <Icon />
                   </div>
                   <span className="text-xs font-medium text-[var(--color-text)]">
                     {step.title}
                   </span>
-                  <span className="text-[10px] leading-tight text-[var(--color-text-muted)]/60">
+                  <span className="text-[10px] leading-tight text-[var(--color-text-muted)]">
                     {step.desc}
                   </span>
                 </div>
