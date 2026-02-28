@@ -118,7 +118,16 @@
   "hints": {
     "dragGames": "從左側遊戲庫拖曳遊戲，開始建構你的時間線",
     "rightClick": "右鍵點擊節點或連線查看更多選項",
-    "branchColors": "使用工具列的顏色按鈕切換分支類型",
+    "branchColors": "右鍵點擊連線可更改分支類型",
+    "shiftDrag": "按住 Shift 拖曳可限制移動方向為單軸",
+    "spacePan": "按住空白鍵拖曳可平移畫布",
+    "imagePaste": "直接從剪貼簿貼上圖片到畫布",
+    "duplicate": "按 {{mod}}+D 複製選取的節點",
+    "edgeSplit": "在事件點模式下點擊連線，可用標籤將其分割",
+    "toolShortcuts": "按 V、D、B、T、P、E、L 快速切換工具",
+    "undoRedo": "按 {{mod}}+Z 復原，{{mod}}+Shift+Z 重做",
+    "tabManagement": "右鍵點擊標籤頁可重新命名、鎖定、複製或刪除",
+    "exportShare": "將時間線匯出為 PNG、PDF、JSON，或透過連結分享",
     "dismiss": "了解"
   },
   "about": {

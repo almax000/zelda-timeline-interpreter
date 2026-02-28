@@ -118,7 +118,16 @@
   "hints": {
     "dragGames": "左のサイドバーからゲームをドラッグしてタイムラインを作成",
     "rightClick": "ノードやエッジを右クリックでオプション表示",
-    "branchColors": "ツールバーのカラーボタンで分岐タイプを変更",
+    "branchColors": "エッジを右クリックして分岐タイプを変更",
+    "shiftDrag": "Shiftを押しながらドラッグで移動方向を軸に制限",
+    "spacePan": "Spaceを押しながらドラッグでキャンバスをパン",
+    "imagePaste": "クリップボードの画像をキャンバスに直接ペースト",
+    "duplicate": "{{mod}}+Dで選択したノードを複製",
+    "edgeSplit": "イベントポイントモードでエッジをクリックしてラベルで分割",
+    "toolShortcuts": "V, D, B, T, P, E, Lキーでツールを素早く切り替え",
+    "undoRedo": "{{mod}}+Zで元に戻す、{{mod}}+Shift+Zでやり直し",
+    "tabManagement": "タブを右クリックで名前変更、ロック、複製、削除",
+    "exportShare": "タイムラインをPNG、PDF、JSONでエクスポート、またはリンクで共有",
     "dismiss": "了解"
   },
   "about": {

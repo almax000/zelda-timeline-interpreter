@@ -29,6 +29,8 @@ import { ContextMenu } from './ContextMenu';
 import { AnnotationOverlay } from '../Annotation/AnnotationOverlay';
 import { WelcomeScreen } from '../UI/WelcomeScreen';
 import { ContextualHint } from '../UI/ContextualHint';
+import { useTips } from '../../hooks/useTips';
+import { incrementCounter } from '../../tips/interactionCounters';
 import { getCanvasStore } from '../../stores/canvasRegistry';
 import { useAnnotationStore } from '../../stores/annotationStore';
 import { useTabStore } from '../../stores/tabStore';
@@ -83,6 +85,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const spaceHeld = useSpacePan();
   const dragStartRef = useRef<Map<string, { x: number; y: number }>>(new Map());
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>(EMPTY_GUIDES);
+  const currentTip = useTips(tabId, welcomeDismissed);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -383,6 +386,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
     }
     dragStartRef.current.delete(node.id);
     setSnapGuides(EMPTY_GUIDES);
+    incrementCounter('nodeDrags');
   }, [applyDragPosition]);
 
   const defaultEdgeOptions = useMemo(() => ({
@@ -504,9 +508,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         />
       )}
 
-      <ContextualHint hintId="dragGames" visible={nodes.length === 0 && welcomeDismissed} />
-      <ContextualHint hintId="rightClick" visible={nodes.length >= 1} />
-      <ContextualHint hintId="branchColors" visible={edges.length >= 1} />
+      <ContextualHint tipConfig={currentTip} />
     </div>
   );
 }

@@ -118,7 +118,16 @@
   "hints": {
     "dragGames": "Drag games from the left sidebar to start building your timeline",
     "rightClick": "Right-click nodes or edges for more options",
-    "branchColors": "Change branch types with the color buttons in the toolbar",
+    "branchColors": "Right-click on edges to change branch types",
+    "shiftDrag": "Hold Shift while dragging to constrain movement to one axis",
+    "spacePan": "Hold Space and drag to pan the canvas",
+    "imagePaste": "Paste images from clipboard directly onto the canvas",
+    "duplicate": "Press {{mod}}+D to duplicate selected nodes",
+    "edgeSplit": "Click on an edge in Event Point mode to split it with a label",
+    "toolShortcuts": "Press V, D, B, T, P, E, L to quickly switch tools",
+    "undoRedo": "Press {{mod}}+Z to undo, {{mod}}+Shift+Z to redo",
+    "tabManagement": "Right-click tabs to rename, lock, duplicate, or delete",
+    "exportShare": "Export your timeline as PNG, PDF, JSON, or share via link",
     "dismiss": "Got it"
   },
   "about": {

@@ -4,6 +4,7 @@ import { useTabStore } from '../stores/tabStore';
 import { useUIStore, type ActiveTool } from '../stores/uiStore';
 import { useAnnotationStore } from '../stores/annotationStore';
 import { isInputFocused } from '../utils/dom';
+import { incrementCounter } from '../tips/interactionCounters';
 
 const TOOL_KEYS: Record<string, ActiveTool> = {
   v: 'select',
@@ -73,10 +74,20 @@ export function useKeyboardShortcuts() {
         return;
       }
 
+      // Delete/Backspace — count for undoRedo tip
+      if (key === 'backspace' || key === 'delete') {
+        const store = getCanvasStore(activeTabId);
+        if (store.getState().nodes.some((n) => n.selected)) {
+          incrementCounter('nodesDeleted');
+        }
+        return;
+      }
+
       const tool = TOOL_KEYS[key];
       if (!tool) return;
 
       e.preventDefault();
+      incrementCounter('toolSwitches');
 
       const { setActiveTool, resetTool } = useUIStore.getState();
       const { setAnnotationMode, setTool } = useAnnotationStore.getState();

@@ -1,49 +1,45 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { STORAGE_KEYS } from '../../constants';
+import { modKey, type TipConfig } from '../../tips/tipRegistry';
 
-type HintId = 'rightClick' | 'branchColors' | 'dragGames';
-
-function getSeenHints(): Set<HintId> {
+function markSeen(id: string) {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.HINTS_SEEN);
-    return raw ? new Set(JSON.parse(raw)) : new Set();
-  } catch {
-    return new Set();
-  }
-}
-
-function markSeen(id: HintId) {
-  const seen = getSeenHints();
-  seen.add(id);
-  localStorage.setItem(STORAGE_KEYS.HINTS_SEEN, JSON.stringify([...seen]));
+    const seen: string[] = raw ? JSON.parse(raw) : [];
+    if (!seen.includes(id)) {
+      seen.push(id);
+      localStorage.setItem(STORAGE_KEYS.HINTS_SEEN, JSON.stringify(seen));
+    }
+  } catch { /* ignore */ }
 }
 
 interface ContextualHintProps {
-  hintId: HintId;
-  visible: boolean;
+  tipConfig: TipConfig | null;
 }
 
-export function ContextualHint({ hintId, visible }: ContextualHintProps) {
+export function ContextualHint({ tipConfig }: ContextualHintProps) {
   const { t } = useTranslation();
-  const [dismissed, setDismissed] = useState(() => getSeenHints().has(hintId));
+  const [dismissedId, setDismissedId] = useState<string | null>(null);
 
   useEffect(() => {
-    setDismissed(getSeenHints().has(hintId));
-  }, [hintId]);
+    setDismissedId(null);
+  }, [tipConfig?.id]);
 
-  if (dismissed || !visible) return null;
+  if (!tipConfig || dismissedId === tipConfig.id) return null;
 
   const handleDismiss = () => {
-    markSeen(hintId);
-    setDismissed(true);
+    markSeen(tipConfig.id);
+    setDismissedId(tipConfig.id);
   };
+
+  const message = (t(tipConfig.i18nKey) as string).replace(/\{\{mod\}\}/g, modKey);
 
   return (
     <div className="absolute bottom-14 left-1/2 -translate-x-1/2 z-40 animate-fade-in">
       <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-gold)]/30 shadow-lg text-sm">
         <span className="text-[var(--color-text-muted)]">
-          {t(`hints.${hintId}`)}
+          {message}
         </span>
         <button
           onClick={handleDismiss}
