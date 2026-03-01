@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type ArrowDirection = 'top' | 'bottom' | 'left' | 'right';
+type ArrowDirection = 'top' | 'bottom' | 'left' | 'right' | 'none';
 
 export interface OnboardingTooltipProps {
   arrowDirection: ArrowDirection;
@@ -13,7 +13,7 @@ export interface OnboardingTooltipProps {
 
 const ARROW_SIZE = 8;
 
-function arrowStyle(dir: ArrowDirection): React.CSSProperties {
+function arrowStyle(dir: Exclude<ArrowDirection, 'none'>): React.CSSProperties {
   const base: React.CSSProperties = {
     position: 'absolute',
     width: ARROW_SIZE * 2,
@@ -50,7 +50,7 @@ export const OnboardingTooltip = forwardRef<HTMLDivElement, OnboardingTooltipPro
         }}
       >
         <div className="relative bg-[var(--color-surface)] border border-[var(--color-gold)]/40 shadow-xl rounded-lg p-4">
-          <div style={arrowStyle(arrowDirection)} />
+          {arrowDirection !== 'none' && <div style={arrowStyle(arrowDirection)} />}
           <p className="text-sm text-[var(--color-text-muted)] leading-relaxed mb-2.5">
             {t(textKey)}
           </p>

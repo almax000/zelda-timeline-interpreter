@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useOnboarding } from '../../hooks/useOnboarding';
 import { OnboardingTooltip } from './OnboardingTooltip';
 
-type ArrowDirection = 'top' | 'bottom' | 'left' | 'right';
+type ArrowDirection = 'top' | 'bottom' | 'left' | 'right' | 'none';
 
 interface TooltipConfig {
   id: string;
@@ -40,7 +40,7 @@ const TOOLTIPS: TooltipConfig[] = [
   {
     id: 'canvas',
     anchorSelector: '[data-onboarding="canvas"]',
-    arrowDirection: 'bottom',
+    arrowDirection: 'none',
     textKey: 'onboarding.canvas',
   },
 ];
@@ -77,6 +77,10 @@ function calcPosition(
     case 'right':
       x = rect.left - tipW - GAP - ARROW_SIZE;
       y = rect.top + rect.height / 2 - tipH / 2;
+      break;
+    case 'none':
+      x = rect.left + rect.width / 2 - tipW / 2;
+      y = rect.top + rect.height * 0.55 - tipH / 2;
       break;
   }
 
@@ -118,7 +122,11 @@ function resolveOverlaps(items: Rect[]) {
   }
 }
 
-export function OnboardingOverlay() {
+interface OnboardingOverlayProps {
+  onComplete?: () => void;
+}
+
+export function OnboardingOverlay({ onComplete }: OnboardingOverlayProps) {
   const { isComplete, dismissedIds, dismissTooltip } = useOnboarding(TOOLTIP_IDS);
   const refs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [positions, setPositions] = useState<Map<string, { x: number; y: number }>>(new Map());
@@ -158,6 +166,10 @@ export function OnboardingOverlay() {
       window.removeEventListener('scroll', recalculate, true);
     };
   }, [recalculate]);
+
+  useEffect(() => {
+    if (isComplete && onComplete) onComplete();
+  }, [isComplete, onComplete]);
 
   if (isComplete) return null;
 

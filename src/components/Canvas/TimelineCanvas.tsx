@@ -37,6 +37,7 @@ import { useAnnotationStore } from '../../stores/annotationStore';
 import { useTabStore } from '../../stores/tabStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useSpacePan } from '../../hooks/useSpacePan';
+import { STORAGE_KEYS } from '../../constants';
 import { isShiftHeld } from '../../hooks/useShiftKey';
 import type { TimelineNode } from '../../types/timeline';
 import type { BranchType } from '../../types/timeline';
@@ -77,6 +78,9 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const isAnnotationMode = useAnnotationStore((s) => s.isAnnotationMode);
   const [welcomeDismissed, setWelcomeDismissed] = useState(false);
+  const [onboardingDone, setOnboardingDone] = useState(
+    () => localStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETE) === 'true',
+  );
 
   const tab = useTabStore((s) => s.tabs.find((t) => t.id === tabId));
   const isLocked = tab?.isLocked ?? false;
@@ -509,8 +513,8 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         />
       )}
 
-      {welcomeDismissed && <OnboardingOverlay />}
-      <ContextualHint tipConfig={currentTip} />
+      {welcomeDismissed && <OnboardingOverlay onComplete={() => setOnboardingDone(true)} />}
+      {onboardingDone && <ContextualHint tipConfig={currentTip} />}
     </div>
   );
 }
