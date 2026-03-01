@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
 import type { BranchType } from '../../types/timeline';
+import { BRANCH_COLORS } from '../../constants';
 
 interface EventNodeData extends Record<string, unknown> {
   isEraMarker?: boolean;
@@ -8,13 +9,6 @@ interface EventNodeData extends Record<string, unknown> {
 }
 
 type EventNodeType = Node<EventNodeData, 'event'>;
-
-const branchColors: Record<BranchType, string> = {
-  main: 'var(--color-branch-main)',
-  child: 'var(--color-branch-child)',
-  adult: 'var(--color-branch-adult)',
-  fallen: 'var(--color-branch-fallen)',
-};
 
 function DoubleDiamondIcon({ color }: { color: string }) {
   return (
@@ -30,7 +24,7 @@ const HIDDEN_HANDLE = '!w-0 !h-0 !opacity-0 !border-0 !bg-transparent !min-w-0 !
 
 function EventNodeComponent({ data, selected }: NodeProps<EventNodeType>) {
   const bt = data.branchType ?? 'main';
-  const color = branchColors[bt];
+  const color = BRANCH_COLORS[bt];
 
   return (
     <div

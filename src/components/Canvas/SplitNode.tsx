@@ -3,16 +3,10 @@ import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
 import { useTranslation } from 'react-i18next';
 import { getCanvasStore } from '../../stores/canvasRegistry';
 import { useTabStore } from '../../stores/tabStore';
+import { BRANCH_COLORS } from '../../constants';
 import type { BranchType, SplitNodeData } from '../../types/timeline';
 
 type SplitNodeType = Node<SplitNodeData, 'split'>;
-
-const branchColors: Record<BranchType, string> = {
-  main: 'var(--color-branch-main)',
-  child: 'var(--color-branch-child)',
-  adult: 'var(--color-branch-adult)',
-  fallen: 'var(--color-branch-fallen)',
-};
 
 function CornerTriangle({ position, color }: { position: 'tl' | 'tr' | 'bl' | 'br'; color?: string }) {
   const size = 8;
@@ -47,7 +41,7 @@ function SplitNodeComponent({ id, data, selected }: NodeProps<SplitNodeType>) {
   const activeTabId = useTabStore((s) => s.activeTabId);
 
   const bt = (data.branchType ?? 'main') as BranchType;
-  const color = branchColors[bt];
+  const color = BRANCH_COLORS[bt];
   const displayLabel = data.labelKey ? t(data.labelKey) : data.label;
 
   useEffect(() => {

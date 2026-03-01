@@ -2,6 +2,8 @@ import { useAnnotationStore } from '../../stores/annotationStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useTabStore } from '../../stores/tabStore';
 import { getCanvasStore } from '../../stores/canvasRegistry';
+import { BRANCH_COLORS } from '../../constants';
+import { PenIcon, Divider } from './icons';
 import type { BranchType } from '../../types/timeline';
 
 const PEN_COLORS = ['#EF4444', '#F97316', '#EAB308', '#22C55E', '#3B82F6', '#A855F7', '#EC4899', '#F8FAFC'];
@@ -14,15 +16,6 @@ const TEXT_COLORS = [
 
 // Prevent focus steal from textarea
 const preventBlur = (e: React.MouseEvent) => e.preventDefault();
-
-function PenIcon({ color }: { color: string }) {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-      <path d="m15 5 4 4" />
-    </svg>
-  );
-}
 
 function IconClearStrokes() {
   return (
@@ -43,10 +36,6 @@ function AlignIcon({ align }: { align: 'left' | 'center' | 'right' }) {
       {align === 'center' && <line x1="3" y1="7" x2="13" y2="7" />}
     </svg>
   );
-}
-
-function Divider() {
-  return <div className="w-px h-5 bg-[var(--color-surface-light)] mx-0.5" />;
 }
 
 const btn = 'w-[30px] h-[30px] flex items-center justify-center rounded-md transition-colors';
@@ -223,10 +212,10 @@ export function TextSubToolbar() {
 }
 
 const BRANCHES: { type: BranchType; color: string; label: string }[] = [
-  { type: 'main', color: 'var(--color-branch-main)', label: 'Main' },
-  { type: 'child', color: 'var(--color-branch-child)', label: 'Child' },
-  { type: 'adult', color: 'var(--color-branch-adult)', label: 'Adult' },
-  { type: 'fallen', color: 'var(--color-branch-fallen)', label: 'Fallen' },
+  { type: 'main', color: BRANCH_COLORS.main, label: 'Main' },
+  { type: 'child', color: BRANCH_COLORS.child, label: 'Child' },
+  { type: 'adult', color: BRANCH_COLORS.adult, label: 'Adult' },
+  { type: 'fallen', color: BRANCH_COLORS.fallen, label: 'Fallen' },
 ];
 
 function AnnotateSubToolbar() {

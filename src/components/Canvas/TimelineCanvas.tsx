@@ -4,7 +4,6 @@ import {
   ReactFlow,
   Background,
   useReactFlow,
-  useStoreApi,
   ConnectionLineType,
   type Connection,
   type NodeTypes,
@@ -14,7 +13,6 @@ import {
   type OnNodesChange,
   type OnEdgesChange,
   type NodeChange,
-  type Node,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -32,19 +30,18 @@ import { WelcomeScreen } from '../UI/WelcomeScreen';
 import { ContextualHint } from '../UI/ContextualHint';
 import { OnboardingOverlay } from '../Onboarding/OnboardingOverlay';
 import { useTips } from '../../hooks/useTips';
-import { incrementCounter } from '../../tips/interactionCounters';
+import { useDragSnap } from '../../hooks/useDragSnap';
+import { useContextMenu } from '../../hooks/useContextMenu';
+import { useImagePaste } from '../../hooks/useImagePaste';
+import { useToolPlacement } from '../../hooks/useToolPlacement';
 import { getCanvasStore } from '../../stores/canvasRegistry';
 import { useAnnotationStore } from '../../stores/annotationStore';
 import { useTabStore } from '../../stores/tabStore';
-import { useUIStore } from '../../stores/uiStore';
 import { useSpacePan } from '../../hooks/useSpacePan';
 import { STORAGE_KEYS } from '../../constants';
-import { isShiftHeld } from '../../hooks/useShiftKey';
 import type { TimelineNode } from '../../types/timeline';
 import type { BranchType } from '../../types/timeline';
 import { officialTimelineNodes, officialTimelineEdges } from '../../data/officialTimeline';
-import { SCREEN_SNAP_THRESHOLD, EMPTY_GUIDES, computeSnap } from '../../utils/snapGuides';
-import type { SnapLine } from '../../utils/snapGuides';
 import { SnapGuidesOverlay } from '../../utils/SnapGuidesOverlay';
 
 const nodeTypes: NodeTypes = {
@@ -61,21 +58,12 @@ const edgeTypes: EdgeTypes = {
   timeline: TimelineEdge as EdgeTypes['timeline'],
 };
 
-interface ContextMenuState {
-  x: number;
-  y: number;
-  type: 'node' | 'edge' | 'pane';
-  targetId: string;
-}
-
 interface TimelineCanvasProps {
   tabId: string;
 }
 
 export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const { screenToFlowPosition } = useReactFlow();
-  const rfStore = useStoreApi();
-  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const isAnnotationMode = useAnnotationStore((s) => s.isAnnotationMode);
@@ -87,11 +75,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const tab = useTabStore((s) => s.tabs.find((t) => t.id === tabId));
   const isLocked = tab?.isLocked ?? false;
 
-  const activeTool = useUIStore((s) => s.activeTool);
-  const resetTool = useUIStore((s) => s.resetTool);
   const spaceHeld = useSpacePan();
-  const dragStartRef = useRef<Map<string, { x: number; y: number }>>(new Map());
-  const [snapGuides, setSnapGuides] = useState<SnapLine[]>(EMPTY_GUIDES);
   const currentTip = useTips(tabId, welcomeDismissed);
 
   useEffect(() => {
@@ -105,51 +89,21 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
     return () => observer.disconnect();
   }, []);
 
-  // Paste handler for images
-  useEffect(() => {
-    if (isLocked) return;
-    const handlePaste = (e: ClipboardEvent) => {
-      const items = e.clipboardData?.items;
-      if (!items) return;
-      for (const item of items) {
-        if (item.type.startsWith('image/')) {
-          e.preventDefault();
-          const blob = item.getAsFile();
-          if (!blob) return;
-          const reader = new FileReader();
-          reader.onload = () => {
-            const src = reader.result as string;
-            const img = new Image();
-            img.onload = () => {
-              const maxW = 400;
-              const ratio = Math.min(1, maxW / img.width);
-              const width = Math.round(img.width * ratio);
-              const height = Math.round(img.height * ratio);
-              const position = screenToFlowPosition({
-                x: containerSize.width / 2,
-                y: containerSize.height / 2,
-              });
-              const store = getCanvasStore(tabId);
-              store.getState().addNode({
-                id: `img-${Date.now()}`,
-                type: 'image',
-                position,
-                data: { src, width, height },
-              } as TimelineNode);
-            };
-            img.src = src;
-          };
-          reader.readAsDataURL(blob);
-          break;
-        }
-      }
-    };
-    document.addEventListener('paste', handlePaste);
-    return () => document.removeEventListener('paste', handlePaste);
-  }, [isLocked, tabId, screenToFlowPosition, containerSize]);
+  useImagePaste(tabId, isLocked, screenToFlowPosition, containerSize);
 
   const store = getCanvasStore(tabId);
-  const { nodes, edges, onNodesChange, onEdgesChange, addNode, addEdge, removeNode, removeEdge, updateEdgeBranchType, splitEdgeWithLabel } = store();
+  const { nodes, edges, onNodesChange, onEdgesChange, addNode, addEdge, removeNode, removeEdge, updateEdgeBranchType } = store();
+  const { snapGuides, onNodeDragStart, onNodeDrag, onNodeDragStop } = useDragSnap(store);
+  const { contextMenu, closeContextMenu, onNodeContextMenu, onEdgeContextMenu, onPaneContextMenu, contextEdge } = useContextMenu(isLocked, edges);
+
+  const dismissWelcome = useCallback(() => setWelcomeDismissed(true), []);
+  const { isPlacementTool, activeTool, selectedBranchType, onPaneClick, onEdgeClick } = useToolPlacement({
+    store,
+    screenToFlowPosition,
+    isLocked,
+    onDismissWelcome: dismissWelcome,
+    onCloseContextMenu: closeContextMenu,
+  });
 
   const onConnect: OnConnect = useCallback(
     (connection: Connection) => {
@@ -190,211 +144,9 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
     [addNode, screenToFlowPosition, isLocked]
   );
 
-  const onNodeContextMenu = useCallback(
-    (event: React.MouseEvent, node: TimelineNode) => {
-      if (isLocked) return;
-      event.preventDefault();
-      setContextMenu({
-        x: event.clientX,
-        y: event.clientY,
-        type: 'node',
-        targetId: node.id,
-      });
-    },
-    [isLocked]
-  );
-
-  const onEdgeContextMenu = useCallback(
-    (event: React.MouseEvent, edge: { id: string }) => {
-      if (isLocked) return;
-      event.preventDefault();
-      setContextMenu({
-        x: event.clientX,
-        y: event.clientY,
-        type: 'edge',
-        targetId: edge.id,
-      });
-    },
-    [isLocked]
-  );
-
-  const isPlacementTool = activeTool === 'split' || activeTool === 'text' || activeTool === 'annotate';
-
-  const selectedBranchType = store((s) => s.selectedBranchType);
-
-  const placeEventPoint = useCallback(
-    (event: React.MouseEvent) => {
-      const position = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
-      position.x -= 12;
-      position.y -= 12;
-      addNode({
-        id: `event-${Date.now()}`,
-        type: 'event',
-        position,
-        data: { branchType: selectedBranchType },
-      } as TimelineNode);
-    },
-    [addNode, screenToFlowPosition, selectedBranchType]
-  );
-
-  const onPaneClick = useCallback(
-    (event: React.MouseEvent) => {
-      setContextMenu(null);
-      setWelcomeDismissed(true);
-
-      if (isLocked) return;
-
-      // Event Point placement
-      if (activeTool === 'annotate') {
-        placeEventPoint(event);
-        return;
-      }
-
-      // Split placement
-      if (activeTool === 'split') {
-        const position = screenToFlowPosition({
-          x: event.clientX,
-          y: event.clientY,
-        });
-        addNode({
-          id: `split-${Date.now()}`,
-          type: 'split',
-          position,
-          data: { label: 'Event', branchType: selectedBranchType },
-        } as TimelineNode);
-        resetTool();
-        return;
-      }
-
-      // Text placement
-      if (activeTool === 'text') {
-        const position = screenToFlowPosition({
-          x: event.clientX,
-          y: event.clientY,
-        });
-        addNode({
-          id: `text-${Date.now()}`,
-          type: 'textLabel',
-          position,
-          data: {
-            text: '',
-            width: 160,
-            fontSize: 16,
-            fontWeight: 'normal',
-            fontStyle: 'normal',
-            textAlign: 'left',
-            textColor: 'var(--color-text)',
-          },
-        } as TimelineNode);
-        resetTool();
-        return;
-      }
-    },
-    [activeTool, isLocked, addNode, screenToFlowPosition, resetTool, placeEventPoint, selectedBranchType]
-  );
-
-  const onPaneContextMenu = useCallback(
-    (event: MouseEvent | React.MouseEvent) => {
-      if (isLocked) return;
-      event.preventDefault();
-      setContextMenu({
-        x: event.clientX,
-        y: event.clientY,
-        type: 'pane',
-        targetId: '',
-      });
-    },
-    [isLocked]
-  );
-
-  const onEdgeClick = useCallback(
-    (event: React.MouseEvent, edge: { id: string }) => {
-      if (isLocked || activeTool !== 'annotate') return;
-      const flowPosition = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
-      splitEdgeWithLabel(edge.id, '', flowPosition, selectedBranchType);
-    },
-    [isLocked, activeTool, screenToFlowPosition, splitEdgeWithLabel, selectedBranchType]
-  );
-
-  const contextEdge = contextMenu?.type === 'edge'
-    ? edges.find((e) => e.id === contextMenu.targetId)
-    : null;
-
   const handleNodesChange = useCallback((changes: NodeChange<TimelineNode>[]) => {
     onNodesChange(changes);
   }, [onNodesChange]);
-
-  // Shift-constrained drag: capture start position
-  const onNodeDragStart = useCallback((_event: React.MouseEvent, node: Node) => {
-    dragStartRef.current.set(node.id, { x: node.position.x, y: node.position.y });
-  }, []);
-
-  // Drag handler: Shift = axis-constrain, otherwise = smart snap guides.
-  // Directly mutates ReactFlow's internal nodeLookup to override XYDrag.
-  const applyDragPosition = useCallback((nodeId: string, pos: { x: number; y: number }, dragging: boolean) => {
-    const { nodeLookup } = rfStore.getState();
-    const internalNode = nodeLookup.get(nodeId);
-    if (internalNode) {
-      internalNode.position = pos;
-      internalNode.internals.positionAbsolute = pos;
-    }
-    store.getState().onNodesChange([{ type: 'position' as const, id: nodeId, position: pos, dragging }]);
-  }, [rfStore, store]);
-
-  const onNodeDrag = useCallback((_event: React.MouseEvent, node: Node) => {
-    const start = dragStartRef.current.get(node.id);
-    const zoom = rfStore.getState().transform[2];
-    const threshold = SCREEN_SNAP_THRESHOLD / zoom;
-    const w = node.measured?.width ?? 0;
-    const h = node.measured?.height ?? 0;
-
-    if (isShiftHeld() && start) {
-      const dx = Math.abs(node.position.x - start.x);
-      const dy = Math.abs(node.position.y - start.y);
-
-      if (dx >= dy) {
-        // Horizontal constraint: Y locked, X can still snap
-        const constrained = { x: node.position.x, y: start.y };
-        const { position, guides } = computeSnap(constrained, w, h, node.id, store.getState().nodes, threshold);
-        applyDragPosition(node.id, { x: position.x, y: start.y }, true);
-        setSnapGuides(guides.filter(g => g.orientation === 'V'));
-      } else {
-        // Vertical constraint: X locked, Y can still snap
-        const constrained = { x: start.x, y: node.position.y };
-        const { position, guides } = computeSnap(constrained, w, h, node.id, store.getState().nodes, threshold);
-        applyDragPosition(node.id, { x: start.x, y: position.y }, true);
-        setSnapGuides(guides.filter(g => g.orientation === 'H'));
-      }
-    } else {
-      // Free drag + smart snap
-      const { position, guides } = computeSnap(node.position, w, h, node.id, store.getState().nodes, threshold);
-      if (guides.length > 0) {
-        applyDragPosition(node.id, position, true);
-      }
-      setSnapGuides(guides);
-    }
-  }, [applyDragPosition, store, rfStore]);
-
-  const onNodeDragStop = useCallback((_event: React.MouseEvent, node: Node) => {
-    const start = dragStartRef.current.get(node.id);
-    if (start && isShiftHeld()) {
-      const dx = Math.abs(node.position.x - start.x);
-      const dy = Math.abs(node.position.y - start.y);
-      const pos = dx >= dy
-        ? { x: node.position.x, y: start.y }
-        : { x: start.x, y: node.position.y };
-      applyDragPosition(node.id, pos, false);
-    }
-    dragStartRef.current.delete(node.id);
-    setSnapGuides(EMPTY_GUIDES);
-    incrementCounter('nodeDrags');
-  }, [applyDragPosition]);
 
   const defaultEdgeOptions = useMemo(() => ({
     type: 'timeline',
@@ -501,7 +253,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
               data: { branchType: selectedBranchType },
             } as TimelineNode);
           }}
-          onClose={() => setContextMenu(null)}
+          onClose={closeContextMenu}
         />
       )}
 

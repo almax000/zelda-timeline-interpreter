@@ -122,6 +122,3 @@ export function ExportButton() {
     </div>
   );
 }
-
-// Keep backward-compatible named export
-export { ExportButton as ExportMenu };

@@ -39,7 +39,7 @@ export function ShareButton() {
     status === 'copied'
       ? t('toolbar.shareCopied')
       : status === 'too-large'
-        ? 'Too large'
+        ? t('toolbar.shareTooLarge')
         : t('toolbar.share');
 
   return (
