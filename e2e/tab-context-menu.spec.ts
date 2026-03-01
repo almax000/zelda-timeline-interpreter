@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { clearLocalStorage, switchToEditableTab, getNodeCount, importFixtureViaUI } from './helpers/canvas';
+import { clearLocalStorage, switchToEditableTab } from './helpers/canvas';
 
 test.describe('Tab Context Menu', () => {
   test.beforeEach(async ({ page }) => {

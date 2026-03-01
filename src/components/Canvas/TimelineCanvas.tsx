@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/preserve-manual-memoization */
 import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import {
   ReactFlow,
@@ -42,8 +43,9 @@ import { isShiftHeld } from '../../hooks/useShiftKey';
 import type { TimelineNode } from '../../types/timeline';
 import type { BranchType } from '../../types/timeline';
 import { officialTimelineNodes, officialTimelineEdges } from '../../data/officialTimeline';
-import { SCREEN_SNAP_THRESHOLD, EMPTY_GUIDES, computeSnap, SnapGuidesOverlay } from '../../utils/snapGuides';
+import { SCREEN_SNAP_THRESHOLD, EMPTY_GUIDES, computeSnap } from '../../utils/snapGuides';
 import type { SnapLine } from '../../utils/snapGuides';
+import { SnapGuidesOverlay } from '../../utils/SnapGuidesOverlay';
 
 const nodeTypes: NodeTypes = {
   game: GameNode as NodeTypes['game'],
@@ -291,7 +293,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         return;
       }
     },
-    [activeTool, isLocked, addNode, screenToFlowPosition, resetTool, placeEventPoint]
+    [activeTool, isLocked, addNode, screenToFlowPosition, resetTool, placeEventPoint, selectedBranchType]
   );
 
   const onPaneContextMenu = useCallback(

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { STORAGE_KEYS } from '../../constants';
 import { modKey, type TipConfig } from '../../tips/tipRegistry';
@@ -21,10 +21,14 @@ interface ContextualHintProps {
 export function ContextualHint({ tipConfig }: ContextualHintProps) {
   const { t } = useTranslation();
   const [dismissedId, setDismissedId] = useState<string | null>(null);
+  const prevTipIdRef = useRef(tipConfig?.id);
 
-  useEffect(() => {
-    setDismissedId(null);
-  }, [tipConfig?.id]);
+  if (tipConfig?.id !== prevTipIdRef.current) {
+    prevTipIdRef.current = tipConfig?.id;
+    if (dismissedId !== null) {
+      setDismissedId(null);
+    }
+  }
 
   if (!tipConfig || dismissedId === tipConfig.id) return null;
 

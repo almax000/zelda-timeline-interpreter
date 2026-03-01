@@ -60,7 +60,7 @@ export async function switchToEditableTab(page: Page, pageIndex = 1) {
  * No-op kept for backward compatibility with existing tests.
  * Sidebar is now always expanded.
  */
-export async function expandSidebar(_page: Page) {
+export async function expandSidebar() {
   // Sidebar no longer collapses — nothing to do
 }
 
@@ -91,13 +91,31 @@ export async function importFixtureViaUI(page: Page) {
 
 /**
  * Dismiss the WelcomeScreen by clicking "Start Blank" if it's visible.
+ * Sets onboarding complete BEFORE clicking so the overlay never renders.
  */
 export async function dismissWelcomeScreen(page: Page) {
+  // Pre-set onboarding complete so tooltips don't appear after welcome dismiss
+  await skipOnboarding(page);
+
   const startBlank = page.getByText('Start Blank');
   if (await startBlank.isVisible({ timeout: 1000 }).catch(() => false)) {
     await startBlank.click();
     await page.waitForTimeout(300);
   }
+}
+
+/**
+ * Mark onboarding tooltips as complete in localStorage.
+ * Prevents onboarding overlay from intercepting pointer events during tests.
+ */
+export async function skipOnboarding(page: Page) {
+  await page.evaluate(() => {
+    localStorage.setItem('zelda-onboarding-complete', 'true');
+    localStorage.setItem(
+      'zelda-onboarding-complete-dismissed',
+      JSON.stringify(['sidebar', 'toolbar', 'tabs', 'share', 'canvas']),
+    );
+  });
 }
 
 /**

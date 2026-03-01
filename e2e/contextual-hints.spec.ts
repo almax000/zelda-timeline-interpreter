@@ -93,6 +93,7 @@ test.describe('Contextual Hints', () => {
 
   test('tip priority: rightClick shown before branchColors', async ({ page }) => {
     await switchToEditableTab(page);
+    await dismissWelcomeScreen(page);
     await importFixtureViaUI(page);
     await page.waitForSelector('.react-flow__edge');
     await page.waitForTimeout(500);

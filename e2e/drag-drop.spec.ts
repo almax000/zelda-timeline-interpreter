@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, clearLocalStorage, switchToEditableTab } from './helpers/canvas';
+import { getNodeCount, clearLocalStorage, switchToEditableTab, dismissWelcomeScreen } from './helpers/canvas';
 
 test.describe('Drag & Drop', () => {
   test.beforeEach(async ({ page }) => {
@@ -53,6 +53,7 @@ test.describe('Drag & Drop', () => {
 
   test('can drag multiple different games to canvas', async ({ page }) => {
     await switchToEditableTab(page);
+    await dismissWelcomeScreen(page);
 
     const canvas = page.locator('.react-flow');
     const canvasBox = await canvas.boundingBox();

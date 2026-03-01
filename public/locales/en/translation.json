@@ -33,7 +33,8 @@
     "draw": "Draw",
     "eraser": "Eraser",
     "laser": "Laser",
-    "branch": "Branch"
+    "branch": "Branch",
+    "importError": "Invalid timeline file"
   },
   "canvas": {
     "dropHint": "Drop game here to add to timeline"

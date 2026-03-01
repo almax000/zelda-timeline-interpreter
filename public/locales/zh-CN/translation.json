@@ -33,7 +33,8 @@
     "draw": "绘制",
     "eraser": "橡皮擦",
     "laser": "激光笔",
-    "branch": "分支"
+    "branch": "分支",
+    "importError": "无效的时间线文件"
   },
   "canvas": {
     "dropHint": "将游戏拖放到此处添加到时间线"

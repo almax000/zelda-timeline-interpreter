@@ -17,6 +17,7 @@ function IconDownload() {
 export function ExportButton() {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [importError, setImportError] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -64,11 +65,13 @@ export function ExportButton() {
     if (!file) return;
 
     try {
+      setImportError(false);
       const result = await importFromJson(file);
       loadTimeline(result.nodes, result.edges);
       setIsOpen(false);
-    } catch (error) {
-      console.error('Failed to import:', error);
+    } catch {
+      setImportError(true);
+      setTimeout(() => setImportError(false), 3000);
     }
 
     event.target.value = '';
@@ -101,6 +104,11 @@ export function ExportButton() {
           <button onClick={handleImport} className={itemClass}>
             {t('toolbar.import')}
           </button>
+          {importError && (
+            <div className="px-4 py-1.5 text-xs text-red-400">
+              {t('toolbar.importError')}
+            </div>
+          )}
         </div>
       )}
 

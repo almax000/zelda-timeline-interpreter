@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getNodeCount, getEdgeCount, clearLocalStorage, switchToEditableTab, importFixtureViaUI, dragGameToCanvas, dismissWelcomeScreen } from './helpers/canvas';
+import { getNodeCount, getEdgeCount, clearLocalStorage, switchToEditableTab, importFixtureViaUI, dragGameToCanvas } from './helpers/canvas';
 
 test.describe('Undo/Redo', () => {
   test.beforeEach(async ({ page }) => {
@@ -34,7 +34,7 @@ test.describe('Undo/Redo', () => {
   });
 
   test('Cmd+Shift+Z redoes undone action', async ({ page }) => {
-    const initialCount = await getNodeCount(page);
+    await getNodeCount(page);
 
     // Delete a node
     const firstNode = page.locator('.react-flow__node').first();

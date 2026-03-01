@@ -102,8 +102,6 @@ test.describe('Export & Import', () => {
   });
 
   test('importing invalid JSON shows no crash', async ({ page }) => {
-    const initialNodeCount = await getNodeCount(page);
-
     const exportButton = page.locator('button', { hasText: /Export/ });
     await exportButton.click();
 

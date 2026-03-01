@@ -33,7 +33,8 @@
     "draw": "描画",
     "eraser": "消しゴム",
     "laser": "レーザー",
-    "branch": "分岐"
+    "branch": "分岐",
+    "importError": "無効なタイムラインファイルです"
   },
   "canvas": {
     "dropHint": "ここにゲームをドロップして追加"

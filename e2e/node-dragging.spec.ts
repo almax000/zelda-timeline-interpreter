@@ -4,9 +4,6 @@ import {
   switchToEditableTab,
   importFixtureViaUI,
   dragNodeOnCanvas,
-  getNodeCount,
-  dragGameToCanvas,
-  dismissWelcomeScreen,
 } from './helpers/canvas';
 
 test.describe('Node Dragging', () => {
@@ -63,7 +60,7 @@ test.describe('Node Dragging', () => {
 
     // Check for snap guide lines during drag
     const snapLines = page.locator('line[stroke="#FF44CC"]');
-    const snapCount = await snapLines.count();
+    await snapLines.count();
     // Snap guides may or may not appear depending on exact alignment
     // At minimum, the drag should work without error
 

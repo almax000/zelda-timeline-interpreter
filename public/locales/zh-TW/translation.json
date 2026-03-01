@@ -33,7 +33,8 @@
     "draw": "繪製",
     "eraser": "橡皮擦",
     "laser": "雷射筆",
-    "branch": "分支"
+    "branch": "分支",
+    "importError": "無效的時間線檔案"
   },
   "canvas": {
     "dropHint": "將遊戲拖放到此處加入時間線"

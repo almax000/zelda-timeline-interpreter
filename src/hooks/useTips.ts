@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { getCanvasStore } from '../stores/canvasRegistry';
 import { useTabStore } from '../stores/tabStore';
 import { useCounters } from '../tips/interactionCounters';
@@ -22,7 +21,7 @@ export function useTips(tabId: string, welcomeDismissed: boolean): TipConfig | n
   const tabCount = useTabStore((s) => s.tabs.length);
   const counters = useCounters();
 
-  const seen = useMemo(() => getSeenHints(), [nodeCount, edgeCount, tabCount, counters]);
+  const seen = getSeenHints();
 
   const ctx: TipContext = {
     nodeCount,

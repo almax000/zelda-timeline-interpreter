@@ -35,7 +35,7 @@ export function AnnotationOverlay({ tabId, width, height }: AnnotationOverlayPro
   const isErasing = useRef(false);
   const laserLayerRef = useRef<Konva.Layer>(null);
   const rafRef = useRef<number>(0);
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(() => Date.now());
 
   const {
     isAnnotationMode,

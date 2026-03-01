@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { switchToEditableTab, getNodeCount, getEdgeCount } from './helpers/canvas';
+import { switchToEditableTab, getNodeCount, getEdgeCount, dismissWelcomeScreen } from './helpers/canvas';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
@@ -21,6 +21,7 @@ test.describe('EventNode', () => {
     await page.goto('/');
     await page.waitForSelector('.react-flow');
     await switchToEditableTab(page);
+    await dismissWelcomeScreen(page);
   });
 
   test('event point handles appear on hover', async ({ page }) => {

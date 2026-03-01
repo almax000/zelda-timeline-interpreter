@@ -13,9 +13,15 @@ function TextNodeComponent({ id, data, selected }: NodeProps<TextNodeType>) {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [localText, setLocalText] = useState(data.text);
+  const [prevDataText, setPrevDataText] = useState(data.text);
   const displayText = data.labelKey ? t(data.labelKey) : data.text;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const flushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  if (!isEditing && data.text !== prevDataText) {
+    setPrevDataText(data.text);
+    setLocalText(data.text);
+  }
 
   const activeTabId = useTabStore((s) => s.activeTabId);
   const setEditingTextNodeId = useUIStore((s) => s.setEditingTextNodeId);
@@ -67,13 +73,6 @@ function TextNodeComponent({ id, data, selected }: NodeProps<TextNodeType>) {
       setEditingTextNodeId(null);
     }
   }, [selected, id, setEditingTextNodeId]);
-
-  // Sync localText when data.text changes externally (e.g. undo)
-  useEffect(() => {
-    if (!isEditing) {
-      setLocalText(data.text);
-    }
-  }, [data.text, isEditing]);
 
   useEffect(() => {
     if (isEditing && textareaRef.current) {

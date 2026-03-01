@@ -1,12 +1,21 @@
-import { memo, useState } from 'react';
+import { memo, useState, useCallback } from 'react';
 import { Handle, Position, NodeResizer, type NodeProps } from '@xyflow/react';
+import { getCanvasStore } from '../../stores/canvasRegistry';
+import { useTabStore } from '../../stores/tabStore';
 import type { ShapeNodeData } from '../../types/timeline';
 
 type ShapeNodeProps = NodeProps & { data: ShapeNodeData };
 
-export const ShapeNode = memo(function ShapeNode({ data, selected }: ShapeNodeProps) {
+export const ShapeNode = memo(function ShapeNode({ id, data, selected }: ShapeNodeProps) {
   const [editing, setEditing] = useState(false);
+  const activeTabId = useTabStore((s) => s.activeTabId);
   const { shapeType, width, height, fill, stroke, strokeWidth, label } = data;
+
+  const handleLabelChange = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+    const store = getCanvasStore(activeTabId);
+    store.getState().updateNodeData(id, { label: e.target.value });
+    setEditing(false);
+  }, [id, activeTabId]);
 
   const renderShape = () => {
     switch (shapeType) {
@@ -109,10 +118,7 @@ export const ShapeNode = memo(function ShapeNode({ data, selected }: ShapeNodePr
             autoFocus
             defaultValue={label ?? ''}
             className="bg-transparent text-xs text-[var(--color-text)] text-center outline-none w-full px-1"
-            onBlur={(e) => {
-              data.label = e.target.value;
-              setEditing(false);
-            }}
+            onBlur={handleLabelChange}
             onKeyDown={(e) => {
               if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
             }}
