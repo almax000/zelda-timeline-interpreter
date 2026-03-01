@@ -13,7 +13,7 @@ export const STORAGE_KEYS = {
 export const LASER_DECAY_MS = 1000;
 
 // URL sharing limit
-export const MAX_URL_LENGTH = 2000;
+export const MAX_URL_LENGTH = 8000;
 
 // Export format version
 export const EXPORT_VERSION = '1.0.0';
