@@ -137,6 +137,11 @@
     "exportShare": "タイムラインをPNG、PDF、JSONでエクスポート、またはリンクで共有",
     "dismiss": "了解"
   },
+  "share": {
+    "madeWith": "Made with",
+    "appName": "Zelda Timeline Interpreter",
+    "createOwn": "自分の理論を作る →"
+  },
   "about": {
     "title": "このアプリについて",
     "text": "Zelda Timeline Interpreter は、ゼルダの伝説のタイムライン理論を視覚化・探求するためのインタラクティブツールです。本プロジェクトは非公式のファン制作であり、任天堂とは一切関係がなく、任天堂の承認を受けたものでもありません。すべてのゲームタイトル、画像、商標は任天堂株式会社の所有物です。本プロジェクトは教育およびファンコミュニティでの利用のみを目的としています。",

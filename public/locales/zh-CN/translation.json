@@ -137,6 +137,11 @@
     "exportShare": "将时间线导出为 PNG、PDF、JSON，或通过链接分享",
     "dismiss": "知道了"
   },
+  "share": {
+    "madeWith": "Made with",
+    "appName": "Zelda Timeline Interpreter",
+    "createOwn": "创建我的时间线 →"
+  },
   "about": {
     "title": "关于",
     "text": "Zelda Timeline Interpreter 是一款用于可视化和探索塞尔达时间线理论的交互工具。本项目为非官方粉丝作品，与任天堂无任何关联，也未获得任天堂的认可。所有游戏名称、图片和商标均为任天堂株式会社的财产。本项目仅供教育和粉丝社区交流之用。",

@@ -137,6 +137,11 @@
     "exportShare": "Export your timeline as PNG, PDF, JSON, or share via link",
     "dismiss": "Got it"
   },
+  "share": {
+    "madeWith": "Made with",
+    "appName": "Zelda Timeline Interpreter",
+    "createOwn": "Create your own →"
+  },
   "about": {
     "title": "About",
     "text": "Zelda Timeline Interpreter is an interactive tool for visualizing and exploring Zelda timeline theories. This is an unofficial fan project and is not affiliated with or endorsed by Nintendo. All game titles, images, and trademarks are the property of Nintendo Co., Ltd. This project is intended solely for educational and fan community purposes.",

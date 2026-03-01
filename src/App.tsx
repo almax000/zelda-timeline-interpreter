@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 import { Sidebar } from './components/Sidebar';
 import { TimelineCanvas } from './components/Canvas';
 import { CanvasOverlay } from './components/Canvas/CanvasOverlay';
+import { ShareViewer } from './components/ShareViewer';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useTabStore } from './stores/tabStore';
-import { getCanvasStore } from './stores/canvasRegistry';
 import { decodeTimeline } from './utils/sharing';
 import { STORAGE_KEYS } from './constants';
 
@@ -31,25 +31,6 @@ function AppContent() {
   useKeyboardShortcuts();
   const activeTabId = useTabStore((s) => s.activeTabId);
 
-  useEffect(() => {
-    // Check URL hash for shared timeline
-    if (window.location.hash.startsWith('#share=')) {
-      try {
-        const shared = decodeTimeline(window.location.hash);
-        if (shared) {
-          const { addTab } = useTabStore.getState();
-          addTab();
-          const { activeTabId } = useTabStore.getState();
-          const sharedStore = getCanvasStore(activeTabId);
-          sharedStore.getState().loadTimeline(shared.nodes, shared.edges);
-          history.replaceState(null, '', window.location.pathname);
-        }
-      } catch {
-        console.error('Failed to decode shared timeline');
-      }
-    }
-  }, []);
-
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       <Sidebar />
@@ -64,6 +45,20 @@ function AppContent() {
 }
 
 function App() {
+  const [sharedData] = useState(() => {
+    if (window.location.hash.startsWith('#share=')) {
+      try {
+        return decodeTimeline(window.location.hash);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
+
+  if (sharedData) {
+    return <ShareViewer nodes={sharedData.nodes} edges={sharedData.edges} />;
+  }
   return <AppContent />;
 }
 
