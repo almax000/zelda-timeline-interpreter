@@ -51,7 +51,6 @@
       "delete": "Delete Tab",
       "lock": "Lock Tab",
       "unlock": "Unlock Tab",
-      "rename": "Rename Tab",
       "duplicateToEdit": "Duplicate to Edit"
     },
     "locked": "This tab is locked"
@@ -78,6 +77,12 @@
       "title": "Clear Timeline?",
       "message": "This will remove all games and connections. This action cannot be undone.",
       "confirm": "Clear",
+      "cancel": "Cancel"
+    },
+    "deleteTabConfirm": {
+      "title": "Delete Tab?",
+      "message": "This will permanently delete this tab and all its canvas data. This action cannot be undone.",
+      "confirm": "Delete",
       "cancel": "Cancel"
     }
   },
@@ -135,7 +140,7 @@
     "edgeSplit": "Click on an edge in Event Point mode to split it with a label",
     "toolShortcuts": "Press V, D, B, T, P, E, L to quickly switch tools",
     "undoRedo": "Press {{mod}}+Z to undo, {{mod}}+Shift+Z to redo",
-    "tabManagement": "Right-click tabs to rename, lock, duplicate, or delete",
+    "tabManagement": "Right-click tabs to lock, duplicate, or delete",
     "exportShare": "Export your timeline as PNG, PDF, JSON, or share via link",
     "dismiss": "Got it"
   },

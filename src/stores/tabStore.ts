@@ -16,7 +16,6 @@ interface TabStore {
   addTab: () => void;
   removeTab: (id: string) => void;
   setActiveTab: (id: string) => void;
-  renameTab: (id: string, name: string) => void;
   toggleLock: (id: string) => void;
   duplicateTab: (sourceId: string) => void;
 }
@@ -56,15 +55,6 @@ export const useTabStore = create<TabStore>()(
       },
 
       setActiveTab: (id) => set({ activeTabId: id }),
-
-      renameTab: (id, name) => {
-        const { tabs } = get();
-        set({
-          tabs: tabs.map((t) =>
-            t.id === id ? { ...t, name } : t
-          ),
-        });
-      },
 
       toggleLock: (id) => {
         const { tabs } = get();

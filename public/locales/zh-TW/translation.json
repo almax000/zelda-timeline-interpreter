@@ -51,7 +51,6 @@
       "delete": "刪除標籤",
       "lock": "鎖定標籤",
       "unlock": "解鎖標籤",
-      "rename": "重新命名標籤",
       "duplicateToEdit": "複製並編輯"
     },
     "locked": "此標籤已鎖定"
@@ -78,6 +77,12 @@
       "title": "清空時間線？",
       "message": "這將刪除所有遊戲和連接。此操作無法復原。",
       "confirm": "清空",
+      "cancel": "取消"
+    },
+    "deleteTabConfirm": {
+      "title": "刪除標籤？",
+      "message": "這將永久刪除此標籤及其所有畫布資料。此操作無法復原。",
+      "confirm": "刪除",
       "cancel": "取消"
     }
   },
@@ -135,7 +140,7 @@
     "edgeSplit": "在事件點模式下點擊連線，可用標籤將其分割",
     "toolShortcuts": "按 V、D、B、T、P、E、L 快速切換工具",
     "undoRedo": "按 {{mod}}+Z 復原，{{mod}}+Shift+Z 重做",
-    "tabManagement": "右鍵點擊標籤頁可重新命名、鎖定、複製或刪除",
+    "tabManagement": "右鍵點擊標籤頁可鎖定、複製或刪除",
     "exportShare": "將時間線匯出為 PNG、PDF、JSON，或透過連結分享",
     "dismiss": "了解"
   },

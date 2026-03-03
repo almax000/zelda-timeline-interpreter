@@ -51,7 +51,6 @@
       "delete": "タブを削除",
       "lock": "タブをロック",
       "unlock": "タブのロックを解除",
-      "rename": "タブの名前を変更",
       "duplicateToEdit": "複製して編集"
     },
     "locked": "このタブはロックされています"
@@ -78,6 +77,12 @@
       "title": "タイムラインをクリアしますか？",
       "message": "すべてのゲームと接続が削除されます。この操作は元に戻せません。",
       "confirm": "クリア",
+      "cancel": "キャンセル"
+    },
+    "deleteTabConfirm": {
+      "title": "タブを削除しますか？",
+      "message": "このタブとすべてのキャンバスデータが完全に削除されます。この操作は元に戻せません。",
+      "confirm": "削除",
       "cancel": "キャンセル"
     }
   },
@@ -135,7 +140,7 @@
     "edgeSplit": "イベントポイントモードでエッジをクリックしてラベルで分割",
     "toolShortcuts": "V, D, B, T, P, E, Lキーでツールを素早く切り替え",
     "undoRedo": "{{mod}}+Zで元に戻す、{{mod}}+Shift+Zでやり直し",
-    "tabManagement": "タブを右クリックで名前変更、ロック、複製、削除",
+    "tabManagement": "タブを右クリックでロック、複製、削除",
     "exportShare": "タイムラインをPNG、PDF、JSONでエクスポート、またはリンクで共有",
     "dismiss": "了解"
   },
