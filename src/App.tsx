@@ -4,6 +4,7 @@ import { Sidebar } from './components/Sidebar';
 import { TimelineCanvas } from './components/Canvas';
 import { CanvasOverlay } from './components/Canvas/CanvasOverlay';
 import { ShareViewer } from './components/ShareViewer';
+import { MobileGate } from './components/UI/MobileGate';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useTabStore } from './stores/tabStore';
 import { decodeTimeline } from './utils/sharing';
@@ -59,7 +60,11 @@ function App() {
   if (sharedData) {
     return <ShareViewer nodes={sharedData.nodes} edges={sharedData.edges} />;
   }
-  return <AppContent />;
+  return (
+    <MobileGate>
+      <AppContent />
+    </MobileGate>
+  );
 }
 
 export default App;

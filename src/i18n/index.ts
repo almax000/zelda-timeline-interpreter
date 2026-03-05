@@ -10,6 +10,27 @@ import { STORAGE_KEYS } from '../constants';
 
 const SUPPORTED_LANGUAGES = ['en', 'ja', 'zh-CN', 'zh-TW'];
 
+function detectBrowserLanguage(): string | null {
+  const browserLang = navigator.language;
+  if (!browserLang) return null;
+
+  // Exact match
+  if (SUPPORTED_LANGUAGES.includes(browserLang)) return browserLang;
+
+  // zh-Hans → zh-CN, zh-Hant → zh-TW
+  if (browserLang.startsWith('zh-Hans')) return 'zh-CN';
+  if (browserLang.startsWith('zh-Hant')) return 'zh-TW';
+
+  // Prefix match (e.g. "en-US" → "en", "ja-JP" → "ja")
+  const prefix = browserLang.split('-')[0];
+  if (SUPPORTED_LANGUAGES.includes(prefix)) return prefix;
+
+  // zh without region → default to zh-CN
+  if (prefix === 'zh') return 'zh-CN';
+
+  return null;
+}
+
 function hasPersistedLanguage(): boolean {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.SETTINGS);
@@ -48,6 +69,15 @@ i18n.use(initReactI18next).init({
 
 export async function initLanguage(): Promise<void> {
   if (hasPersistedLanguage()) return;
+
+  const browserLang = detectBrowserLanguage();
+  if (browserLang) {
+    if (browserLang !== 'en') {
+      await i18n.changeLanguage(browserLang);
+      useSettingsStore.getState().setLanguage(browserLang as 'en' | 'ja' | 'zh-CN' | 'zh-TW');
+    }
+    return;
+  }
 
   try {
     const controller = new AbortController();

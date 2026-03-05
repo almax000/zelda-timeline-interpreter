@@ -153,5 +153,10 @@
     "title": "About",
     "text": "Zelda Timeline Interpreter is an interactive tool for visualizing and exploring Zelda timeline theories. This is an unofficial fan project and is not affiliated with or endorsed by Nintendo. All game titles, images, and trademarks are the property of Nintendo Co., Ltd. This project is intended solely for educational and fan community purposes.",
     "close": "Close"
+  },
+  "mobile": {
+    "title": "Best on Larger Screens",
+    "message": "This app involves drag-and-drop timeline building and works best on a desktop or tablet. Please switch to a larger device for the full experience.",
+    "continue": "Continue anyway"
   }
 }

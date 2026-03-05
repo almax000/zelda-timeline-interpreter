@@ -1,8 +1,9 @@
-import { memo, useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
 import { useTranslation } from 'react-i18next';
 import { getGameById } from '../../data/games';
 import { useSettingsStore } from '../../stores/settingsStore';
+import { getLogoLang } from '../../utils/logo';
 
 interface GameNodeData extends Record<string, unknown> {
   gameId: string;
@@ -15,6 +16,7 @@ function GameNodeComponent({ data, selected }: NodeProps<GameNodeType>) {
   const { i18n } = useTranslation();
   const coverRegion = useSettingsStore((state) => state.coverRegion);
   const [logoFailed, setLogoFailed] = useState(false);
+  const [logoLangFallback, setLogoLangFallback] = useState(false);
   const [fallbackToUs, setFallbackToUs] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
 
@@ -22,9 +24,19 @@ function GameNodeComponent({ data, selected }: NodeProps<GameNodeType>) {
   if (!game) return null;
 
   const gameName = game.names[i18n.language as keyof typeof game.names] || game.names.en;
+  const logoLang = logoLangFallback ? 'ja' : getLogoLang(i18n.language);
+
+  useEffect(() => {
+    setLogoFailed(false);
+    setLogoLangFallback(false);
+  }, [i18n.language]);
 
   const handleLogoError = () => {
-    setLogoFailed(true);
+    if (!logoLangFallback && logoLang !== 'ja') {
+      setLogoLangFallback(true);
+    } else {
+      setLogoFailed(true);
+    }
   };
 
   const handleCoverError = () => {
@@ -55,10 +67,10 @@ function GameNodeComponent({ data, selected }: NodeProps<GameNodeType>) {
       <Handle type="target" position={Position.Left} id="left" className="!w-2 !h-2 !bg-[var(--color-gold)] !border-[var(--color-surface)]" />
       <Handle type="source" position={Position.Left} id="left" className="!w-0 !h-0 !opacity-0" />
 
-      {/* Game image: logo first, cover fallback */}
+      {/* Game image */}
       {useLogo ? (
         <img
-          src={`/logos/${game.logo}`}
+          src={`/logos/${logoLang}/${game.logo}`}
           alt={gameName}
           className="w-full h-auto object-contain drop-shadow-lg"
           onError={handleLogoError}
@@ -67,15 +79,13 @@ function GameNodeComponent({ data, selected }: NodeProps<GameNodeType>) {
         <img
           src={`/covers/${effectiveRegion}/${coverPath}`}
           alt={gameName}
-          className="w-full h-auto block rounded"
+          className="w-full h-auto object-contain rounded"
           onError={handleCoverError}
         />
       ) : (
-        <div className="w-full h-16 flex items-center justify-center">
-          <span className="text-center p-2 text-xs text-[var(--color-text-muted)]">
-            {gameName}
-          </span>
-        </div>
+        <span className="text-center p-2 text-xs text-[var(--color-text-muted)]">
+          {gameName}
+        </span>
       )}
 
       {/* Game title — absolute so it doesn't affect node height (handles stay at image center) */}
