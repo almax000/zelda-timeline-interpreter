@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { LanguageDropdown } from './LanguageDropdown';
 import { AboutModal } from './AboutModal';
+import { GitHubIcon, XIcon } from '../UI/SocialIcons';
+
+const githubUrl =
+  import.meta.env.VITE_GITHUB_URL || 'https://github.com/almax000/zelda-timeline-interpreter';
+const xUrl = import.meta.env.VITE_X_URL;
 
 function AboutIcon() {
   return (
@@ -27,7 +32,7 @@ export function SidebarLogo() {
           {['Zelda', 'Timeline', 'Interpreter'].map((word) => (
             <div
               key={word}
-              className="text-[var(--color-gold)] text-lg leading-tight tracking-wider"
+              className="text-[var(--color-gold)] text-base leading-tight tracking-wider"
               style={fontStyle}
             >
               {word}
@@ -36,6 +41,14 @@ export function SidebarLogo() {
         </div>
         <div className="flex items-center gap-0.5 shrink-0">
           <LanguageDropdown />
+          <a href={githubUrl} target="_blank" rel="noopener noreferrer" className={iconBtn} title="GitHub">
+            <GitHubIcon />
+          </a>
+          {xUrl && (
+            <a href={xUrl} target="_blank" rel="noopener noreferrer" className={iconBtn} title="X">
+              <XIcon />
+            </a>
+          )}
           <button onClick={() => setIsAboutOpen(true)} className={iconBtn} title="About">
             <AboutIcon />
           </button>

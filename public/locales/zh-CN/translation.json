@@ -70,7 +70,11 @@
     "changeBranch": "更改分支类型",
     "addLabel": "添加标签",
     "editLabel": "编辑标签",
-    "addEvent": "添加事件节点"
+    "addEventPoint": "添加事件点",
+    "addEventBoard": "添加事件板",
+    "addText": "添加文本",
+    "selectAll": "全选",
+    "zoomToFit": "适应视图"
   },
   "dialog": {
     "clearConfirm": {
@@ -117,17 +121,21 @@
     "step1Desc": "从侧边栏将游戏拖拽到画布上",
     "step2Title": "连接",
     "step2Desc": "拖动连接点将游戏节点相连",
-    "step3Title": "自定义",
-    "step3Desc": "右键点击设置分支类型和标签",
-    "step4Title": "分享",
-    "step4Desc": "导出为 PNG、PDF，或通过链接分享你的时间线"
+    "step3Title": "缩放",
+    "step3Desc": "捏合或 {{mod}}+滚轮缩放画布",
+    "step4Title": "平移",
+    "step4Desc": "滚动鼠标平移画布，Space+拖拽精确平移",
+    "step5Title": "自定义",
+    "step5Desc": "右键点击设置分支类型和标签",
+    "step6Title": "快捷键",
+    "step6Desc": "按 H 查看所有键盘快捷键"
   },
   "onboarding": {
     "sidebar": "从这里拖拽游戏到画布上，开始构建",
     "toolbar": "切换工具：选择、放置事件、绘制等",
     "tabs": "创建多个画布，对比不同的理论",
     "share": "通过链接与他人分享你的时间线",
-    "canvas": "将游戏拖放到这里，连接它们，构建你的理论"
+    "canvas": "将游戏拖放到这里，连接它们，构建你的理论。按 H 查看快捷键"
   },
   "hints": {
     "dragGames": "从左侧游戏库拖拽游戏，开始构建你的时间线",
@@ -141,8 +149,30 @@
     "toolShortcuts": "按 V、D、B、T、P、E、L 快速切换工具",
     "undoRedo": "按 {{mod}}+Z 撤销，{{mod}}+Shift+Z 重做",
     "tabManagement": "右键点击标签页可锁定、复制或删除",
+    "middleClickPan": "中键拖拽可平移画布",
+    "shiftScroll": "{{mod}}+滚轮缩放，滚轮平移画布",
     "exportShare": "将时间线导出为 PNG、PDF、JSON，或通过链接分享",
     "dismiss": "知道了"
+  },
+  "help": {
+    "title": "键盘快捷键",
+    "navigation": "导航",
+    "editing": "编辑",
+    "tools": "工具",
+    "scrollWheel": "滚轮",
+    "drag": "拖拽",
+    "middleClickDrag": "中键拖拽",
+    "zoomInOut": "放大 / 缩小",
+    "panCanvas": "平移画布",
+    "panHorizontally": "横向平移",
+    "constrainAxis": "限制为单轴移动",
+    "rightClickLabel": "右键点击",
+    "contextMenu": "上下文菜单",
+    "undo": "撤销",
+    "redo": "重做",
+    "duplicate": "复制选中项",
+    "deleteSelected": "删除选中项",
+    "pressToClose": "按 H 或 Esc 关闭"
   },
   "share": {
     "madeWith": "Made with",

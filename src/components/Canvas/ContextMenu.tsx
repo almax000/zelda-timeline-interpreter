@@ -2,12 +2,40 @@ import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BranchType } from '../../types/timeline';
 
+const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.userAgent);
+const mod = isMac ? '\u2318' : 'Ctrl+';
+
 const branchOptions: { type: BranchType; color: string }[] = [
   { type: 'main', color: 'var(--color-branch-main)' },
   { type: 'fallen', color: 'var(--color-branch-fallen)' },
   { type: 'child', color: 'var(--color-branch-child)' },
   { type: 'adult', color: 'var(--color-branch-adult)' },
 ];
+
+function MenuItem({ label, shortcut, onClick, variant }: {
+  label: string;
+  shortcut?: string;
+  onClick?: () => void;
+  variant?: 'danger';
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full px-4 py-1.5 text-left text-sm flex items-center justify-between gap-4 hover:bg-[var(--color-surface-light)] ${
+        variant === 'danger' ? 'text-red-400' : 'text-[var(--color-text)]'
+      }`}
+    >
+      <span>{label}</span>
+      {shortcut && (
+        <kbd className="text-xs text-[var(--color-text-muted)] font-mono">{shortcut}</kbd>
+      )}
+    </button>
+  );
+}
+
+function Separator() {
+  return <hr className="my-1 border-[var(--color-surface-light)]" />;
+}
 
 interface ContextMenuProps {
   x: number;
@@ -16,7 +44,11 @@ interface ContextMenuProps {
   edgeBranchType?: BranchType;
   onDelete: () => void;
   onChangeBranch?: (branchType: BranchType) => void;
-  onAddEvent?: () => void;
+  onAddEventPoint?: () => void;
+  onAddEventBoard?: () => void;
+  onAddText?: () => void;
+  onSelectAll?: () => void;
+  onZoomToFit?: () => void;
   onClose: () => void;
 }
 
@@ -27,7 +59,11 @@ export function ContextMenu({
   edgeBranchType,
   onDelete,
   onChangeBranch,
-  onAddEvent,
+  onAddEventPoint,
+  onAddEventBoard,
+  onAddText,
+  onSelectAll,
+  onZoomToFit,
   onClose,
 }: ContextMenuProps) {
   const { t } = useTranslation();
@@ -51,26 +87,47 @@ export function ContextMenu({
       style={{ left: x, top: y }}
     >
       {type === 'pane' && (
-        <button
-          onClick={() => { onAddEvent?.(); onClose(); }}
-          className="w-full px-4 py-2 text-left text-sm text-[var(--color-text)] hover:bg-[var(--color-surface-light)] flex items-center gap-2"
-        >
-          {t('contextMenu.addEvent')}
-        </button>
+        <>
+          <MenuItem
+            label={t('contextMenu.addEventPoint')}
+            shortcut="D"
+            onClick={() => { onAddEventPoint?.(); onClose(); }}
+          />
+          <MenuItem
+            label={t('contextMenu.addEventBoard')}
+            shortcut="B"
+            onClick={() => { onAddEventBoard?.(); onClose(); }}
+          />
+          <MenuItem
+            label={t('contextMenu.addText')}
+            shortcut="T"
+            onClick={() => { onAddText?.(); onClose(); }}
+          />
+          <Separator />
+          <MenuItem
+            label={t('contextMenu.selectAll')}
+            shortcut={`${mod}A`}
+            onClick={() => { onSelectAll?.(); onClose(); }}
+          />
+          <Separator />
+          <MenuItem
+            label={t('contextMenu.zoomToFit')}
+            onClick={() => { onZoomToFit?.(); onClose(); }}
+          />
+        </>
       )}
 
       {(type === 'node' || type === 'edge') && (
-        <button
+        <MenuItem
+          label={t('contextMenu.delete')}
+          variant="danger"
           onClick={() => { onDelete(); onClose(); }}
-          className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-[var(--color-surface-light)] flex items-center gap-2"
-        >
-          {t('contextMenu.delete')}
-        </button>
+        />
       )}
 
       {type === 'edge' && (
         <>
-          <hr className="my-1 border-[var(--color-surface-light)]" />
+          <Separator />
           <div className="px-4 py-2">
             <div className="flex gap-2">
               {branchOptions.map(({ type: bt, color }) => (

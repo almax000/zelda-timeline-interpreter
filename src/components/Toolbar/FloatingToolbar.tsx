@@ -34,7 +34,7 @@ export function FloatingToolbar() {
     setAnnotationMode, setTool, setColor,
   } = useAnnotationStore();
 
-  const { activeTool, setActiveTool, resetTool } = useUIStore();
+  const { activeTool, setActiveTool, resetTool, isHelpOpen, toggleHelp } = useUIStore();
 
   const undo = useStore(store.temporal, (s) => s.undo);
   const redo = useStore(store.temporal, (s) => s.redo);
@@ -237,6 +237,19 @@ export function FloatingToolbar() {
             </button>
           </Tooltip>
         </div>
+
+        <Divider />
+
+        {/* === Help === */}
+        <Tooltip label={t('help.title')} shortcut="H">
+          <button
+            onClick={toggleHelp}
+            className={isHelpOpen ? btnActive : btnMuted}
+            data-testid="toolbar-help"
+          >
+            <span className="text-sm font-bold leading-none">?</span>
+          </button>
+        </Tooltip>
       </div>
 
       <ConfirmDialog

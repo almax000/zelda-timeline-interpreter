@@ -51,6 +51,18 @@ export const tipRegistry: TipConfig[] = [
     condition: (ctx) => ctx.nodeCount >= 3,
   },
   {
+    id: 'middleClickPan',
+    i18nKey: 'hints.middleClickPan',
+    priority: 4.5,
+    condition: (ctx) => ctx.nodeCount >= 5,
+  },
+  {
+    id: 'shiftScroll',
+    i18nKey: 'hints.shiftScroll',
+    priority: 4.6,
+    condition: (ctx) => ctx.nodeCount >= 5,
+  },
+  {
     id: 'imagePaste',
     i18nKey: 'hints.imagePaste',
     priority: 5,
@@ -72,7 +84,7 @@ export const tipRegistry: TipConfig[] = [
     id: 'toolShortcuts',
     i18nKey: 'hints.toolShortcuts',
     priority: 8,
-    condition: (ctx) => ctx.counters.toolSwitches >= 3,
+    condition: (ctx) => ctx.counters.toolSwitches >= 5,
   },
   {
     id: 'undoRedo',

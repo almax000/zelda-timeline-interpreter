@@ -3,8 +3,12 @@ import { ShareButton } from '../Toolbar/ShareButton';
 import { ExportButton } from '../Toolbar/ExportMenu';
 import { FloatingToolbar } from '../Toolbar/FloatingToolbar';
 import { SubToolbar } from '../Toolbar/SubToolbar';
+import { HelpPanel } from '../UI/HelpPanel';
+import { useHelpShortcut } from '../../hooks/useHelpShortcut';
 
 export function CanvasOverlay() {
+  useHelpShortcut();
+
   return (
     <div className="absolute inset-0 pointer-events-none z-10 flex flex-col">
       <div className="flex items-center justify-between w-full p-2 gap-2">
@@ -21,6 +25,7 @@ export function CanvasOverlay() {
         </div>
       </div>
       <div className="flex-1" />
+      <HelpPanel />
     </div>
   );
 }

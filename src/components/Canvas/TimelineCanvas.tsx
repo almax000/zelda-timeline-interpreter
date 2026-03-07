@@ -5,6 +5,7 @@ import {
   Background,
   useReactFlow,
   ConnectionLineType,
+  PanOnScrollMode,
   type Connection,
   type NodeTypes,
   type EdgeTypes,
@@ -37,7 +38,7 @@ import { useToolPlacement } from '../../hooks/useToolPlacement';
 import { getCanvasStore } from '../../stores/canvasRegistry';
 import { useAnnotationStore } from '../../stores/annotationStore';
 import { useTabStore } from '../../stores/tabStore';
-import { useSpacePan } from '../../hooks/useSpacePan';
+import { useCanvasModifiers } from '../../hooks/useCanvasModifiers';
 import { STORAGE_KEYS } from '../../constants';
 import type { TimelineNode } from '../../types/timeline';
 import type { BranchType } from '../../types/timeline';
@@ -63,7 +64,7 @@ interface TimelineCanvasProps {
 }
 
 export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
-  const { screenToFlowPosition } = useReactFlow();
+  const { screenToFlowPosition, fitView } = useReactFlow();
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const isAnnotationMode = useAnnotationStore((s) => s.isAnnotationMode);
@@ -75,7 +76,8 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const tab = useTabStore((s) => s.tabs.find((t) => t.id === tabId));
   const isLocked = tab?.isLocked ?? false;
 
-  const spaceHeld = useSpacePan();
+  const { spaceHeld } = useCanvasModifiers();
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   const currentTip = useTips(tabId, welcomeDismissed);
 
   useEffect(() => {
@@ -198,15 +200,25 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         elementsSelectable={!interactionDisabled}
         selectionOnDrag={activeTool === 'select' && !spaceHeld && !isLocked}
         selectionKeyCode={null}
-        panOnDrag={spaceHeld && !isAnnotationMode && !isPlacementTool}
-        zoomOnScroll={!isAnnotationMode}
+        panOnDrag={
+          isAnnotationMode || isPlacementTool
+            ? false
+            : isTouchDevice
+              ? true
+              : spaceHeld ? [0, 1] : [1]
+        }
+        panOnScroll={!isAnnotationMode}
+        panOnScrollMode={PanOnScrollMode.Free}
+        zoomOnScroll={false}
+        zoomOnPinch={!isAnnotationMode}
+        zoomActivationKeyCode="Meta"
         deleteKeyCode={interactionDisabled ? [] : ['Backspace', 'Delete']}
         proOptions={{ hideAttribution: true }}
       >
         <Background
           variant={BackgroundVariant.Dots}
           gap={20}
-          size={1}
+          size={1.5}
           color="var(--color-surface-light)"
         />
       </ReactFlow>
@@ -239,7 +251,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
           onChangeBranch={(branchType: BranchType) => {
             updateEdgeBranchType(contextMenu.targetId, branchType);
           }}
-          onAddEvent={() => {
+          onAddEventPoint={() => {
             const position = screenToFlowPosition({
               x: contextMenu.x,
               y: contextMenu.y,
@@ -252,6 +264,46 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
               position,
               data: { branchType: selectedBranchType },
             } as TimelineNode);
+          }}
+          onAddEventBoard={() => {
+            const position = screenToFlowPosition({
+              x: contextMenu.x,
+              y: contextMenu.y,
+            });
+            addNode({
+              id: `split-${Date.now()}`,
+              type: 'split',
+              position,
+              data: { label: 'Event', branchType: selectedBranchType },
+            } as TimelineNode);
+          }}
+          onAddText={() => {
+            const position = screenToFlowPosition({
+              x: contextMenu.x,
+              y: contextMenu.y,
+            });
+            addNode({
+              id: `text-${Date.now()}`,
+              type: 'textLabel',
+              position,
+              data: {
+                text: '',
+                width: 160,
+                fontSize: 16,
+                fontWeight: 'normal',
+                fontStyle: 'normal',
+                textAlign: 'left',
+                textColor: 'var(--color-text)',
+              },
+            } as TimelineNode);
+          }}
+          onSelectAll={() => {
+            const s = store.getState();
+            s.setNodes(s.nodes.map((n) => ({ ...n, selected: true })));
+            s.setEdges(s.edges.map((e) => ({ ...e, selected: true })));
+          }}
+          onZoomToFit={() => {
+            fitView({ duration: 300 });
           }}
           onClose={closeContextMenu}
         />

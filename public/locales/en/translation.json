@@ -70,7 +70,11 @@
     "changeBranch": "Change Branch Type",
     "addLabel": "Add Label",
     "editLabel": "Edit Label",
-    "addEvent": "Add Event Node"
+    "addEventPoint": "Add Event Point",
+    "addEventBoard": "Add Event Board",
+    "addText": "Add Text",
+    "selectAll": "Select All",
+    "zoomToFit": "Zoom to Fit"
   },
   "dialog": {
     "clearConfirm": {
@@ -117,17 +121,21 @@
     "step1Desc": "Drag games from the sidebar onto the canvas",
     "step2Title": "Connect",
     "step2Desc": "Link games by dragging between handles",
-    "step3Title": "Customize",
-    "step3Desc": "Right-click to set branch types & labels",
-    "step4Title": "Share",
-    "step4Desc": "Export as PNG/PDF or share your timeline via link"
+    "step3Title": "Zoom",
+    "step3Desc": "Pinch or {{mod}}+scroll to zoom in and out",
+    "step4Title": "Pan",
+    "step4Desc": "Scroll to move around, Space+drag for precision",
+    "step5Title": "Customize",
+    "step5Desc": "Right-click to set branch types & labels",
+    "step6Title": "Shortcuts",
+    "step6Desc": "Press H to see all keyboard shortcuts"
   },
   "onboarding": {
     "sidebar": "Drag any game from here onto the canvas to start building",
     "toolbar": "Switch tools: select, place events, draw, and more",
     "tabs": "Create multiple canvases to compare different theories",
     "share": "Share your timeline with others via a unique link",
-    "canvas": "Drop games here, connect them, and build your theory"
+    "canvas": "Drop games here, connect them, and build your theory. Press H for controls."
   },
   "hints": {
     "dragGames": "Drag games from the left sidebar to start building your timeline",
@@ -141,8 +149,30 @@
     "toolShortcuts": "Press V, D, B, T, P, E, L to quickly switch tools",
     "undoRedo": "Press {{mod}}+Z to undo, {{mod}}+Shift+Z to redo",
     "tabManagement": "Right-click tabs to lock, duplicate, or delete",
+    "middleClickPan": "Middle-click and drag to pan the canvas",
+    "shiftScroll": "{{mod}}+scroll to zoom, scroll to pan",
     "exportShare": "Export your timeline as PNG, PDF, JSON, or share via link",
     "dismiss": "Got it"
+  },
+  "help": {
+    "title": "Keyboard Shortcuts",
+    "navigation": "Navigation",
+    "editing": "Editing",
+    "tools": "Tools",
+    "scrollWheel": "Scroll wheel",
+    "drag": "drag",
+    "middleClickDrag": "Middle-click drag",
+    "zoomInOut": "Zoom in / out",
+    "panCanvas": "Pan canvas",
+    "panHorizontally": "Pan horizontally",
+    "constrainAxis": "Constrain to axis",
+    "rightClickLabel": "Right-click",
+    "contextMenu": "Context menu",
+    "undo": "Undo",
+    "redo": "Redo",
+    "duplicate": "Duplicate selected",
+    "deleteSelected": "Delete selected",
+    "pressToClose": "Press H or Esc to close"
   },
   "share": {
     "madeWith": "Made with",

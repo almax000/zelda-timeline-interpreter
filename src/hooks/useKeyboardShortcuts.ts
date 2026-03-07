@@ -54,6 +54,16 @@ export function useKeyboardShortcuts() {
           store.getState().duplicateSelected();
           return;
         }
+        if (e.key === 'a') {
+          e.preventDefault();
+          const tab = useTabStore.getState().tabs.find((t) => t.id === activeTabId);
+          if (tab?.isLocked) return;
+          const store = getCanvasStore(activeTabId);
+          const { nodes, edges, setNodes, setEdges } = store.getState();
+          setNodes(nodes.map((n) => ({ ...n, selected: true })));
+          setEdges(edges.map((edge) => ({ ...edge, selected: true })));
+          return;
+        }
         return;
       }
 

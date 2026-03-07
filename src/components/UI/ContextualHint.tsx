@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { STORAGE_KEYS } from '../../constants';
 import { modKey, type TipConfig } from '../../tips/tipRegistry';
+import { useUIStore } from '../../stores/uiStore';
 
 function markSeen(id: string) {
   try {
@@ -20,6 +21,7 @@ interface ContextualHintProps {
 
 export function ContextualHint({ tipConfig }: ContextualHintProps) {
   const { t } = useTranslation();
+  const isHelpOpen = useUIStore((s) => s.isHelpOpen);
   const [dismissedId, setDismissedId] = useState<string | null>(null);
   const prevTipIdRef = useRef(tipConfig?.id);
 
@@ -40,7 +42,7 @@ export function ContextualHint({ tipConfig }: ContextualHintProps) {
   const message = (t(tipConfig.i18nKey) as string).replace(/\{\{mod\}\}/g, modKey);
 
   return (
-    <div className="absolute bottom-14 left-1/2 -translate-x-1/2 z-40 animate-fade-in">
+    <div className={`absolute left-1/2 -translate-x-1/2 z-40 animate-fade-in transition-[bottom] duration-200 ${isHelpOpen ? 'bottom-[160px]' : 'bottom-14'}`}>
       <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-gold)]/30 shadow-lg text-sm">
         <span className="text-[var(--color-text-muted)]">
           {message}

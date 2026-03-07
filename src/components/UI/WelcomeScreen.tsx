@@ -6,7 +6,10 @@ interface WelcomeScreenProps {
   onStartBlank: () => void;
 }
 
-function StepIcon1() {
+const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.userAgent);
+const mod = isMac ? '\u2318' : 'Ctrl';
+
+function DragIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="6" width="10" height="12" rx="1.5" />
@@ -15,7 +18,7 @@ function StepIcon1() {
   );
 }
 
-function StepIcon2() {
+function ConnectIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
       <circle cx="6" cy="12" r="3" />
@@ -25,7 +28,29 @@ function StepIcon2() {
   );
 }
 
-function StepIcon3() {
+function ZoomIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="10" cy="10" r="7" />
+      <path d="M15 15l5 5" />
+      <path d="M7 10h6M10 7v6" />
+    </svg>
+  );
+}
+
+function PanIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3v18M3 12h18" />
+      <path d="M12 3l-3 3M12 3l3 3" />
+      <path d="M12 21l-3-3M12 21l3-3" />
+      <path d="M3 12l3-3M3 12l3 3" />
+      <path d="M21 12l-3-3M21 12l-3 3" />
+    </svg>
+  );
+}
+
+function CustomizeIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 3v1.5M12 19.5V21M21 12h-1.5M4.5 12H3M18.36 5.64l-1.06 1.06M6.7 17.3l-1.06 1.06M18.36 18.36l-1.06-1.06M6.7 6.7L5.64 5.64" />
@@ -34,32 +59,36 @@ function StepIcon3() {
   );
 }
 
-function StepIcon4() {
+function ShortcutsIcon() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3v12M12 3l-4 4M12 3l4 4" />
-      <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" />
+      <text x="12" y="16" textAnchor="middle" fontSize="12" fill="currentColor" fontWeight="600">?</text>
     </svg>
   );
 }
 
-const stepIcons = [StepIcon1, StepIcon2, StepIcon3, StepIcon4];
+const stepIcons = [DragIcon, ConnectIcon, ZoomIcon, PanIcon, CustomizeIcon, ShortcutsIcon];
 
 const stepColors = [
   'var(--color-gold)',
   'var(--color-branch-child)',
   'var(--color-branch-adult)',
   'var(--color-branch-fallen)',
+  'var(--color-gold)',
+  'var(--color-branch-child)',
 ];
 
 export function WelcomeScreen({ onLoadOfficial, onStartBlank }: WelcomeScreenProps) {
   const { t } = useTranslation();
 
   const steps = [
-    { title: t('welcome.step1Title'), desc: t('welcome.step1Desc') },
-    { title: t('welcome.step2Title'), desc: t('welcome.step2Desc') },
-    { title: t('welcome.step3Title'), desc: t('welcome.step3Desc') },
-    { title: t('welcome.step4Title'), desc: t('welcome.step4Desc') },
+    { title: t('welcome.step1Title'), desc: t('welcome.step1Desc', { mod }) },
+    { title: t('welcome.step2Title'), desc: t('welcome.step2Desc', { mod }) },
+    { title: t('welcome.step3Title'), desc: t('welcome.step3Desc', { mod }) },
+    { title: t('welcome.step4Title'), desc: t('welcome.step4Desc', { mod }) },
+    { title: t('welcome.step5Title'), desc: t('welcome.step5Desc', { mod }) },
+    { title: t('welcome.step6Title'), desc: t('welcome.step6Desc', { mod }) },
   ];
 
   return (
@@ -109,7 +138,7 @@ export function WelcomeScreen({ onLoadOfficial, onStartBlank }: WelcomeScreenPro
           <p className="text-[11px] uppercase tracking-widest text-[var(--color-gold)] mb-3">
             {t('welcome.quickStart')}
           </p>
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             {steps.map((step, i) => {
               const Icon = stepIcons[i];
               const color = stepColors[i];

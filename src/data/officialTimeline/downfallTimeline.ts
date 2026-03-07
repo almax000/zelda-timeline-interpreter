@@ -57,7 +57,7 @@ export const downfallNodes: TimelineNode[] = [
   {
     id: 'game-echoes-of-wisdom',
     type: 'game',
-    position: { x: 2999, y: 425 },
+    position: { x: 2999, y: 417 },
     data: { gameId: 'echoes-of-wisdom' },
   },
   {

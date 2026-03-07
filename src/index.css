@@ -18,6 +18,7 @@
   --color-surface-light: #1E293B;
   --color-text: #F8FAFC;
   --color-text-muted: #94A3B8;
+  --color-canvas: #141C2B;
 
   /* Timeline branch colors */
   --color-branch-main: #C9A227;
@@ -33,6 +34,7 @@
   --color-background: var(--color-background);
   --color-surface: var(--color-surface);
   --color-surface-light: var(--color-surface-light);
+  --color-canvas: var(--color-canvas);
 }
 
 html, body, #root {
@@ -47,7 +49,7 @@ html, body, #root {
 
 /* React Flow custom styles */
 .react-flow__background {
-  background-color: var(--color-background) !important;
+  background-color: var(--color-canvas) !important;
 }
 
 

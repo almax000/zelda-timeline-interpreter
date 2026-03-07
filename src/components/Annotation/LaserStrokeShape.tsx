@@ -39,31 +39,50 @@ export function LaserStrokeShape({ stroke, now }: LaserStrokeShapeProps) {
           const taper = 0.3 + 0.7 * (i / (numPoints - 1));
           const w = strokeWidth * taper;
 
+          // Smooth curve: use midpoints between consecutive points
+          let sx: number, sy: number;
+          if (i === 0) {
+            sx = x1; sy = y1;
+          } else {
+            sx = (points[(i - 1) * 2] + x1) / 2;
+            sy = (points[(i - 1) * 2 + 1] + y1) / 2;
+          }
+          let ex: number, ey: number;
+          if (i === numPoints - 2) {
+            ex = x2; ey = y2;
+          } else {
+            ex = (x1 + x2) / 2;
+            ey = (y1 + y2) / 2;
+          }
+
           // Outer glow
           ctx.beginPath();
-          ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
+          ctx.moveTo(sx, sy);
+          ctx.quadraticCurveTo(x1, y1, ex, ey);
           ctx.strokeStyle = `rgba(${LASER_COLOR_R},${LASER_COLOR_G},${LASER_COLOR_B},${decay * 0.15})`;
           ctx.lineWidth = w * 3;
           ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
           ctx.stroke();
 
           // Mid glow
           ctx.beginPath();
-          ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
+          ctx.moveTo(sx, sy);
+          ctx.quadraticCurveTo(x1, y1, ex, ey);
           ctx.strokeStyle = `rgba(${LASER_COLOR_R},${LASER_COLOR_G},${LASER_COLOR_B},${decay * 0.4})`;
           ctx.lineWidth = w * 1.5;
           ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
           ctx.stroke();
 
           // Core
           ctx.beginPath();
-          ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
+          ctx.moveTo(sx, sy);
+          ctx.quadraticCurveTo(x1, y1, ex, ey);
           ctx.strokeStyle = `rgba(${LASER_COLOR_R},${LASER_COLOR_G},${LASER_COLOR_B},${decay})`;
           ctx.lineWidth = w;
           ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
           ctx.stroke();
         }
 

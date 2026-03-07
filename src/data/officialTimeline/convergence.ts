@@ -18,13 +18,13 @@ export const convergenceNodes: TimelineNode[] = [
   {
     id: 'game-breath-of-the-wild',
     type: 'game',
-    position: { x: 3312, y: 856 },
+    position: { x: 3312, y: 831 },
     data: { gameId: 'breath-of-the-wild' },
   },
   {
     id: 'game-tears-of-the-kingdom',
     type: 'game',
-    position: { x: 3633, y: 840 },
+    position: { x: 3633, y: 830 },
     data: { gameId: 'tears-of-the-kingdom' },
   },
 ];

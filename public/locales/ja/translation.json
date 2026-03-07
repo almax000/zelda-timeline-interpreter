@@ -70,7 +70,11 @@
     "changeBranch": "分岐タイプを変更",
     "addLabel": "ラベルを追加",
     "editLabel": "ラベルを編集",
-    "addEvent": "イベントノードを追加"
+    "addEventPoint": "イベントポイントを追加",
+    "addEventBoard": "イベントボードを追加",
+    "addText": "テキストを追加",
+    "selectAll": "すべて選択",
+    "zoomToFit": "全体表示"
   },
   "dialog": {
     "clearConfirm": {
@@ -117,17 +121,21 @@
     "step1Desc": "サイドバーからゲームをキャンバスにドラッグ",
     "step2Title": "接続",
     "step2Desc": "ハンドルをドラッグしてゲームを繋げる",
-    "step3Title": "カスタマイズ",
-    "step3Desc": "右クリックで分岐タイプやラベルを設定",
-    "step4Title": "共有",
-    "step4Desc": "PNG・PDFでエクスポート、またはリンクでタイムラインを共有"
+    "step3Title": "ズーム",
+    "step3Desc": "ピンチまたは{{mod}}+スクロールでズーム",
+    "step4Title": "パン",
+    "step4Desc": "スクロールで移動、Space+ドラッグで精密移動",
+    "step5Title": "カスタマイズ",
+    "step5Desc": "右クリックで分岐タイプやラベルを設定",
+    "step6Title": "ショートカット",
+    "step6Desc": "H キーでキーボードショートカットを表示"
   },
   "onboarding": {
     "sidebar": "ここからゲームをキャンバスにドラッグして構築開始",
     "toolbar": "ツール切替：選択、イベント配置、描画など",
     "tabs": "複数のキャンバスを作成して異なる理論を比較",
     "share": "リンクでタイムラインを他の人と共有",
-    "canvas": "ゲームをドロップして接続し、理論を構築しよう"
+    "canvas": "ゲームをドロップして接続し、理論を構築しよう。H でショートカット表示"
   },
   "hints": {
     "dragGames": "左のサイドバーからゲームをドラッグしてタイムラインを作成",
@@ -141,8 +149,30 @@
     "toolShortcuts": "V, D, B, T, P, E, Lキーでツールを素早く切り替え",
     "undoRedo": "{{mod}}+Zで元に戻す、{{mod}}+Shift+Zでやり直し",
     "tabManagement": "タブを右クリックでロック、複製、削除",
+    "middleClickPan": "中クリック+ドラッグでキャンバスをパン",
+    "shiftScroll": "{{mod}}+スクロールでズーム、スクロールでパン",
     "exportShare": "タイムラインをPNG、PDF、JSONでエクスポート、またはリンクで共有",
     "dismiss": "了解"
+  },
+  "help": {
+    "title": "キーボードショートカット",
+    "navigation": "ナビゲーション",
+    "editing": "編集",
+    "tools": "ツール",
+    "scrollWheel": "スクロール",
+    "drag": "ドラッグ",
+    "middleClickDrag": "中クリック+ドラッグ",
+    "zoomInOut": "ズームイン / アウト",
+    "panCanvas": "キャンバスをパン",
+    "panHorizontally": "横方向にパン",
+    "constrainAxis": "軸に沿って移動制限",
+    "rightClickLabel": "右クリック",
+    "contextMenu": "コンテキストメニュー",
+    "undo": "元に戻す",
+    "redo": "やり直し",
+    "duplicate": "選択を複製",
+    "deleteSelected": "選択を削除",
+    "pressToClose": "H または Esc で閉じる"
   },
   "share": {
     "madeWith": "Made with",
