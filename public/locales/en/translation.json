@@ -11,6 +11,7 @@
       "mainline": "Mainline",
       "spinoff": "Spin-off"
     },
+    "spinoffSection": "Spin-off",
     "dragHint": "Drag games to the canvas",
     "canonTooltip": "Officially recognized as canon"
   },

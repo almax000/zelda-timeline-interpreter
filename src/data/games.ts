@@ -206,8 +206,8 @@ export const games: Game[] = [
     names: {
       en: 'Echoes of Wisdom',
       ja: '知恵のかりもの',
-      'zh-CN': '智慧的借物',
-      'zh-TW': '智慧的借物',
+      'zh-CN': '智慧的再现',
+      'zh-TW': '智慧的再現',
     },
   },
   {
@@ -263,7 +263,7 @@ export const games: Game[] = [
     },
   },
 
-  // ===== SPIN-OFF GAMES (7) =====
+  // ===== SPIN-OFF GAMES (3) =====
   {
     id: 'hyrule-warriors',
     releaseYear: 2014,
@@ -302,58 +302,6 @@ export const games: Game[] = [
       ja: 'ゼルダ無双 封印戦記',
       'zh-CN': '塞尔达无双 封印战记',
       'zh-TW': '薩爾達無雙 封印戰記',
-    },
-  },
-  {
-    id: 'cadence-of-hyrule',
-    releaseYear: 2019,
-    isMainline: false,
-    logo: 'cadence-of-hyrule.png',
-    covers: { us: 'cadence-of-hyrule.jpg', jp: 'cadence-of-hyrule.jpg' },
-    names: {
-      en: 'Cadence of Hyrule',
-      ja: 'ケイデンス・オブ・ハイラル',
-      'zh-CN': '节奏海拉鲁',
-      'zh-TW': '節奏海拉魯',
-    },
-  },
-  {
-    id: 'links-crossbow-training',
-    releaseYear: 2007,
-    isMainline: false,
-    logo: 'links-crossbow-training.png',
-    covers: { us: 'links-crossbow-training.jpg', jp: 'links-crossbow-training.jpg' },
-    names: {
-      en: "Link's Crossbow Training",
-      ja: 'リンクのボウガントレーニング',
-      'zh-CN': '十字弓训练',
-      'zh-TW': '十字弓訓練',
-    },
-  },
-  {
-    id: 'tingles-rosy-rupeeland',
-    releaseYear: 2006,
-    isMainline: false,
-    logo: 'tingles-rosy-rupeeland.png',
-    covers: { us: 'tingles-rosy-rupeeland.jpg', jp: 'tingles-rosy-rupeeland.jpg' },
-    names: {
-      en: "Tingle's Rosy Rupeeland",
-      ja: 'もぎたてチンクルのばら色ルッピーランド',
-      'zh-CN': '廷格尔的玫瑰色卢比乐园',
-      'zh-TW': '廷格爾的玫瑰色盧比樂園',
-    },
-  },
-  {
-    id: 'battle-quest',
-    releaseYear: 2012,
-    isMainline: false,
-    logo: 'battle-quest.png',
-    covers: { us: 'battle-quest.jpg', jp: 'battle-quest.jpg' },
-    names: {
-      en: 'Nintendo Land: Battle Quest',
-      ja: 'ニンテンドーランド: バトルクエスト',
-      'zh-CN': '任天堂乐园：战斗任务',
-      'zh-TW': '任天堂樂園：戰鬥任務',
     },
   },
 ];

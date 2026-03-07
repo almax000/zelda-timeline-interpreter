@@ -83,7 +83,7 @@ function GameCardComponent({ game }: GameCardProps) {
       {/* Canon indicator for spin-offs */}
       {!game.isMainline && game.isCanon && (
         <div className="relative group flex-shrink-0">
-          <span className="w-5 h-5 flex items-center justify-center rounded text-xs font-bold text-[var(--color-gold)] bg-[var(--color-gold)]/20 cursor-help">
+          <span className="w-5 h-5 flex items-center justify-center rounded text-xs font-bold text-[var(--color-gold)] bg-[var(--color-gold)]/20">
             !
           </span>
           {/* Tooltip */}

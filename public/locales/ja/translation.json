@@ -11,6 +11,7 @@
       "mainline": "本編",
       "spinoff": "外伝"
     },
+    "spinoffSection": "スピンオフ",
     "dragHint": "ゲームをキャンバスにドラッグ",
     "canonTooltip": "公式に正史として認定"
   },
