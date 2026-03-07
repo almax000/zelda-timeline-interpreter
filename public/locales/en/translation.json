@@ -173,6 +173,10 @@
     "redo": "Redo",
     "duplicate": "Duplicate selected",
     "deleteSelected": "Delete selected",
+    "copy": "Copy",
+    "paste": "Paste",
+    "nudge": "Nudge",
+    "nudge10": "Nudge ×10",
     "pressToClose": "Press H or Esc to close"
   },
   "share": {

@@ -5,6 +5,12 @@ import { useUIStore, type ActiveTool } from '../stores/uiStore';
 import { useAnnotationStore } from '../stores/annotationStore';
 import { isInputFocused } from '../utils/dom';
 import { incrementCounter } from '../tips/interactionCounters';
+import type { TimelineNode, TimelineEdge } from '../types/timeline';
+
+let clipboard: {
+  nodes: TimelineNode[];
+  edges: TimelineEdge[];
+} | null = null;
 
 const TOOL_KEYS: Record<string, ActiveTool> = {
   v: 'select',
@@ -25,8 +31,8 @@ export function useKeyboardShortcuts() {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Modifier shortcuts (Cmd+Z etc.)
       if (e.metaKey || e.ctrlKey) {
-        // Let native Cmd+Z/C/V/X work in text inputs — only keep Cmd+D (duplicate)
-        if (e.key !== 'd' && isInputFocused()) return;
+        // Let native shortcuts work in text inputs — only override Cmd+D/C/V on canvas
+        if (e.key !== 'd' && e.key !== 'c' && e.key !== 'v' && isInputFocused()) return;
 
         if (e.key === 'z') {
           e.preventDefault();
@@ -64,6 +70,55 @@ export function useKeyboardShortcuts() {
           setEdges(edges.map((edge) => ({ ...edge, selected: true })));
           return;
         }
+        if (e.key === 'c') {
+          const store = getCanvasStore(activeTabId);
+          const { nodes, edges } = store.getState();
+          const selected = nodes.filter((n) => n.selected);
+          if (selected.length === 0) return;
+          const selectedIds = new Set(selected.map((n) => n.id));
+          const internalEdges = edges.filter(
+            (edge) => selectedIds.has(edge.source) && selectedIds.has(edge.target)
+          );
+          clipboard = { nodes: selected, edges: internalEdges };
+          return;
+        }
+        if (e.key === 'v') {
+          e.preventDefault();
+          if (!clipboard) return;
+          const tab = useTabStore.getState().tabs.find((t) => t.id === activeTabId);
+          if (tab?.isLocked) return;
+          const store = getCanvasStore(activeTabId);
+          const { nodes, edges, setNodes, setEdges } = store.getState();
+          const OFFSET = 30;
+          const ts = Date.now();
+          const idMap = new Map<string, string>();
+          const newNodes = clipboard.nodes.map((n, i) => {
+            const newId = `${n.type}-paste-${ts}-${i}`;
+            idMap.set(n.id, newId);
+            return {
+              ...n,
+              id: newId,
+              position: { x: n.position.x + OFFSET, y: n.position.y + OFFSET },
+              selected: true,
+            };
+          });
+          const newEdges = clipboard.edges.map((edge) => ({
+            ...edge,
+            id: `${idMap.get(edge.source)}-${idMap.get(edge.target)}`,
+            source: idMap.get(edge.source)!,
+            target: idMap.get(edge.target)!,
+            selected: true,
+          }));
+          setNodes([
+            ...nodes.map((n) => (n.selected ? { ...n, selected: false } : n)),
+            ...newNodes,
+          ] as TimelineNode[]);
+          setEdges([
+            ...edges.map((edge) => (edge.selected ? { ...edge, selected: false } : edge)),
+            ...newEdges,
+          ] as TimelineEdge[]);
+          return;
+        }
         return;
       }
 
@@ -90,6 +145,30 @@ export function useKeyboardShortcuts() {
         if (store.getState().nodes.some((n) => n.selected)) {
           incrementCounter('nodesDeleted');
         }
+        return;
+      }
+
+      const ARROW_KEYS: Record<string, { x: number; y: number }> = {
+        arrowup: { x: 0, y: -1 },
+        arrowdown: { x: 0, y: 1 },
+        arrowleft: { x: -1, y: 0 },
+        arrowright: { x: 1, y: 0 },
+      };
+      const arrow = ARROW_KEYS[key];
+      if (arrow) {
+        e.preventDefault();
+        const store = getCanvasStore(activeTabId);
+        const { nodes, setNodes } = store.getState();
+        const selected = nodes.filter((n) => n.selected);
+        if (selected.length === 0) return;
+        const step = e.shiftKey ? 10 : 1;
+        setNodes(
+          nodes.map((n) =>
+            n.selected
+              ? { ...n, position: { x: n.position.x + arrow.x * step, y: n.position.y + arrow.y * step } }
+              : n
+          )
+        );
         return;
       }
 

@@ -77,6 +77,10 @@ export function HelpPanel() {
               <Row keys={`${mod}+D`} action={t('help.duplicate')} />
               <Row keys={`${mod}+A`} action={t('contextMenu.selectAll')} />
               <Row keys="Delete" action={t('help.deleteSelected')} />
+              <Row keys={`${mod}+C`} action={t('help.copy')} />
+              <Row keys={`${mod}+V`} action={t('help.paste')} />
+              <Row keys="↑↓←→" action={t('help.nudge')} />
+              <Row keys="Shift + ↑↓←→" action={t('help.nudge10')} />
             </div>
           )}
 

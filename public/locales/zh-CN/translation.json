@@ -173,6 +173,10 @@
     "redo": "重做",
     "duplicate": "复制选中项",
     "deleteSelected": "删除选中项",
+    "copy": "复制",
+    "paste": "粘贴",
+    "nudge": "微移",
+    "nudge10": "快速微移",
     "pressToClose": "按 H 或 Esc 关闭"
   },
   "share": {

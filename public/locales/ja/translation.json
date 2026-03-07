@@ -173,6 +173,10 @@
     "redo": "やり直し",
     "duplicate": "選択を複製",
     "deleteSelected": "選択を削除",
+    "copy": "コピー",
+    "paste": "ペースト",
+    "nudge": "微調整",
+    "nudge10": "大きく移動",
     "pressToClose": "H または Esc で閉じる"
   },
   "share": {
