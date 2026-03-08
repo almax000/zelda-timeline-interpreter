@@ -93,6 +93,34 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
 
   useImagePaste(tabId, isLocked, screenToFlowPosition, containerSize);
 
+  // Listen for mobile tap-to-add events
+  useEffect(() => {
+    const handleAddGame = (e: Event) => {
+      if (isLocked) return;
+      const { gameId } = (e as CustomEvent<{ gameId: string }>).detail;
+      if (!gameId) return;
+
+      const position = screenToFlowPosition({
+        x: containerSize.width / 2,
+        y: containerSize.height / 2,
+      });
+
+      const newNode: TimelineNode = {
+        id: `game-${gameId}-${Date.now()}`,
+        type: 'game',
+        position,
+        data: { gameId },
+      };
+
+      const s = getCanvasStore(tabId).getState();
+      s.addNode(newNode);
+      setWelcomeDismissed(true);
+    };
+
+    window.addEventListener('zelda:add-game', handleAddGame);
+    return () => window.removeEventListener('zelda:add-game', handleAddGame);
+  }, [tabId, isLocked, screenToFlowPosition, containerSize]);
+
   const store = getCanvasStore(tabId);
   const { nodes, edges, onNodesChange, onEdgesChange, addNode, addEdge, removeNode, removeEdge, updateEdgeBranchType } = store();
   const { snapGuides, onNodeDragStart, onNodeDrag, onNodeDragStop } = useDragSnap(store);

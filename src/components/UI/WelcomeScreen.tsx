@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { TriforceIcon } from './TriforceIcon';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 interface WelcomeScreenProps {
   onLoadOfficial: () => void;
@@ -81,9 +82,13 @@ const stepColors = [
 
 export function WelcomeScreen({ onLoadOfficial, onStartBlank }: WelcomeScreenProps) {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   const steps = [
-    { title: t('welcome.step1Title'), desc: t('welcome.step1Desc', { mod }) },
+    {
+      title: isMobile ? t('welcome.step1TitleMobile') : t('welcome.step1Title'),
+      desc: isMobile ? t('welcome.step1DescMobile') : t('welcome.step1Desc', { mod }),
+    },
     { title: t('welcome.step2Title'), desc: t('welcome.step2Desc', { mod }) },
     { title: t('welcome.step3Title'), desc: t('welcome.step3Desc', { mod }) },
     { title: t('welcome.step4Title'), desc: t('welcome.step4Desc', { mod }) },
@@ -94,7 +99,7 @@ export function WelcomeScreen({ onLoadOfficial, onStartBlank }: WelcomeScreenPro
   return (
     <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
       <div
-        className="flex flex-col items-center gap-6 p-8 rounded-2xl bg-[var(--color-surface)]/80 backdrop-blur-sm border border-[var(--color-surface-light)] shadow-2xl max-w-xl text-center"
+        className="flex flex-col items-center gap-6 p-4 md:p-8 rounded-2xl bg-[var(--color-surface)]/80 backdrop-blur-sm border border-[var(--color-surface-light)] shadow-2xl max-w-[90vw] md:max-w-xl text-center"
         style={{ animation: 'welcome-in 400ms ease-out both' }}
       >
         {/* Title */}
@@ -108,10 +113,10 @@ export function WelcomeScreen({ onLoadOfficial, onStartBlank }: WelcomeScreenPro
         </div>
 
         {/* Action Cards */}
-        <div className="pointer-events-auto flex gap-4">
+        <div className="pointer-events-auto flex flex-col md:flex-row gap-3 md:gap-4 w-full md:w-auto">
           <button
             onClick={onLoadOfficial}
-            className="group flex flex-col items-center gap-3 p-5 rounded-xl border border-[var(--color-gold)]/30 bg-[var(--color-gold)]/5 hover:bg-[var(--color-gold)]/15 hover:border-[var(--color-gold)]/60 transition-all w-44"
+            className="group flex flex-col items-center gap-3 p-5 rounded-xl border border-[var(--color-gold)]/30 bg-[var(--color-gold)]/5 hover:bg-[var(--color-gold)]/15 hover:border-[var(--color-gold)]/60 transition-all w-full md:w-44"
           >
             <TriforceIcon size={28} className="text-[var(--color-gold)] opacity-70 group-hover:opacity-100 transition-opacity" />
             <span className="text-sm font-medium text-[var(--color-gold)] group-hover:brightness-110">
@@ -121,7 +126,7 @@ export function WelcomeScreen({ onLoadOfficial, onStartBlank }: WelcomeScreenPro
 
           <button
             onClick={onStartBlank}
-            className="group flex flex-col items-center gap-3 p-5 rounded-xl border border-[var(--color-branch-adult)]/40 bg-[var(--color-branch-adult)]/8 hover:bg-[var(--color-branch-adult)]/15 hover:border-[var(--color-branch-adult)]/60 transition-all w-44"
+            className="group flex flex-col items-center gap-3 p-5 rounded-xl border border-[var(--color-branch-adult)]/40 bg-[var(--color-branch-adult)]/8 hover:bg-[var(--color-branch-adult)]/15 hover:border-[var(--color-branch-adult)]/60 transition-all w-full md:w-44"
           >
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-[var(--color-branch-adult)] group-hover:opacity-100 transition-opacity">
               <line x1="12" y1="5" x2="12" y2="19" />
@@ -138,7 +143,7 @@ export function WelcomeScreen({ onLoadOfficial, onStartBlank }: WelcomeScreenPro
           <p className="text-[11px] uppercase tracking-widest text-[var(--color-gold)] mb-3">
             {t('welcome.quickStart')}
           </p>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {steps.map((step, i) => {
               const Icon = stepIcons[i];
               const color = stepColors[i];

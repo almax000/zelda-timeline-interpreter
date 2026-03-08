@@ -120,6 +120,8 @@
     "quickStart": "快速入門",
     "step1Title": "拖曳",
     "step1Desc": "從側邊欄將遊戲拖曳到畫布上",
+    "step1TitleMobile": "新增",
+    "step1DescMobile": "點擊遊戲卡片新增",
     "step2Title": "連接",
     "step2Desc": "拖動連接點將遊戲節點相連",
     "step3Title": "縮放",
@@ -190,8 +192,8 @@
     "close": "關閉"
   },
   "mobile": {
-    "title": "建議使用大螢幕裝置",
-    "message": "本應用涉及拖曳操作來建構時間線，建議在電腦或平板上使用以獲得最佳體驗。",
-    "continue": "仍然繼續"
+    "drawerTitle": "遊戲庫",
+    "tapToAdd": "點擊新增",
+    "moreTools": "更多"
   }
 }

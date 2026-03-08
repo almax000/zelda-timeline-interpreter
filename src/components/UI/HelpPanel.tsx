@@ -33,7 +33,7 @@ export function HelpPanel() {
 
   return (
     <div className={`fixed bottom-3 left-1/2 -translate-x-1/2 z-40 transition-all duration-200 ${isOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-3 pointer-events-none'}`}>
-      <div className="bg-[var(--color-surface)] border border-[var(--color-surface-light)] rounded-xl shadow-2xl overflow-hidden min-w-[480px] max-w-[600px]">
+      <div className="bg-[var(--color-surface)] border border-[var(--color-surface-light)] rounded-xl shadow-2xl overflow-hidden w-[90vw] md:min-w-[480px] md:w-auto md:max-w-[600px]">
         <div className="flex items-center justify-between px-3 pt-2 pb-1 border-b border-[var(--color-surface-light)]">
           <div className="flex gap-1">
             {tabs.map((tab) => (
@@ -60,7 +60,7 @@ export function HelpPanel() {
 
         <div className="px-4 py-2 max-h-[200px] overflow-y-auto">
           {activeTab === 'navigation' && (
-            <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1">
               <Row keys={t('help.scrollWheel')} action={t('help.panCanvas')} />
               <Row keys={`${mod} + ${t('help.scrollWheel')}`} action={t('help.zoomInOut')} />
               <Row keys={`Space + ${t('help.drag')}`} action={t('help.panCanvas')} />
@@ -69,7 +69,7 @@ export function HelpPanel() {
           )}
 
           {activeTab === 'editing' && (
-            <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1">
               <Row keys={`Shift + ${t('help.drag')}`} action={t('help.constrainAxis')} />
               <Row keys={t('help.rightClickLabel')} action={t('help.contextMenu')} />
               <Row keys={`${mod}+Z`} action={t('help.undo')} />
@@ -85,7 +85,7 @@ export function HelpPanel() {
           )}
 
           {activeTab === 'tools' && (
-            <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1">
               <Row keys="V" action={t('toolbar.select')} />
               <Row keys="D" action={t('toolbar.annotate')} />
               <Row keys="B" action={t('toolbar.split')} />

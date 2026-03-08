@@ -120,6 +120,8 @@
     "quickStart": "Quick Start",
     "step1Title": "Drag",
     "step1Desc": "Drag games from the sidebar onto the canvas",
+    "step1TitleMobile": "Add",
+    "step1DescMobile": "Tap a game card to add it",
     "step2Title": "Connect",
     "step2Desc": "Link games by dragging between handles",
     "step3Title": "Zoom",
@@ -190,8 +192,8 @@
     "close": "Close"
   },
   "mobile": {
-    "title": "Best on Larger Screens",
-    "message": "This app involves drag-and-drop timeline building and works best on a desktop or tablet. Please switch to a larger device for the full experience.",
-    "continue": "Continue anyway"
+    "drawerTitle": "Game Library",
+    "tapToAdd": "Tap to add",
+    "moreTools": "More"
   }
 }

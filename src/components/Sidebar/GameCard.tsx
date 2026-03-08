@@ -6,9 +6,10 @@ import { getLogoLang } from '../../utils/logo';
 
 interface GameCardProps {
   game: Game;
+  onTap?: (gameId: string) => void;
 }
 
-function GameCardComponent({ game }: GameCardProps) {
+function GameCardComponent({ game, onTap }: GameCardProps) {
   const { t, i18n } = useTranslation();
   const coverRegion = useSettingsStore((state) => state.coverRegion);
   const [logoFailed, setLogoFailed] = useState(false);
@@ -42,9 +43,10 @@ function GameCardComponent({ game }: GameCardProps) {
 
   return (
     <div
-      draggable
-      onDragStart={handleDragStart}
-      className="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 cursor-grab hover:bg-[var(--color-surface-light)] active:cursor-grabbing"
+      draggable={!onTap}
+      onDragStart={onTap ? undefined : handleDragStart}
+      onClick={onTap ? () => onTap(game.id) : undefined}
+      className={`flex items-center gap-3 p-2 rounded-lg transition-all duration-200 hover:bg-[var(--color-surface-light)] ${onTap ? 'cursor-pointer active:bg-[var(--color-surface-light)]/80' : 'cursor-grab active:cursor-grabbing'}`}
     >
       {/* Thumbnail: logo or cover */}
       <div className="w-10 h-10 flex-shrink-0 rounded overflow-hidden bg-[var(--color-surface-light)] flex items-center justify-center">

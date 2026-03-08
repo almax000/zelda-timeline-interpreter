@@ -96,48 +96,58 @@ export function AnnotationOverlay({ tabId, width, height }: AnnotationOverlayPro
     [tabId, removeStroke]
   );
 
-  const handleMouseDown = useCallback(
-    (e: { evt: MouseEvent }) => {
-      if (!isAnnotationMode) return;
-      const stage = e.evt.target as HTMLElement;
-      const rect = stage.closest('.konva-stage-container')?.getBoundingClientRect();
-      if (!rect) return;
+  // Unified coordinate extraction for mouse and touch events
+  const getPosition = useCallback(
+    (evt: MouseEvent | TouchEvent): { x: number; y: number } | null => {
+      const target = evt.target as HTMLElement;
+      const rect = target.closest('.konva-stage-container')?.getBoundingClientRect();
+      if (!rect) return null;
 
-      const x = e.evt.clientX - rect.left;
-      const y = e.evt.clientY - rect.top;
+      if ('touches' in evt) {
+        if (evt.touches.length > 1) return null; // ignore multi-touch
+        const touch = evt.touches[0] ?? evt.changedTouches[0];
+        if (!touch) return null;
+        return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+      }
+      return { x: evt.clientX - rect.left, y: evt.clientY - rect.top };
+    },
+    []
+  );
+
+  const handlePointerDown = useCallback(
+    (e: { evt: MouseEvent | TouchEvent }) => {
+      if (!isAnnotationMode) return;
+      const pos = getPosition(e.evt);
+      if (!pos) return;
 
       if (tool === 'pen' || tool === 'laser') {
         isDrawing.current = true;
         startStroke();
-        addPoint(x, y);
+        addPoint(pos.x, pos.y);
       } else if (tool === 'eraser') {
         isErasing.current = true;
-        eraseAtPoint(x, y);
+        eraseAtPoint(pos.x, pos.y);
       }
     },
-    [isAnnotationMode, tool, startStroke, addPoint, eraseAtPoint]
+    [isAnnotationMode, tool, startStroke, addPoint, eraseAtPoint, getPosition]
   );
 
-  const handleMouseMove = useCallback(
-    (e: { evt: MouseEvent }) => {
+  const handlePointerMove = useCallback(
+    (e: { evt: MouseEvent | TouchEvent }) => {
       if (!isAnnotationMode) return;
-      const stage = e.evt.target as HTMLElement;
-      const rect = stage.closest('.konva-stage-container')?.getBoundingClientRect();
-      if (!rect) return;
-
-      const x = e.evt.clientX - rect.left;
-      const y = e.evt.clientY - rect.top;
+      const pos = getPosition(e.evt);
+      if (!pos) return;
 
       if (isDrawing.current && (tool === 'pen' || tool === 'laser')) {
-        addPoint(x, y);
+        addPoint(pos.x, pos.y);
       } else if (isErasing.current && tool === 'eraser') {
-        eraseAtPoint(x, y);
+        eraseAtPoint(pos.x, pos.y);
       }
     },
-    [isAnnotationMode, tool, addPoint, eraseAtPoint]
+    [isAnnotationMode, tool, addPoint, eraseAtPoint, getPosition]
   );
 
-  const handleMouseUp = useCallback(() => {
+  const handlePointerUp = useCallback(() => {
     if (isDrawing.current) {
       isDrawing.current = false;
       if (tool === 'laser') {
@@ -173,15 +183,22 @@ export function AnnotationOverlay({ tabId, width, height }: AnnotationOverlayPro
   return (
     <div
       className="absolute inset-0 z-10"
-      style={{ pointerEvents: isAnnotationMode ? 'auto' : 'none', cursor }}
+      style={{
+        pointerEvents: isAnnotationMode ? 'auto' : 'none',
+        cursor,
+        touchAction: isAnnotationMode ? 'none' : 'auto',
+      }}
     >
       <Stage
         width={width}
         height={height}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        onMouseDown={handlePointerDown}
+        onMouseMove={handlePointerMove}
+        onMouseUp={handlePointerUp}
+        onMouseLeave={handlePointerUp}
+        onTouchStart={handlePointerDown}
+        onTouchMove={handlePointerMove}
+        onTouchEnd={handlePointerUp}
         className="konva-stage-container"
         style={{ cursor }}
       >

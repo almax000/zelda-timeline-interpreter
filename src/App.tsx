@@ -3,9 +3,10 @@ import { ReactFlowProvider } from '@xyflow/react';
 import { Sidebar } from './components/Sidebar';
 import { TimelineCanvas } from './components/Canvas';
 import { CanvasOverlay } from './components/Canvas/CanvasOverlay';
+import { MobileDrawer } from './components/Sidebar/MobileDrawer';
 import { ShareViewer } from './components/ShareViewer';
-import { MobileGate } from './components/UI/MobileGate';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { useIsMobile } from './hooks/useIsMobile';
 import { useTabStore } from './stores/tabStore';
 import { decodeTimeline } from './utils/sharing';
 import { STORAGE_KEYS } from './constants';
@@ -31,16 +32,18 @@ import { STORAGE_KEYS } from './constants';
 function AppContent() {
   useKeyboardShortcuts();
   const activeTabId = useTabStore((s) => s.activeTabId);
+  const isMobile = useIsMobile();
 
   return (
     <div className="flex h-screen w-screen overflow-hidden">
-      <Sidebar />
+      {!isMobile && <Sidebar />}
       <div className="flex-1 relative min-w-0">
         <ReactFlowProvider key={activeTabId}>
           <TimelineCanvas tabId={activeTabId} />
         </ReactFlowProvider>
         <CanvasOverlay />
       </div>
+      {isMobile && <MobileDrawer />}
     </div>
   );
 }
@@ -60,11 +63,7 @@ function App() {
   if (sharedData) {
     return <ShareViewer nodes={sharedData.nodes} edges={sharedData.edges} />;
   }
-  return (
-    <MobileGate>
-      <AppContent />
-    </MobileGate>
-  );
+  return <AppContent />;
 }
 
 export default App;

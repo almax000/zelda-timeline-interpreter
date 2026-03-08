@@ -120,6 +120,8 @@
     "quickStart": "クイックスタート",
     "step1Title": "ドラッグ",
     "step1Desc": "サイドバーからゲームをキャンバスにドラッグ",
+    "step1TitleMobile": "追加",
+    "step1DescMobile": "ゲームカードをタップして追加",
     "step2Title": "接続",
     "step2Desc": "ハンドルをドラッグしてゲームを繋げる",
     "step3Title": "ズーム",
@@ -190,8 +192,8 @@
     "close": "閉じる"
   },
   "mobile": {
-    "title": "大きな画面でのご利用を推奨",
-    "message": "このアプリはドラッグ＆ドロップでタイムラインを作成するため、PCやタブレットでの使用を推奨します。",
-    "continue": "このまま続ける"
+    "drawerTitle": "ゲームライブラリ",
+    "tapToAdd": "タップで追加",
+    "moreTools": "その他"
   }
 }

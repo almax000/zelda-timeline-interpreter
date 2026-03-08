@@ -120,6 +120,8 @@
     "quickStart": "快速入门",
     "step1Title": "拖拽",
     "step1Desc": "从侧边栏将游戏拖拽到画布上",
+    "step1TitleMobile": "添加",
+    "step1DescMobile": "点击游戏卡片添加",
     "step2Title": "连接",
     "step2Desc": "拖动连接点将游戏节点相连",
     "step3Title": "缩放",
@@ -190,8 +192,8 @@
     "close": "关闭"
   },
   "mobile": {
-    "title": "建议使用大屏设备",
-    "message": "本应用涉及拖拽操作来构建时间线，建议在电脑或平板上使用以获得最佳体验。",
-    "continue": "仍然继续"
+    "drawerTitle": "游戏库",
+    "tapToAdd": "点击添加",
+    "moreTools": "更多"
   }
 }

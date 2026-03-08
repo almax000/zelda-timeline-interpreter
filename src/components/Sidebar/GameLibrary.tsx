@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { getMainlineGames, getSpinoffGames } from '../../data/games';
 import { GameCard } from './GameCard';
 
-export function GameLibrary() {
+interface GameLibraryProps {
+  onGameTap?: (gameId: string) => void;
+}
+
+export function GameLibrary({ onGameTap }: GameLibraryProps = {}) {
   const { t } = useTranslation();
   const [spinoffExpanded, setSpinoffExpanded] = useState(false);
 
@@ -21,7 +25,7 @@ export function GameLibrary() {
     <div className="flex-1 overflow-y-auto min-w-64">
       <div className="p-1.5 space-y-0.5">
         {mainlineGames.map((game) => (
-          <GameCard key={game.id} game={game} />
+          <GameCard key={game.id} game={game} onTap={onGameTap} />
         ))}
       </div>
 
@@ -45,7 +49,7 @@ export function GameLibrary() {
           {spinoffExpanded && (
             <div className="p-1.5 pt-0 space-y-0.5">
               {spinoffGames.map((game) => (
-                <GameCard key={game.id} game={game} />
+                <GameCard key={game.id} game={game} onTap={onGameTap} />
               ))}
             </div>
           )}
