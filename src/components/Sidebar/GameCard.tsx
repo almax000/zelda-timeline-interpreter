@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from 'react';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Game } from '../../types/game';
 import { useSettingsStore } from '../../stores/settingsStore';
@@ -20,13 +20,16 @@ function GameCardComponent({ game, onTap }: GameCardProps) {
   const gameName = game.names[i18n.language as keyof typeof game.names] || game.names.en;
   const effectiveRegion = fallbackToUs ? 'us' : coverRegion;
   const coverPath = game.covers[effectiveRegion] || game.covers.us;
-  const logoLang = logoLangFallback ? 'ja' : getLogoLang(i18n.language);
-  const useLogo = game.logo && !logoFailed;
+  const [prevLang, setPrevLang] = useState(i18n.language);
 
-  useEffect(() => {
+  if (prevLang !== i18n.language) {
+    setPrevLang(i18n.language);
     setLogoFailed(false);
     setLogoLangFallback(false);
-  }, [i18n.language]);
+  }
+
+  const logoLang = logoLangFallback ? 'ja' : getLogoLang(i18n.language);
+  const useLogo = game.logo && !logoFailed;
 
   const handleDragStart = (event: React.DragEvent) => {
     event.dataTransfer.setData('application/zelda-game', game.id);

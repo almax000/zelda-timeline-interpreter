@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from 'react';
+import { memo, useState } from 'react';
 import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
 import { useTranslation } from 'react-i18next';
 import { getGameById } from '../../data/games';
@@ -19,17 +19,19 @@ function GameNodeComponent({ data, selected }: NodeProps<GameNodeType>) {
   const [logoLangFallback, setLogoLangFallback] = useState(false);
   const [fallbackToUs, setFallbackToUs] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
+  const [prevLang, setPrevLang] = useState(i18n.language);
+
+  if (prevLang !== i18n.language) {
+    setPrevLang(i18n.language);
+    setLogoFailed(false);
+    setLogoLangFallback(false);
+  }
 
   const game = getGameById(data.gameId);
   if (!game) return null;
 
   const gameName = game.names[i18n.language as keyof typeof game.names] || game.names.en;
   const logoLang = logoLangFallback ? 'ja' : getLogoLang(i18n.language);
-
-  useEffect(() => {
-    setLogoFailed(false);
-    setLogoLangFallback(false);
-  }, [i18n.language]);
 
   const handleLogoError = () => {
     if (!logoLangFallback && logoLang !== 'ja') {
