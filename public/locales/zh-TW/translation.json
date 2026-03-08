@@ -192,6 +192,9 @@
     "close": "關閉"
   },
   "mobile": {
+    "gateTitle": "建議使用大螢幕裝置",
+    "gateMessage": "本應用涉及拖曳操作來建構時間線，建議在電腦或平板上使用以獲得最佳體驗。手機版為實驗性功能。",
+    "gateContinue": "仍然繼續",
     "drawerTitle": "遊戲庫",
     "tapToAdd": "點擊新增",
     "moreTools": "更多"

@@ -192,6 +192,9 @@
     "close": "Close"
   },
   "mobile": {
+    "gateTitle": "Best on Larger Screens",
+    "gateMessage": "This app involves drag-and-drop timeline building and works best on a desktop or tablet. Mobile support is experimental.",
+    "gateContinue": "Continue anyway",
     "drawerTitle": "Game Library",
     "tapToAdd": "Tap to add",
     "moreTools": "More"

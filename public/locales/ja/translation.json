@@ -192,6 +192,9 @@
     "close": "閉じる"
   },
   "mobile": {
+    "gateTitle": "大きな画面でのご利用を推奨",
+    "gateMessage": "このアプリはドラッグ＆ドロップでタイムラインを作成するため、PCやタブレットでの使用を推奨します。モバイル対応は試験的です。",
+    "gateContinue": "このまま続ける",
     "drawerTitle": "ゲームライブラリ",
     "tapToAdd": "タップで追加",
     "moreTools": "その他"

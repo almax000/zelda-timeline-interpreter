@@ -192,6 +192,9 @@
     "close": "关闭"
   },
   "mobile": {
+    "gateTitle": "建议使用大屏设备",
+    "gateMessage": "本应用涉及拖拽操作来构建时间线，建议在电脑或平板上使用以获得最佳体验。手机版为实验性功能。",
+    "gateContinue": "仍然继续",
     "drawerTitle": "游戏库",
     "tapToAdd": "点击添加",
     "moreTools": "更多"
