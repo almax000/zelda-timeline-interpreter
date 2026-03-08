@@ -220,6 +220,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         edgeTypes={edgeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
         connectionLineType={ConnectionLineType.SmoothStep}
+        connectionRadius={30}
         fitView
         minZoom={0.1}
         maxZoom={2}
