@@ -12,19 +12,19 @@ export const childNodes: TimelineNode[] = [
   {
     id: 'game-majoras-mask',
     type: 'game',
-    position: { x: 1760, y: 660 },
+    position: { x: 1760, y: 680 },
     data: { gameId: 'majoras-mask' },
   },
   {
     id: 'game-twilight-princess',
     type: 'game',
-    position: { x: 2200, y: 660 },
+    position: { x: 2100, y: 680 },
     data: { gameId: 'twilight-princess' },
   },
   {
     id: 'game-four-swords-adventures',
     type: 'game',
-    position: { x: 2580, y: 660 },
+    position: { x: 2500, y: 680 },
     data: { gameId: 'four-swords-adventures' },
   },
 ];

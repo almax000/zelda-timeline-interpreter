@@ -6,13 +6,13 @@ export const mainTrunkNodes: TimelineNode[] = [
   {
     id: 'game-skyward-sword',
     type: 'game',
-    position: { x: -520, y: 560 },
+    position: { x: -520, y: 580 },
     data: { gameId: 'skyward-sword' },
   },
   {
     id: 'text-creation',
     type: 'textLabel',
-    position: { x: -780, y: 520 },
+    position: { x: -740, y: 560 },
     data: {
       text: 'The Creation of the Land and Sky',
       labelKey: 'officialTimeline.creation',
@@ -27,7 +27,7 @@ export const mainTrunkNodes: TimelineNode[] = [
   {
     id: 'event-pre-skyward',
     type: 'event',
-    position: { x: -720, y: 580 },
+    position: { x: -760, y: 580 },
     data: { branchType: 'main' },
   },
   {
@@ -39,7 +39,7 @@ export const mainTrunkNodes: TimelineNode[] = [
   {
     id: 'text-sacred-realm',
     type: 'textLabel',
-    position: { x: -260, y: 520 },
+    position: { x: -220, y: 560 },
     data: {
       text: 'The Sacred Realm is sealed',
       labelKey: 'officialTimeline.sacredRealmSealed',
@@ -60,7 +60,7 @@ export const mainTrunkNodes: TimelineNode[] = [
   {
     id: 'text-hyrule-founded',
     type: 'textLabel',
-    position: { x: -60, y: 520 },
+    position: { x: -14.5, y: 564.5 },
     data: {
       text: 'Kingdom of Hyrule is founded',
       labelKey: 'officialTimeline.hyruleFounded',
@@ -75,13 +75,13 @@ export const mainTrunkNodes: TimelineNode[] = [
   {
     id: 'game-minish-cap',
     type: 'game',
-    position: { x: 200, y: 560 },
+    position: { x: 200, y: 580 },
     data: { gameId: 'minish-cap' },
   },
   {
     id: 'game-four-swords',
     type: 'game',
-    position: { x: 500, y: 560 },
+    position: { x: 500, y: 580 },
     data: { gameId: 'four-swords' },
   },
   {
@@ -93,7 +93,7 @@ export const mainTrunkNodes: TimelineNode[] = [
   {
     id: 'text-civil-war',
     type: 'textLabel',
-    position: { x: 700, y: 540 },
+    position: { x: 760, y: 580 },
     data: {
       text: 'Hyrulean Civil War',
       labelKey: 'officialTimeline.civilWar',
@@ -108,7 +108,7 @@ export const mainTrunkNodes: TimelineNode[] = [
   {
     id: 'game-ocarina-of-time',
     type: 'game',
-    position: { x: 960, y: 540 },
+    position: { x: 960, y: 580 },
     data: { gameId: 'ocarina-of-time' },
   },
   {

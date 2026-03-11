@@ -6,13 +6,13 @@ export const downfallNodes: TimelineNode[] = [
   {
     id: 'event-fallen-pre-lttp',
     type: 'event',
-    position: { x: 1500, y: 440 },
+    position: { x: 1420, y: 440 },
     data: { branchType: 'main' },
   },
   {
     id: 'text-imprisoning-war',
     type: 'textLabel',
-    position: { x: 1440, y: 400 },
+    position: { x: 1460, y: 440 },
     data: {
       text: 'The Imprisoning War',
       labelKey: 'officialTimeline.imprisoningWar',
@@ -27,13 +27,13 @@ export const downfallNodes: TimelineNode[] = [
   {
     id: 'game-link-to-the-past',
     type: 'game',
-    position: { x: 1640, y: 420 },
+    position: { x: 1640, y: 440 },
     data: { gameId: 'link-to-the-past' },
   },
   {
     id: 'game-links-awakening',
     type: 'game',
-    position: { x: 1840, y: 420 },
+    position: { x: 1840, y: 440 },
     data: { gameId: 'links-awakening' },
   },
   {
@@ -45,19 +45,19 @@ export const downfallNodes: TimelineNode[] = [
   {
     id: 'game-link-between-worlds',
     type: 'game',
-    position: { x: 2440, y: 420 },
+    position: { x: 2440, y: 440 },
     data: { gameId: 'link-between-worlds' },
   },
   {
     id: 'game-tri-force-heroes',
     type: 'game',
-    position: { x: 2660, y: 420 },
+    position: { x: 2660, y: 440 },
     data: { gameId: 'tri-force-heroes' },
   },
   {
     id: 'game-echoes-of-wisdom',
     type: 'game',
-    position: { x: 3000, y: 420 },
+    position: { x: 3000, y: 440 },
     data: { gameId: 'echoes-of-wisdom' },
   },
   {
@@ -69,7 +69,7 @@ export const downfallNodes: TimelineNode[] = [
   {
     id: 'text-decline',
     type: 'textLabel',
-    position: { x: 3200, y: 400 },
+    position: { x: 3280, y: 440 },
     data: {
       text: 'Decline of Hyrule Kingdom',
       labelKey: 'officialTimeline.decline',
@@ -84,7 +84,7 @@ export const downfallNodes: TimelineNode[] = [
   {
     id: 'game-legend-of-zelda',
     type: 'game',
-    position: { x: 3580, y: 420 },
+    position: { x: 3580, y: 440 },
     data: { gameId: 'legend-of-zelda' },
   },
   {

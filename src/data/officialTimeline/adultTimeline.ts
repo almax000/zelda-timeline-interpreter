@@ -12,13 +12,13 @@ export const adultNodes: TimelineNode[] = [
   {
     id: 'event-adult-pre-ww',
     type: 'event',
-    position: { x: 1760, y: 1020 },
+    position: { x: 1720, y: 1000 },
     data: { branchType: 'main' },
   },
   {
     id: 'text-hyrule-flooded',
     type: 'textLabel',
-    position: { x: 1700, y: 980 },
+    position: { x: 1720, y: 1000 },
     data: {
       text: 'Hyrule is flooded',
       labelKey: 'officialTimeline.hyruleFlooded',
@@ -45,13 +45,13 @@ export const adultNodes: TimelineNode[] = [
   {
     id: 'event-adult-pre-st',
     type: 'event',
-    position: { x: 2400, y: 1020 },
+    position: { x: 2400, y: 1000 },
     data: { branchType: 'main' },
   },
   {
     id: 'text-new-hyrule',
     type: 'textLabel',
-    position: { x: 2320, y: 960 },
+    position: { x: 2380, y: 980 },
     data: {
       text: 'A new Hyrule Kingdom is Established',
       labelKey: 'officialTimeline.newHyrule',
@@ -66,7 +66,7 @@ export const adultNodes: TimelineNode[] = [
   {
     id: 'game-spirit-tracks',
     type: 'game',
-    position: { x: 2580, y: 1000 },
+    position: { x: 2600, y: 1000 },
     data: { gameId: 'spirit-tracks' },
   },
 ];
