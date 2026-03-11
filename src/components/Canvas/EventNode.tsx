@@ -28,11 +28,12 @@ function EventNodeComponent({ data, selected }: NodeProps<EventNodeType>) {
 
   return (
     <div
-      className="flex items-center"
-      style={selected ? {
-        filter: `drop-shadow(0 0 6px ${color}) drop-shadow(0 0 14px ${color})`,
-        transform: 'scale(1.25)',
-      } : undefined}
+      className="flex items-center justify-center"
+      style={{
+        width: 140,
+        height: 100,
+        filter: selected ? `drop-shadow(0 0 6px ${color}) drop-shadow(0 0 14px ${color})` : undefined,
+      }}
     >
       {/* Top handles */}
       <Handle type="target" position={Position.Top} id="top" className={VISIBLE_HANDLE} />

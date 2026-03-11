@@ -72,11 +72,13 @@ function SplitNodeComponent({ id, data, selected }: NodeProps<SplitNodeType>) {
     <div
       onDoubleClick={handleDoubleClick}
       className={`
-        relative px-5 py-3 min-w-[140px] group
+        relative px-3 group flex items-center justify-center
         bg-[var(--color-surface)] border-2
         transition-all duration-200
       `}
       style={{
+        width: 140,
+        height: 100,
         borderColor: color,
         boxShadow: selected ? `0 0 15px ${color}` : undefined,
       }}
@@ -115,7 +117,7 @@ function SplitNodeComponent({ id, data, selected }: NodeProps<SplitNodeType>) {
           style={{ borderBottom: `1px solid ${color}` }}
         />
       ) : (
-        <p className="text-sm font-medium text-center whitespace-nowrap text-[var(--color-text)]">
+        <p className="text-sm font-medium text-center text-[var(--color-text)]">
           {displayLabel || 'Event'}
         </p>
       )}

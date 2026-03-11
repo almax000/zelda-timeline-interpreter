@@ -289,12 +289,13 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
             updateEdgeBranchType(contextMenu.targetId, branchType);
           }}
           onAddEventPoint={() => {
-            const position = screenToFlowPosition({
+            let position = screenToFlowPosition({
               x: contextMenu.x,
               y: contextMenu.y,
             });
-            position.x -= 12;
-            position.y -= 12;
+            position.x -= 70;
+            position.y -= 50;
+            if (snapToGrid) position = snapPositionToGrid(position);
             addNode({
               id: `event-${Date.now()}`,
               type: 'event',
@@ -303,10 +304,13 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
             } as TimelineNode);
           }}
           onAddEventBoard={() => {
-            const position = screenToFlowPosition({
+            let position = screenToFlowPosition({
               x: contextMenu.x,
               y: contextMenu.y,
             });
+            position.x -= 70;
+            position.y -= 50;
+            if (snapToGrid) position = snapPositionToGrid(position);
             addNode({
               id: `split-${Date.now()}`,
               type: 'split',
