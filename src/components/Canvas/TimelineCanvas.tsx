@@ -255,6 +255,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
           variant={snapToGrid ? BackgroundVariant.Lines : BackgroundVariant.Dots}
           gap={20}
           size={snapToGrid ? 0.5 : 1.5}
+          offset={snapToGrid ? 20 : 0}
           color="var(--color-surface-light)"
         />
       </ReactFlow>

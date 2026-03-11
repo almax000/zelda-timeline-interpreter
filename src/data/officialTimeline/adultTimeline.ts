@@ -6,19 +6,19 @@ export const adultNodes: TimelineNode[] = [
   {
     id: 'split-adult-era',
     type: 'split',
-    position: { x: 1492, y: 1009 },
+    position: { x: 1500, y: 1000 },
     data: { labelKey: 'officialTimeline.adultEra' },
   },
   {
     id: 'event-adult-pre-ww',
     type: 'event',
-    position: { x: 1764, y: 1022 },
+    position: { x: 1760, y: 1020 },
     data: { branchType: 'main' },
   },
   {
     id: 'text-hyrule-flooded',
     type: 'textLabel',
-    position: { x: 1692, y: 983 },
+    position: { x: 1700, y: 980 },
     data: {
       text: 'Hyrule is flooded',
       labelKey: 'officialTimeline.hyruleFlooded',
@@ -33,25 +33,25 @@ export const adultNodes: TimelineNode[] = [
   {
     id: 'game-wind-waker',
     type: 'game',
-    position: { x: 1897, y: 994 },
+    position: { x: 1900, y: 1000 },
     data: { gameId: 'wind-waker' },
   },
   {
     id: 'game-phantom-hourglass',
     type: 'game',
-    position: { x: 2109, y: 999 },
+    position: { x: 2100, y: 1000 },
     data: { gameId: 'phantom-hourglass' },
   },
   {
     id: 'event-adult-pre-st',
     type: 'event',
-    position: { x: 2408, y: 1023 },
+    position: { x: 2400, y: 1020 },
     data: { branchType: 'main' },
   },
   {
     id: 'text-new-hyrule',
     type: 'textLabel',
-    position: { x: 2326, y: 968 },
+    position: { x: 2320, y: 960 },
     data: {
       text: 'A new Hyrule Kingdom is Established',
       labelKey: 'officialTimeline.newHyrule',
@@ -66,7 +66,7 @@ export const adultNodes: TimelineNode[] = [
   {
     id: 'game-spirit-tracks',
     type: 'game',
-    position: { x: 2573, y: 995 },
+    position: { x: 2580, y: 1000 },
     data: { gameId: 'spirit-tracks' },
   },
 ];

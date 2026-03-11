@@ -6,13 +6,13 @@ export const downfallNodes: TimelineNode[] = [
   {
     id: 'event-fallen-pre-lttp',
     type: 'event',
-    position: { x: 1498, y: 442 },
+    position: { x: 1500, y: 440 },
     data: { branchType: 'main' },
   },
   {
     id: 'text-imprisoning-war',
     type: 'textLabel',
-    position: { x: 1431, y: 407 },
+    position: { x: 1440, y: 400 },
     data: {
       text: 'The Imprisoning War',
       labelKey: 'officialTimeline.imprisoningWar',
@@ -27,49 +27,49 @@ export const downfallNodes: TimelineNode[] = [
   {
     id: 'game-link-to-the-past',
     type: 'game',
-    position: { x: 1644, y: 421 },
+    position: { x: 1640, y: 420 },
     data: { gameId: 'link-to-the-past' },
   },
   {
     id: 'game-links-awakening',
     type: 'game',
-    position: { x: 1850, y: 423 },
+    position: { x: 1840, y: 420 },
     data: { gameId: 'links-awakening' },
   },
   {
     id: 'game-oracle-of-seasons-ages',
     type: 'game',
-    position: { x: 2155, y: 432 },
+    position: { x: 2160, y: 440 },
     data: { gameId: 'oracle-of-seasons-ages' },
   },
   {
     id: 'game-link-between-worlds',
     type: 'game',
-    position: { x: 2446, y: 413 },
+    position: { x: 2440, y: 420 },
     data: { gameId: 'link-between-worlds' },
   },
   {
     id: 'game-tri-force-heroes',
     type: 'game',
-    position: { x: 2655, y: 421 },
+    position: { x: 2660, y: 420 },
     data: { gameId: 'tri-force-heroes' },
   },
   {
     id: 'game-echoes-of-wisdom',
     type: 'game',
-    position: { x: 2999, y: 417 },
+    position: { x: 3000, y: 420 },
     data: { gameId: 'echoes-of-wisdom' },
   },
   {
     id: 'event-fallen-pre-loz',
     type: 'event',
-    position: { x: 3303, y: 445 },
+    position: { x: 3300, y: 440 },
     data: { branchType: 'main' },
   },
   {
     id: 'text-decline',
     type: 'textLabel',
-    position: { x: 3205, y: 408 },
+    position: { x: 3200, y: 400 },
     data: {
       text: 'Decline of Hyrule Kingdom',
       labelKey: 'officialTimeline.decline',
@@ -84,13 +84,13 @@ export const downfallNodes: TimelineNode[] = [
   {
     id: 'game-legend-of-zelda',
     type: 'game',
-    position: { x: 3586, y: 424 },
+    position: { x: 3580, y: 420 },
     data: { gameId: 'legend-of-zelda' },
   },
   {
     id: 'game-adventure-of-link',
     type: 'game',
-    position: { x: 3818, y: 434 },
+    position: { x: 3820, y: 440 },
     data: { gameId: 'adventure-of-link' },
   },
 ];

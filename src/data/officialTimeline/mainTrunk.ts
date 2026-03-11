@@ -6,13 +6,13 @@ export const mainTrunkNodes: TimelineNode[] = [
   {
     id: 'game-skyward-sword',
     type: 'game',
-    position: { x: -523, y: 550 },
+    position: { x: -520, y: 560 },
     data: { gameId: 'skyward-sword' },
   },
   {
     id: 'text-creation',
     type: 'textLabel',
-    position: { x: -775, y: 522 },
+    position: { x: -780, y: 520 },
     data: {
       text: 'The Creation of the Land and Sky',
       labelKey: 'officialTimeline.creation',
@@ -27,19 +27,19 @@ export const mainTrunkNodes: TimelineNode[] = [
   {
     id: 'event-pre-skyward',
     type: 'event',
-    position: { x: -719, y: 585 },
+    position: { x: -720, y: 580 },
     data: { branchType: 'main' },
   },
   {
     id: 'event-post-skyward',
     type: 'event',
-    position: { x: -205, y: 585 },
+    position: { x: -200, y: 580 },
     data: { branchType: 'main' },
   },
   {
     id: 'text-sacred-realm',
     type: 'textLabel',
-    position: { x: -268, y: 526 },
+    position: { x: -260, y: 520 },
     data: {
       text: 'The Sacred Realm is sealed',
       labelKey: 'officialTimeline.sacredRealmSealed',
@@ -54,13 +54,13 @@ export const mainTrunkNodes: TimelineNode[] = [
   {
     id: 'event-pre-minish',
     type: 'event',
-    position: { x: 10, y: 585 },
+    position: { x: 0, y: 580 },
     data: { branchType: 'main' },
   },
   {
     id: 'text-hyrule-founded',
     type: 'textLabel',
-    position: { x: -55, y: 526 },
+    position: { x: -60, y: 520 },
     data: {
       text: 'Kingdom of Hyrule is founded',
       labelKey: 'officialTimeline.hyruleFounded',
@@ -75,25 +75,25 @@ export const mainTrunkNodes: TimelineNode[] = [
   {
     id: 'game-minish-cap',
     type: 'game',
-    position: { x: 196, y: 558 },
+    position: { x: 200, y: 560 },
     data: { gameId: 'minish-cap' },
   },
   {
     id: 'game-four-swords',
     type: 'game',
-    position: { x: 496, y: 555 },
+    position: { x: 500, y: 560 },
     data: { gameId: 'four-swords' },
   },
   {
     id: 'event-pre-ocarina',
     type: 'event',
-    position: { x: 764, y: 584 },
+    position: { x: 760, y: 580 },
     data: { branchType: 'main' },
   },
   {
     id: 'text-civil-war',
     type: 'textLabel',
-    position: { x: 693, y: 546 },
+    position: { x: 700, y: 540 },
     data: {
       text: 'Hyrulean Civil War',
       labelKey: 'officialTimeline.civilWar',
@@ -108,19 +108,19 @@ export const mainTrunkNodes: TimelineNode[] = [
   {
     id: 'game-ocarina-of-time',
     type: 'game',
-    position: { x: 952, y: 540 },
+    position: { x: 960, y: 540 },
     data: { gameId: 'ocarina-of-time' },
   },
   {
     id: 'split-hero-defeated',
     type: 'split',
-    position: { x: 1201, y: 430 },
+    position: { x: 1200, y: 440 },
     data: { labelKey: 'officialTimeline.heroDefeated' },
   },
   {
     id: 'split-hero-triumphant',
     type: 'split',
-    position: { x: 1192, y: 831 },
+    position: { x: 1200, y: 840 },
     data: { labelKey: 'officialTimeline.heroTriumphant' },
   },
 ];

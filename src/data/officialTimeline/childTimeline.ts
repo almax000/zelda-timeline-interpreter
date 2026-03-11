@@ -6,25 +6,25 @@ export const childNodes: TimelineNode[] = [
   {
     id: 'split-child-era',
     type: 'split',
-    position: { x: 1492, y: 677 },
+    position: { x: 1500, y: 680 },
     data: { labelKey: 'officialTimeline.childEra' },
   },
   {
     id: 'game-majoras-mask',
     type: 'game',
-    position: { x: 1765, y: 657 },
+    position: { x: 1760, y: 660 },
     data: { gameId: 'majoras-mask' },
   },
   {
     id: 'game-twilight-princess',
     type: 'game',
-    position: { x: 2209, y: 654 },
+    position: { x: 2200, y: 660 },
     data: { gameId: 'twilight-princess' },
   },
   {
     id: 'game-four-swords-adventures',
     type: 'game',
-    position: { x: 2573, y: 657 },
+    position: { x: 2580, y: 660 },
     data: { gameId: 'four-swords-adventures' },
   },
 ];

@@ -167,6 +167,7 @@ export function useKeyboardShortcuts() {
       const arrow = ARROW_KEYS[key];
       if (arrow) {
         e.preventDefault();
+        e.stopPropagation();
         const store = getCanvasStore(activeTabId);
         const { nodes, setNodes } = store.getState();
         const selected = nodes.filter((n) => n.selected);

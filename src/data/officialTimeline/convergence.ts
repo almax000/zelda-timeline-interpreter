@@ -6,25 +6,25 @@ export const convergenceNodes: TimelineNode[] = [
   {
     id: 'event-converge-top',
     type: 'event',
-    position: { x: 3039, y: 628 },
+    position: { x: 3040, y: 620 },
     data: { branchType: 'main' },
   },
   {
     id: 'event-converge-bottom',
     type: 'event',
-    position: { x: 3040, y: 1071 },
+    position: { x: 3040, y: 1080 },
     data: { branchType: 'main' },
   },
   {
     id: 'game-breath-of-the-wild',
     type: 'game',
-    position: { x: 3312, y: 831 },
+    position: { x: 3320, y: 840 },
     data: { gameId: 'breath-of-the-wild' },
   },
   {
     id: 'game-tears-of-the-kingdom',
     type: 'game',
-    position: { x: 3633, y: 830 },
+    position: { x: 3640, y: 840 },
     data: { gameId: 'tears-of-the-kingdom' },
   },
 ];
