@@ -1,6 +1,14 @@
 import type { TimelineNode } from '../types/timeline';
 
 export const SCREEN_SNAP_THRESHOLD = 5;
+export const GRID_SIZE = 20;
+
+export function snapPositionToGrid(pos: { x: number; y: number }): { x: number; y: number } {
+  return {
+    x: Math.round(pos.x / GRID_SIZE) * GRID_SIZE,
+    y: Math.round(pos.y / GRID_SIZE) * GRID_SIZE,
+  };
+}
 
 export interface SnapLine {
   position: number;

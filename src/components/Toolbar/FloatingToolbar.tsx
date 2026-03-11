@@ -9,8 +9,9 @@ import { ConfirmDialog } from '../UI/ConfirmDialog';
 import { Tooltip } from '../UI/Tooltip';
 import {
   IconLock, IconUnlock, IconCursor, IconAnnotate, IconSplit, IconText,
-  IconUndo, IconRedo, IconTrash, IconEraser, IconLaser, PenIcon, Divider,
+  IconUndo, IconRedo, IconTrash, IconEraser, IconLaser, IconGrid, PenIcon, Divider,
 } from './icons';
+import { useSettingsStore } from '../../stores/settingsStore';
 
 const isMac = navigator.platform.toUpperCase().includes('MAC');
 const mod = isMac ? '\u2318' : 'Ctrl+';
@@ -35,6 +36,8 @@ export function FloatingToolbar() {
   } = useAnnotationStore();
 
   const { activeTool, setActiveTool, resetTool, isHelpOpen, toggleHelp } = useUIStore();
+  const snapToGrid = useSettingsStore((s) => s.snapToGrid);
+  const setSnapToGrid = useSettingsStore((s) => s.setSnapToGrid);
 
   const undo = useStore(store.temporal, (s) => s.undo);
   const redo = useStore(store.temporal, (s) => s.redo);
@@ -121,6 +124,17 @@ export function FloatingToolbar() {
             data-testid="toolbar-lock"
           >
             {isLocked ? <IconLock /> : <IconUnlock />}
+          </button>
+        </Tooltip>
+
+        {/* Snap to grid toggle */}
+        <Tooltip label={t('settings.snapToGrid')} shortcut="G">
+          <button
+            onClick={() => setSnapToGrid(!snapToGrid)}
+            className={snapToGrid ? btnActive : btnMuted}
+            data-testid="toolbar-grid"
+          >
+            <IconGrid />
           </button>
         </Tooltip>
 

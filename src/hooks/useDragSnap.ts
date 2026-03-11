@@ -3,13 +3,15 @@ import { useStoreApi, type Node } from '@xyflow/react';
 import type { CanvasStoreWithTemporal } from '../stores/canvasStoreFactory';
 import { isShiftHeld } from './useShiftKey';
 import { incrementCounter } from '../tips/interactionCounters';
-import { SCREEN_SNAP_THRESHOLD, EMPTY_GUIDES, computeSnap } from '../utils/snapGuides';
+import { useSettingsStore } from '../stores/settingsStore';
+import { SCREEN_SNAP_THRESHOLD, EMPTY_GUIDES, computeSnap, snapPositionToGrid } from '../utils/snapGuides';
 import type { SnapLine } from '../utils/snapGuides';
 
 export function useDragSnap(store: CanvasStoreWithTemporal) {
   const rfStore = useStoreApi();
   const dragStartRef = useRef<Map<string, { x: number; y: number }>>(new Map());
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>(EMPTY_GUIDES);
+  const gridEnabled = useSettingsStore((s) => s.snapToGrid);
 
   const applyDragPosition = useCallback((nodeId: string, pos: { x: number; y: number }, dragging: boolean) => {
     const { nodeLookup } = rfStore.getState();
@@ -32,7 +34,19 @@ export function useDragSnap(store: CanvasStoreWithTemporal) {
     const w = node.measured?.width ?? 0;
     const h = node.measured?.height ?? 0;
 
-    if (isShiftHeld() && start) {
+    if (gridEnabled) {
+      const gridPos = isShiftHeld() && start
+        ? (() => {
+            const dx = Math.abs(node.position.x - start.x);
+            const dy = Math.abs(node.position.y - start.y);
+            return dx >= dy
+              ? snapPositionToGrid({ x: node.position.x, y: start.y })
+              : snapPositionToGrid({ x: start.x, y: node.position.y });
+          })()
+        : snapPositionToGrid(node.position);
+      applyDragPosition(node.id, gridPos, true);
+      setSnapGuides(EMPTY_GUIDES);
+    } else if (isShiftHeld() && start) {
       const dx = Math.abs(node.position.x - start.x);
       const dy = Math.abs(node.position.y - start.y);
 
@@ -54,11 +68,22 @@ export function useDragSnap(store: CanvasStoreWithTemporal) {
       }
       setSnapGuides(guides);
     }
-  }, [applyDragPosition, store, rfStore]);
+  }, [applyDragPosition, store, rfStore, gridEnabled]);
 
   const onNodeDragStop = useCallback((_event: React.MouseEvent, node: Node) => {
     const start = dragStartRef.current.get(node.id);
-    if (start && isShiftHeld()) {
+    if (gridEnabled) {
+      const pos = isShiftHeld() && start
+        ? (() => {
+            const dx = Math.abs(node.position.x - start.x);
+            const dy = Math.abs(node.position.y - start.y);
+            return dx >= dy
+              ? snapPositionToGrid({ x: node.position.x, y: start.y })
+              : snapPositionToGrid({ x: start.x, y: node.position.y });
+          })()
+        : snapPositionToGrid(node.position);
+      applyDragPosition(node.id, pos, false);
+    } else if (start && isShiftHeld()) {
       const dx = Math.abs(node.position.x - start.x);
       const dy = Math.abs(node.position.y - start.y);
       const pos = dx >= dy
@@ -69,7 +94,7 @@ export function useDragSnap(store: CanvasStoreWithTemporal) {
     dragStartRef.current.delete(node.id);
     setSnapGuides(EMPTY_GUIDES);
     incrementCounter('nodeDrags');
-  }, [applyDragPosition]);
+  }, [applyDragPosition, gridEnabled]);
 
   return { snapGuides, onNodeDragStart, onNodeDrag, onNodeDragStop };
 }

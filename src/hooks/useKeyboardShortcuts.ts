@@ -3,8 +3,10 @@ import { getCanvasStore } from '../stores/canvasRegistry';
 import { useTabStore } from '../stores/tabStore';
 import { useUIStore, type ActiveTool } from '../stores/uiStore';
 import { useAnnotationStore } from '../stores/annotationStore';
+import { useSettingsStore } from '../stores/settingsStore';
 import { isInputFocused } from '../utils/dom';
 import { incrementCounter } from '../tips/interactionCounters';
+import { GRID_SIZE } from '../utils/snapGuides';
 import type { TimelineNode, TimelineEdge } from '../types/timeline';
 
 let clipboard: {
@@ -126,6 +128,14 @@ export function useKeyboardShortcuts() {
       if (isInputFocused()) return;
       if (useUIStore.getState().editingTextNodeId) return;
 
+      // Grid toggle — works even when locked (view setting)
+      if (e.key.toLowerCase() === 'g') {
+        e.preventDefault();
+        const { snapToGrid, setSnapToGrid } = useSettingsStore.getState();
+        setSnapToGrid(!snapToGrid);
+        return;
+      }
+
       // Skip when canvas is locked
       const tab = useTabStore.getState().tabs.find((t) => t.id === activeTabId);
       if (tab?.isLocked) return;
@@ -161,7 +171,8 @@ export function useKeyboardShortcuts() {
         const { nodes, setNodes } = store.getState();
         const selected = nodes.filter((n) => n.selected);
         if (selected.length === 0) return;
-        const step = e.shiftKey ? 10 : 1;
+        const gridOn = useSettingsStore.getState().snapToGrid;
+        const step = gridOn ? GRID_SIZE : e.shiftKey ? 10 : 1;
         setNodes(
           nodes.map((n) =>
             n.selected

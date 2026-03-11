@@ -40,10 +40,12 @@ import { useAnnotationStore } from '../../stores/annotationStore';
 import { useTabStore } from '../../stores/tabStore';
 import { useCanvasModifiers } from '../../hooks/useCanvasModifiers';
 import { STORAGE_KEYS } from '../../constants';
+import { useSettingsStore } from '../../stores/settingsStore';
 import type { TimelineNode } from '../../types/timeline';
 import type { BranchType } from '../../types/timeline';
 import { officialTimelineNodes, officialTimelineEdges } from '../../data/officialTimeline';
 import { SnapGuidesOverlay } from '../../utils/SnapGuidesOverlay';
+import { snapPositionToGrid } from '../../utils/snapGuides';
 
 const nodeTypes: NodeTypes = {
   game: GameNode as NodeTypes['game'],
@@ -79,6 +81,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
   const { spaceHeld } = useCanvasModifiers();
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   const currentTip = useTips(tabId, welcomeDismissed);
+  const snapToGrid = useSettingsStore((s) => s.snapToGrid);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -157,10 +160,14 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
       const gameId = event.dataTransfer.getData('application/zelda-game');
       if (!gameId) return;
 
-      const position = screenToFlowPosition({
+      let position = screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
       });
+
+      if (snapToGrid) {
+        position = snapPositionToGrid(position);
+      }
 
       const newNode: TimelineNode = {
         id: `game-${gameId}-${Date.now()}`,
@@ -171,7 +178,7 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
 
       addNode(newNode);
     },
-    [addNode, screenToFlowPosition, isLocked]
+    [addNode, screenToFlowPosition, isLocked, snapToGrid]
   );
 
   const handleNodesChange = useCallback((changes: NodeChange<TimelineNode>[]) => {
@@ -245,9 +252,9 @@ export function TimelineCanvas({ tabId }: TimelineCanvasProps) {
         proOptions={{ hideAttribution: true }}
       >
         <Background
-          variant={BackgroundVariant.Dots}
+          variant={snapToGrid ? BackgroundVariant.Lines : BackgroundVariant.Dots}
           gap={20}
-          size={1.5}
+          size={snapToGrid ? 0.5 : 1.5}
           color="var(--color-surface-light)"
         />
       </ReactFlow>
