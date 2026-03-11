@@ -10,16 +10,21 @@ interface EventNodeData extends Record<string, unknown> {
 
 type EventNodeType = Node<EventNodeData, 'event'>;
 
-function DoubleDiamondIcon({ color }: { color: string }) {
+function EventNodeSVG({ color }: { color: string }) {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" className="shrink-0" overflow="visible">
-      <path d="M12 0 L24 12 L12 24 L0 12 Z" fill="var(--color-surface)" stroke={color} strokeWidth="1.5"/>
-      <path d="M12 5 L19 12 L12 19 L5 12 Z" fill={color}/>
+    <svg width="140" height="100" viewBox="0 0 140 100" className="absolute inset-0">
+      {/* Connection lines from handles to diamond (bottom layer) */}
+      <line x1="0" y1="50" x2="58" y2="50" stroke={color} strokeWidth="3" />
+      <line x1="82" y1="50" x2="140" y2="50" stroke={color} strokeWidth="3" />
+      <line x1="70" y1="0" x2="70" y2="38" stroke={color} strokeWidth="3" />
+      <line x1="70" y1="62" x2="70" y2="100" stroke={color} strokeWidth="3" />
+      {/* Diamond at center (70, 50) — top layer */}
+      <path d="M70 38 L82 50 L70 62 L58 50 Z" fill="var(--color-surface)" stroke={color} strokeWidth="1.5"/>
+      <path d="M70 43 L77 50 L70 57 L63 50 Z" fill={color}/>
     </svg>
   );
 }
 
-const VISIBLE_HANDLE = '!w-2 !h-2 !bg-[var(--color-gold)] !border-[var(--color-surface)]';
 const HIDDEN_HANDLE = '!w-0 !h-0 !opacity-0 !border-0 !bg-transparent !min-w-0 !min-h-0';
 
 function EventNodeComponent({ data, selected }: NodeProps<EventNodeType>) {
@@ -28,30 +33,24 @@ function EventNodeComponent({ data, selected }: NodeProps<EventNodeType>) {
 
   return (
     <div
-      className="flex items-center justify-center"
+      className="relative"
       style={{
         width: 140,
         height: 100,
         filter: selected ? `drop-shadow(0 0 6px ${color}) drop-shadow(0 0 14px ${color})` : undefined,
       }}
     >
-      {/* Top handles */}
-      <Handle type="target" position={Position.Top} id="top" className={VISIBLE_HANDLE} />
+      {/* Handles (invisible — connection lines serve as visual indicators) */}
+      <Handle type="target" position={Position.Top} id="top" className={HIDDEN_HANDLE} />
       <Handle type="source" position={Position.Top} id="top" className={HIDDEN_HANDLE} />
-
-      {/* Bottom handles */}
-      <Handle type="source" position={Position.Bottom} id="bottom" className={VISIBLE_HANDLE} />
+      <Handle type="source" position={Position.Bottom} id="bottom" className={HIDDEN_HANDLE} />
       <Handle type="target" position={Position.Bottom} id="bottom" className={HIDDEN_HANDLE} />
-
-      {/* Left handles */}
-      <Handle type="target" position={Position.Left} id="left" className={VISIBLE_HANDLE} />
+      <Handle type="target" position={Position.Left} id="left" className={HIDDEN_HANDLE} />
       <Handle type="source" position={Position.Left} id="left" className={HIDDEN_HANDLE} />
-
-      {/* Right handles */}
-      <Handle type="source" position={Position.Right} id="right" className={VISIBLE_HANDLE} />
+      <Handle type="source" position={Position.Right} id="right" className={HIDDEN_HANDLE} />
       <Handle type="target" position={Position.Right} id="right" className={HIDDEN_HANDLE} />
 
-      <DoubleDiamondIcon color={color} />
+      <EventNodeSVG color={color} />
     </div>
   );
 }
