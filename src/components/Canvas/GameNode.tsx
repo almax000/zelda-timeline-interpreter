@@ -56,10 +56,10 @@ function GameNodeComponent({ data, selected }: NodeProps<GameNodeType>) {
   return (
     <div
       className={`
-        relative flex flex-col items-center cursor-grab transition-all duration-200 overflow-visible
+        relative flex flex-col items-center justify-center cursor-grab transition-all duration-200 overflow-visible
         ${selected ? 'drop-shadow-[0_0_12px_var(--color-gold)]' : ''}
       `}
-      style={{ width: 140 }}
+      style={{ width: 140, height: 100 }}
     >
       {/* Top handles */}
       <Handle type="target" position={Position.Top} id="top" className="!w-2 !h-2 !bg-[var(--color-gold)] !border-[var(--color-surface)]" />
@@ -74,14 +74,14 @@ function GameNodeComponent({ data, selected }: NodeProps<GameNodeType>) {
         <img
           src={`/logos/${logoLang}/${game.logo}`}
           alt={gameName}
-          className="w-full h-auto object-contain drop-shadow-lg"
+          className="max-w-full max-h-full object-contain drop-shadow-lg"
           onError={handleLogoError}
         />
       ) : coverPath && !imageFailed ? (
         <img
           src={`/covers/${effectiveRegion}/${coverPath}`}
           alt={gameName}
-          className="w-full h-auto object-contain rounded"
+          className="max-w-full max-h-full object-contain rounded"
           onError={handleCoverError}
         />
       ) : (
